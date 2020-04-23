@@ -90,7 +90,6 @@ L1TMuonBarrelKalmanAlgo::convertToBMTF(const L1MuKBMTrack& track) {
 
   // if (K2>4095)
   //   K2=4095;
-  //  int pt2 = unconstrainedPtLUT(track.curvatureAtMuon())/2;
   int pt2 = ptLUT(track.curvatureAtMuon())/2;
   int eta  = track.hasFineEta() ? track.fineEta() : track.coarseEta();
 
