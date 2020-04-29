@@ -69,8 +69,12 @@ void l1t::MuonRawDigiTranslator::fillMuon(Muon& mu, uint64_t dataword, int fed, 
 }
 
 void l1t::MuonRawDigiTranslator::generatePackedDataWords(const Muon& mu,
+                                                         uint32_t& raw_data_spare,
                                                          uint32_t& raw_data_00_31,
-                                                         uint32_t& raw_data_32_63) {
+                                                         uint32_t& raw_data_32_63,
+                                                         int fedID,
+                                                         int fwID,
+                                                         int muInBx) {
   int abs_eta = mu.hwEta();
   if (abs_eta < 0) {
     abs_eta += (1 << (etaSignShift_ - absEtaShift_));
@@ -89,12 +93,17 @@ void l1t::MuonRawDigiTranslator::generatePackedDataWords(const Muon& mu,
                    (mu.hwPhi() & phiMask_) << phiShift_;
 }
 
-uint64_t l1t::MuonRawDigiTranslator::generate64bitDataWord(const Muon& mu) {
+void l1t::MuonRawDigiTranslator::generate64bitDataWord(const Muon& mu,
+                                                       uint32_t& raw_data_spare,
+                                                       uint64_t& dataword,
+                                                       int fedId,
+                                                       int fwId,
+                                                       int muInBx) {
   uint32_t lsw;
   uint32_t msw;
 
-  generatePackedDataWords(mu, lsw, msw);
-  return (((uint64_t)msw) << 32) + lsw;
+  generatePackedDataWords(mu, raw_data_spare, lsw, msw, fedId, fwId, muInBx);
+  dataword = (((uint64_t)msw) << 32) + lsw;
 }
 
 int l1t::MuonRawDigiTranslator::calcHwEta(const uint32_t& raw,
@@ -108,3 +117,4 @@ int l1t::MuonRawDigiTranslator::calcHwEta(const uint32_t& raw,
     return abs_eta;
   }
 }
+

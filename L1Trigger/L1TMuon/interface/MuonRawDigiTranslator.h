@@ -8,8 +8,8 @@ namespace l1t {
   public:
     static void fillMuon(Muon&, uint32_t, uint32_t, int, unsigned int);
     static void fillMuon(Muon&, uint64_t, int, unsigned int);
-    static void generatePackedDataWords(const Muon&, uint32_t&, uint32_t&);
-    static uint64_t generate64bitDataWord(const Muon&);
+    static void generatePackedDataWords(const Muon& mu, uint32_t& raw_data_spare, uint32_t& raw_data_00_31, uint32_t& raw_data_32_63, int fedId, int fwId, int muInBx);
+    static void generate64bitDataWord(const Muon& mu, uint32_t& raw_data_spare, uint64_t& dataword, int fedId, int fwId, int muInBx);
     static int calcHwEta(const uint32_t&, const unsigned, const unsigned);
 
     static const unsigned ptMask_ = 0x1FF;
@@ -34,3 +34,4 @@ namespace l1t {
 }  // namespace l1t
 
 #endif
+
