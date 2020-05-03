@@ -342,7 +342,6 @@ int L1TMuonBarrelKalmanAlgo::correctedPhi(const L1MuKBMTCombinedStubRef& stub,in
   return stub->phi();
 } 
 
-
 int L1TMuonBarrelKalmanAlgo::hitPattern(const L1MuKBMTrack& track)  {
   unsigned int mask = 0;
   for (const auto& stub : track.stubs()) {
@@ -377,8 +376,6 @@ void L1TMuonBarrelKalmanAlgo::propagate(L1MuKBMTrack& track) {
   int charge=1;
   if (K!=0) 
     charge = K/fabs(K);
-
-
 
 
   int KBound=K;
@@ -446,6 +443,7 @@ void L1TMuonBarrelKalmanAlgo::propagate(L1MuKBMTrack& track) {
 
   a[7] = 0.0;
   a[8] = bPhiB_[step-1];
+
 
 
   ROOT::Math::SMatrix<double,3> P(a,9);
@@ -559,6 +557,7 @@ bool L1TMuonBarrelKalmanAlgo::updateOffline(L1MuKBMTrack& track,const L1MuKBMTCo
     }
 
 
+
     track.setCoordinates(track.step(),KNew,phiNew,phiBNew);
     Matrix33 covNew = cov - Gain*(H*cov);
     L1MuKBMTrack::CovarianceMatrix c;
@@ -619,10 +618,8 @@ bool L1TMuonBarrelKalmanAlgo::updateOffline1D(L1MuKBMTrack& track,const L1MuKBMT
     track.setCoordinates(track.step(),KNew,phiNew,phiBNew);
     Matrix33 covNew = cov - Gain*(H*cov);
     L1MuKBMTrack::CovarianceMatrix c;
-    if (verbose_){
-      printf(" K = %d + %f * %f\n", trackK, Gain(0,0), residual);
-      printf(" phiB = %d + %f * %f\n", trackPhiB, Gain(2,0), residual);
-    }
+ 
+
     c(0,0)=covNew(0,0); 
     c(0,1)=covNew(0,1); 
     c(0,2)=covNew(0,2); 
@@ -650,6 +647,7 @@ bool L1TMuonBarrelKalmanAlgo::updateLUT(L1MuKBMTrack& track,const L1MuKBMTCombin
     int phi  = correctedPhi(stub,track.sector());
     int phiB = correctedPhiB(stub);
 
+
     //if (stub->quality()<4)
     //  phiB=trackPhiB;
 
@@ -657,8 +655,11 @@ bool L1TMuonBarrelKalmanAlgo::updateLUT(L1MuKBMTrack& track,const L1MuKBMTCombin
     int residualPhi = wrapAround(phi-trackPhi,4096);
     int residualPhiB = wrapAround(phiB-trackPhiB,8192);
 
+
     if (verbose_)
-      printf("residuals %d %d\n", residualPhi, residualPhiB);
+      printf("residuals %d-%d=%d %d-%d=%d\n",phi,trackPhi,int(residualPhi),phiB,trackPhiB,int(residualPhiB));
+
+
     uint absK = fabs(trackK);
     if (absK>4095)
       absK = 4095;
@@ -676,21 +677,18 @@ bool L1TMuonBarrelKalmanAlgo::updateLUT(L1MuKBMTrack& track,const L1MuKBMTCombin
 
 
     }
-    
+    if (verbose_)
+      printf("Gains:%d  %f %f %f %f\n",absK/4,GAIN[0],GAIN[1],GAIN[2],GAIN[3]);
+
     track.setKalmanGain(track.step(),fabs(trackK),GAIN[0],GAIN[1],1,0,GAIN[2],GAIN[3]);
 
 
     int k_0 = fp_product(GAIN[0],residualPhi,3);
     int k_1 = fp_product(GAIN[1],residualPhiB,5);
     int KNew  = trackK+k_0+k_1;
-
     if (fabs(KNew)>=8191)
       return false;
     KNew = wrapAround(KNew,8192);
-
-    if (verbose_){
-      printf(" K = %d + %f * %d + %f * %d\n", trackK, GAIN[0], residualPhi, GAIN[1], residualPhiB);
-    }
 
     int phiNew  = phi;
 
@@ -701,23 +699,21 @@ bool L1TMuonBarrelKalmanAlgo::updateLUT(L1MuKBMTrack& track,const L1MuKBMTCombin
 
     if (verbose_)
       printf("phiupdate: %d %d\n",pb_0,pb_1);
+
     int phiBNew;
     if (!(mask==3 || mask ==5 || mask==9 ||mask==6|| mask==10 ||mask==12))  {
       phiBNew = wrapAround(trackPhiB+pb_0,4096);
-      if (verbose_)
-	printf(" phiB = %d + %f * %d\n", trackPhiB, GAIN[2], residualPhi);
+
       if (fabs(trackPhiB+pb_0)>=4095)
 	return false;
     }
     else {
       phiBNew = wrapAround(trackPhiB+pb_1-pbdouble_0,4096);
-      if (verbose_)
-	printf(" phiB = %d - %f * %d + %f * %d\n", trackPhiB, fabs(GAIN[2]), residualPhi,GAIN[3], residualPhiB);
+
       if (fabs(trackPhiB+pb_1-pbdouble_0)>=4095)
 	return false;
 
     }
-
 
     track.setCoordinates(track.step(),KNew,phiNew,phiBNew);
     track.addStub(stub);
@@ -798,7 +794,8 @@ void L1TMuonBarrelKalmanAlgo::vertexConstraintLUT(L1MuKBMTrack& track) {
   if (absK>2047)
     absK = 2047;
 
-  std::pair<float,float> GAIN = lutService_->vertexGain(track.hitPattern(),absK/2);
+std::pair<float,float> GAIN = lutService_->vertexGain(track.hitPattern(),absK/2);
+
   track.setKalmanGain(track.step(),fabs(track.curvature()),GAIN.first,GAIN.second,-1);
 
   int k_0 = fp_product(GAIN.first,int(residual),7);
@@ -839,6 +836,7 @@ void L1TMuonBarrelKalmanAlgo::setFloatingPointValues(L1MuKBMTrack& track,bool ve
 
 
     double phi= track.sector()*M_PI/6.0+track.phiAtVertex()*M_PI/(6*2048.)-2*M_PI;
+
 
     double eta = etaINT*lsbEta;
     track.setPtEtaPhi(pt,eta,phi);
@@ -1274,7 +1272,6 @@ int L1TMuonBarrelKalmanAlgo::ptLUT(int K) {
     FK=26.;   
 
   FK=FK*lsb;
- 
 
   //step 1 -material and B-field
   FK = .8569*FK/(1.0+0.1144*FK);
