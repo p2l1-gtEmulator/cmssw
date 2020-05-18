@@ -44,7 +44,7 @@ Implementation:
 //#include "TLorentzVector.h"
 //#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 //#include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
-#include "DataFormats/Phase2L1CaloTrig/src/classes.h"
+#include "DataFormats/L1TCalorimeterPhase2/src/classes.h"
 
 //#include "DataFormats/EgammaReco/interface/SuperCluster.h"
 //#include "DataFormats/EgammaReco/interface/SuperClusterFwd.h"
@@ -79,7 +79,7 @@ Implementation:
 #include "DataFormats/HcalDigi/interface/HcalTriggerPrimitiveDigi.h"
 
 // Output tower collection
-#include "DataFormats/Phase2L1CaloTrig/interface/L1CaloTower.h"
+#include "DataFormats/L1TCalorimeterPhase2/interface/CaloTower.h"
 
 #include "L1Trigger/L1CaloTrigger/interface/ParametricCalibration.h"
 
@@ -363,9 +363,9 @@ L1EGCrystalClusterEmulatorProducer::L1EGCrystalClusterEmulatorProducer(const edm
    hcalTPToken_(consumes< edm::SortedCollection<HcalTriggerPrimitiveDigi> >(iConfig.getParameter<edm::InputTag>("hcalTP"))),
    calib_(iConfig.getParameter<edm::ParameterSet>("calib"))
 {
-   produces<l1slhc::L1EGCrystalClusterCollection>("L1EGXtalClusterEmulator");
+   produces<l1tp2::CaloCrystalClusterCollection>("L1EGXtalClusterEmulator");
    produces< BXVector<l1t::EGamma> >("L1EGammaCollectionBXVEmulator");
-   produces< L1CaloTowerCollection >("L1CaloTowerCollection");
+   produces< l1tp2::CaloTowerCollection >("CaloTowerCollection");
 
 }
 
@@ -955,9 +955,9 @@ void L1EGCrystalClusterEmulatorProducer::produce(edm::Event& iEvent, const edm::
       }
 
 
-   std::unique_ptr<l1slhc::L1EGCrystalClusterCollection> L1EGXtalClusterEmulator( new l1slhc::L1EGCrystalClusterCollection );
-   std::unique_ptr< BXVector<l1t::EGamma> > L1EGammaCollectionBXVEmulator(new l1t::EGammaBxCollection);
-   std::unique_ptr< L1CaloTowerCollection > l1CaloTowerCollection(new L1CaloTowerCollection);
+   std::unique_ptr<l1tp2::CaloCrystalClusterCollection> L1EGXtalClusters( new l1tp2::CaloCrystalClusterCollection );
+   std::unique_ptr< BXVector<l1t::EGamma> > L1EGammas(new l1t::EGammaBxCollection);
+   std::unique_ptr< l1tp2::CaloTowerCollection > L1CaloTowers(new l1tp2::CaloTowerCollection);
 
     // Fill the cluster collection and towers as well
     for (int ii=0; ii<n_links_GCTcard; ++ii){ // 48 links
@@ -973,7 +973,7 @@ void L1EGCrystalClusterEmulatorProducer::produce(edm::Event& iEvent, const edm::
                     bool is_photon=(photonShowerShape_cluster_L2Card[ii][jj][ll]==1) && is_ss && is_iso;
                     bool is_looseTkss=(showerShapeLooseTk_cluster_L2Card[ii][jj][ll]==1);
                     // All the ID set to Standalone WP! Some dummy values for non calculated variables
-                    l1slhc::L1EGCrystalCluster cluster(p4calibrated, energy_cluster_L2Card[ii][jj][ll], HE_cluster_L2Card[ii][jj][ll], isolation_cluster_L2Card[ii][jj][ll], centerhit.id,-1000, float(brem_cluster_L2Card[ii][jj][ll]),-1000,-1000, energy_cluster_L2Card[ii][jj][ll],-1, is_iso && is_ss, is_iso && is_ss, is_photon, is_iso && is_ss, is_looseTkiso && is_looseTkss, is_iso && is_ss); 
+                    l1tp2::CaloCrystalCluster cluster(p4calibrated, energy_cluster_L2Card[ii][jj][ll], HE_cluster_L2Card[ii][jj][ll], isolation_cluster_L2Card[ii][jj][ll], centerhit.id,-1000, float(brem_cluster_L2Card[ii][jj][ll]),-1000,-1000, energy_cluster_L2Card[ii][jj][ll],-1, is_iso && is_ss, is_iso && is_ss, is_photon, is_iso && is_ss, is_looseTkiso && is_looseTkss, is_iso && is_ss); 
                     // Experimental parameters, don't want to bother with hardcoding them in data format
                     std::map<std::string, float> params;
                     params["standaloneWP_showerShape"] = is_ss;
@@ -982,8 +982,8 @@ void L1EGCrystalClusterEmulatorProducer::produce(edm::Event& iEvent, const edm::
                     params["trkMatchWP_isolation"] = is_looseTkiso;
                     params["TTiEta"] = getToweriEta_fromAbsoluteID( getTower_absoluteEtaID( p4calibrated.eta() ) );
                     params["TTiPhi"] = getToweriPhi_fromAbsoluteID( getTower_absolutePhiID( p4calibrated.phi() ) );
-                    cluster.SetExperimentalParams(params);
-                    L1EGXtalClusterEmulator->push_back(cluster);
+                    cluster.setExperimentalParams(params);
+                    L1EGXtalClusters->push_back(cluster);
 
                     // BXVector l1t::EGamma quality defined with respect to these WPs
                     // FIXME, need to defaul some of these to 0 I think...
@@ -991,7 +991,7 @@ void L1EGCrystalClusterEmulatorProducer::produce(edm::Event& iEvent, const edm::
                     int looseL1TkMatchWP = (int)(is_looseTkiso && is_looseTkss); 
                     int photonWP = (int)(is_photon);
                     int quality = (standaloneWP*std::pow(2,0)) + (looseL1TkMatchWP*std::pow(2,1)) + (photonWP*std::pow(2,2));
-                    L1EGammaCollectionBXVEmulator->push_back(0,l1t::EGamma(p4calibrated, p4calibrated.pt(), p4calibrated.eta(), p4calibrated.phi(),quality,1 ));
+                    L1EGammas->push_back(0,l1t::EGamma(p4calibrated, p4calibrated.pt(), p4calibrated.eta(), p4calibrated.phi(),quality,1 ));
                 }
             }
         }
@@ -1001,47 +1001,48 @@ void L1EGCrystalClusterEmulatorProducer::produce(edm::Event& iEvent, const edm::
         for (int ll=0; ll<3; ++ll){ // 3 cards
             // Fill the tower collection
             for (int jj=0; jj<n_towers_cardEta; ++jj){ // 17 TTs
-                L1CaloTower l1CaloTower;
-                l1CaloTower.ecal_tower_et = ECAL_tower_L2Card[ii][jj][ll];
-                l1CaloTower.hcal_tower_et = HCAL_tower_L2Card[ii][jj][ll];
-                l1CaloTower.tower_iEta = getToweriEta_fromAbsoluteID(iEta_tower_L2Card[ii][jj][ll]);
-                l1CaloTower.tower_iPhi = getToweriPhi_fromAbsoluteID(iPhi_tower_L2Card[ii][jj][ll]);
-                l1CaloTower.tower_eta = getTowerEta_fromAbsoluteID(iEta_tower_L2Card[ii][jj][ll]);
-                l1CaloTower.tower_phi = getTowerPhi_fromAbsoluteID(iPhi_tower_L2Card[ii][jj][ll]);
+              l1tp2::CaloTower l1CaloTower;
+                l1CaloTower.setEcalTowerEt( ECAL_tower_L2Card[ii][jj][ll] );
+                l1CaloTower.setHcalTowerEt( HCAL_tower_L2Card[ii][jj][ll] );
+                l1CaloTower.setTowerIEta( getToweriEta_fromAbsoluteID(iEta_tower_L2Card[ii][jj][ll]) );
+                l1CaloTower.setTowerIPhi( getToweriPhi_fromAbsoluteID(iPhi_tower_L2Card[ii][jj][ll]) );
+                l1CaloTower.setTowerEta( getTowerEta_fromAbsoluteID(iEta_tower_L2Card[ii][jj][ll]) );
+                l1CaloTower.setTowerPhi( getTowerPhi_fromAbsoluteID(iPhi_tower_L2Card[ii][jj][ll]) );
                 // Some towers have incorrect eta/phi because that wasn't initialized in certain cases, fix these
-                if (l1CaloTower.tower_eta < -80. && l1CaloTower.tower_phi < -90.)
+                if (l1CaloTower.towerEta() < -80. && l1CaloTower.towerPhi() < -90.)
                 {
-                    l1CaloTower.tower_eta = l1t::CaloTools::towerEta( l1CaloTower.tower_iEta );
-                    l1CaloTower.tower_phi = l1t::CaloTools::towerPhi( l1CaloTower.tower_iEta, l1CaloTower.tower_iPhi );
+                    l1CaloTower.setTowerEta ( l1t::CaloTools::towerEta( l1CaloTower.towerIEta()) );
+                    l1CaloTower.setTowerPhi ( l1t::CaloTools::towerPhi( l1CaloTower.towerIEta(), l1CaloTower.towerIPhi() ) );
                 }
-                l1CaloTower.isBarrel = true;
+                l1CaloTower.setIsBarrel(true);
 
                 // Add L1EGs if they match in iEta / iPhi
                 // L1EGs are already pT ordered, we will take the ID info for the leading one, but pT as the sum
-                for (auto l1eg : *L1EGXtalClusterEmulator){
+                for (auto l1eg : *L1EGXtalClusters){
 
-                    if (l1eg.GetExperimentalParam("TTiEta") != l1CaloTower.tower_iEta) continue;
-                    if (l1eg.GetExperimentalParam("TTiPhi") != l1CaloTower.tower_iPhi) continue;
+                    if (l1eg.experimentalParam("TTiEta") != l1CaloTower.towerIEta()) continue;
+                    if (l1eg.experimentalParam("TTiPhi") != l1CaloTower.towerIPhi()) continue;
 
-                    l1CaloTower.n_l1eg++;
-                    l1CaloTower.l1eg_tower_et += l1eg.pt();
-                    if (l1CaloTower.n_l1eg > 1) continue; // Don't record L1EG quality info for subleading L1EG
-                    l1CaloTower.l1eg_trkSS = l1eg.GetExperimentalParam("trkMatchWP_showerShape");
-                    l1CaloTower.l1eg_trkIso = l1eg.GetExperimentalParam("trkMatchWP_isolation");
-                    l1CaloTower.l1eg_standaloneSS = l1eg.GetExperimentalParam("standaloneWP_showerShape");
-                    l1CaloTower.l1eg_standaloneIso = l1eg.GetExperimentalParam("standaloneWP_isolation");
+                    int n_L1eg = l1CaloTower.nL1eg();
+                    l1CaloTower.setNL1eg(n_L1eg++);
+                    l1CaloTower.setL1egTowerEt ( l1CaloTower.l1egTowerEt() + l1eg.pt());
+                    if (l1CaloTower.nL1eg() > 1) continue; // Don't record L1EG quality info for subleading L1EG
+                    l1CaloTower.setL1egTrkSS ( l1eg.experimentalParam("trkMatchWP_showerShape") );
+                    l1CaloTower.setL1egTrkIso( l1eg.experimentalParam("trkMatchWP_isolation") );
+                    l1CaloTower.setL1egStandaloneSS ( l1eg.experimentalParam("standaloneWP_showerShape") );
+                    l1CaloTower.setL1egStandaloneIso( l1eg.experimentalParam("standaloneWP_isolation") );
                 }
 
-                l1CaloTowerCollection->push_back( l1CaloTower );
+                L1CaloTowers->push_back( l1CaloTower );
             }
         }
     }
 
 
 
-   iEvent.put(std::move(L1EGXtalClusterEmulator),"L1EGXtalClusterEmulator");
-   iEvent.put(std::move(L1EGammaCollectionBXVEmulator),"L1EGammaCollectionBXVEmulator");
-   iEvent.put(std::move(l1CaloTowerCollection),"L1CaloTowerCollection");
+   iEvent.put(std::move(L1EGXtalClusters),"L1EGXtalClusterEmulator");
+   iEvent.put(std::move(L1EGammas),"L1EGammaCollectionBXVEmulator");
+   iEvent.put(std::move(L1CaloTowers),"CaloTowerCollection");
 
 }
 
