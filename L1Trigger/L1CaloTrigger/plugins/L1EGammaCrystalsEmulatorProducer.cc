@@ -365,7 +365,7 @@ L1EGCrystalClusterEmulatorProducer::L1EGCrystalClusterEmulatorProducer(const edm
 {
    produces<l1tp2::CaloCrystalClusterCollection>("L1EGXtalClusterEmulator");
    produces< BXVector<l1t::EGamma> >("L1EGammaCollectionBXVEmulator");
-   produces< l1tp2::CaloTowerCollection >("CaloTowerCollection");
+   produces< l1tp2::CaloTowerCollection >("L1CaloTowerCollection");
 
 }
 
@@ -1042,7 +1042,7 @@ void L1EGCrystalClusterEmulatorProducer::produce(edm::Event& iEvent, const edm::
 
    iEvent.put(std::move(L1EGXtalClusters),"L1EGXtalClusterEmulator");
    iEvent.put(std::move(L1EGammas),"L1EGammaCollectionBXVEmulator");
-   iEvent.put(std::move(L1CaloTowers),"CaloTowerCollection");
+   iEvent.put(std::move(L1CaloTowers),"L1CaloTowerCollection");
 
 }
 
