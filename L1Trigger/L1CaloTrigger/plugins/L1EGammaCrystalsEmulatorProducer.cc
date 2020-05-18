@@ -25,103 +25,55 @@ Implementation:
 
 // user include files
 #include "L1Trigger/L1TCalorimeter/interface/CaloTools.h"
-#include "SimDataFormats/Track/interface/SimTrackContainer.h"
-#include "DataFormats/L1Trigger/interface/L1EmParticle.h"
-#include "DataFormats/L1Trigger/interface/L1EmParticleFwd.h"
-#include "DataFormats/Math/interface/deltaR.h"
-#include "DataFormats/Math/interface/deltaPhi.h"
-#include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDProducer.h"
-#include "FWCore/Framework/interface/ESHandle.h"
-#include "SimDataFormats/CaloHit/interface/PCaloHitContainer.h"
-#include "FWCore/ServiceRegistry/interface/Service.h"
-#include "Geometry/CaloEventSetup/interface/CaloTopologyRecord.h"
-#include "Geometry/Records/interface/CaloGeometryRecord.h"
-#include "Geometry/CaloGeometry/interface/CaloSubdetectorGeometry.h"
-#include "Geometry/CaloGeometry/interface/CaloGeometry.h"
-#include "Geometry/EcalAlgo/interface/EcalBarrelGeometry.h"
-#include "Geometry/CaloGeometry/interface/CaloCellGeometry.h"
-#include "Geometry/HcalTowerAlgo/interface/HcalTrigTowerGeometry.h"
-#include "Geometry/HcalTowerAlgo/interface/HcalGeometry.h"
 #include <iostream>
-#include "DataFormats/Phase2L1CaloTrig/interface/L1EGCrystalCluster.h"
-#include "Geometry/CaloTopology/interface/CaloTopology.h"
-#include "Geometry/CaloTopology/interface/HcalTopology.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDAnalyzer.h"
+//#include "FWCore/Framework/interface/EDAnalyzer.h"
 #include "FWCore/Framework/interface/Event.h"
-#include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/Framework/interface/ESHandle.h"
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/ServiceRegistry/interface/Service.h"
+//#include "FWCore/ServiceRegistry/interface/Service.h"
 #include "FWCore/Utilities/interface/InputTag.h"
-#include "CommonTools/UtilAlgos/interface/TFileService.h"
-#include "TH1.h"
-#include "TH2.h"
-#include "TF1.h"
-#include "TTree.h"
+//#include "CommonTools/UtilAlgos/interface/TFileService.h"
+//#include "TH1.h"
+//#include "TH2.h"
+//#include "TF1.h"
+//#include "TTree.h"
 #include "TMath.h"
-#include "TLorentzVector.h"
-#include "DataFormats/Math/interface/deltaR.h"
-#include "DataFormats/Candidate/interface/Candidate.h"
-#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
-#include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
-#include "SimDataFormats/GeneratorProducts/interface/HepMCProduct.h"
-#include "DataFormats/Phase2L1CaloTrig/interface/L1EGCrystalCluster.h"
+//#include "TLorentzVector.h"
+//#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
+//#include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
 #include "DataFormats/Phase2L1CaloTrig/src/classes.h"
 
-#include "DataFormats/EgammaReco/interface/SuperCluster.h"
-#include "DataFormats/EgammaReco/interface/SuperClusterFwd.h"
+//#include "DataFormats/EgammaReco/interface/SuperCluster.h"
+//#include "DataFormats/EgammaReco/interface/SuperClusterFwd.h"
 
-#include "DataFormats/L1Trigger/interface/L1EmParticle.h"
-#include "DataFormats/L1Trigger/interface/L1EmParticleFwd.h"
+//#include "DataFormats/L1Trigger/interface/L1EmParticle.h"
+//#include "DataFormats/L1Trigger/interface/L1EmParticleFwd.h"
 
-#include "L1Trigger/L1CaloTrigger/interface/L1TkElectronTrackMatchAlgo.h"
-
-#include "DataFormats/L1TrackTrigger/interface/TTTypes.h"
-#include "DataFormats/L1TrackTrigger/interface/TTCluster.h"
-#include "DataFormats/L1TrackTrigger/interface/TTStub.h"
-#include "DataFormats/L1TrackTrigger/interface/TTTrack.h"
-#include "SimDataFormats/TrackingAnalysis/interface/TrackingParticle.h"
-#include "SimDataFormats/TrackingAnalysis/interface/TrackingVertex.h"
-#include "SimDataFormats/TrackingHit/interface/PSimHitContainer.h"
-#include "SimDataFormats/TrackingHit/interface/PSimHit.h"
-#include "SimTracker/TrackTriggerAssociation/interface/TTClusterAssociationMap.h"
-#include "SimTracker/TrackTriggerAssociation/interface/TTStubAssociationMap.h"
-#include "SimTracker/TrackTriggerAssociation/interface/TTTrackAssociationMap.h"
-#include "Geometry/Records/interface/StackedTrackerGeometryRecord.h"
-#include "Geometry/Records/interface/TrackerDigiGeometryRecord.h"
-#include "DataFormats/HcalDigi/interface/HcalTriggerPrimitiveDigi.h"
 #include "CalibFormats/CaloTPG/interface/CaloTPGTranscoder.h"
 #include "CalibFormats/CaloTPG/interface/CaloTPGRecord.h"
-#include "DataFormats/L1TCorrelator/interface/TkPrimaryVertex.h"
-#include "DataFormats/EcalDigi/interface/EcalDigiCollections.h"
-#include "SimCalorimetry/EcalEBTrigPrimProducers/plugins/EcalEBTrigPrimProducer.h"
-#include "DataFormats/EcalDigi/interface/EcalEBTriggerPrimitiveDigi.h"
-#include "DataFormats/L1Trigger/interface/BXVector.h"
-#include "DataFormats/L1Trigger/interface/EGamma.h"
-#include "DataFormats/L1Trigger/interface/Tau.h"
-#include "DataFormats/L1Trigger/interface/L1Candidate.h"
+//#include "DataFormats/L1TCorrelator/interface/TkPrimaryVertex.h"
+//#include "DataFormats/EcalDigi/interface/EcalDigiCollections.h"
+//#include "DataFormats/L1Trigger/interface/BXVector.h"
+//#include "DataFormats/L1Trigger/interface/EGamma.h"
+//#include "DataFormats/L1Trigger/interface/L1Candidate.h"
 #include "Geometry/CaloGeometry/interface/CaloGeometry.h"
 #include "Geometry/EcalAlgo/interface/EcalBarrelGeometry.h"
-#include "Geometry/CaloGeometry/interface/CaloCellGeometry.h"
+//#include "Geometry/CaloGeometry/interface/CaloCellGeometry.h"
 #include "Geometry/HcalTowerAlgo/interface/HcalTrigTowerGeometry.h"
-#include "Geometry/HcalTowerAlgo/interface/HcalGeometry.h"
-#include "Geometry/Records/interface/CaloGeometryRecord.h"
-#include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
-#include "Geometry/CommonDetUnit/interface/GeomDet.h"
-#include "Geometry/Records/interface/TrackerDigiGeometryRecord.h"
 #include "DataFormats/HcalDetId/interface/HcalSubdetector.h"
 #include "DataFormats/HcalDetId/interface/HcalDetId.h"
 
 
-#include "Geometry/Records/interface/IdealGeometryRecord.h"
+//#include "Geometry/Records/interface/IdealGeometryRecord.h"
 
 // ECAL TPs
-#include "SimCalorimetry/EcalEBTrigPrimProducers/plugins/EcalEBTrigPrimProducer.h"
-#include "DataFormats/EcalDigi/interface/EcalEBTriggerPrimitiveDigi.h"
+//#include "SimCalorimetry/EcalEBTrigPrimProducers/plugins/EcalEBTrigPrimProducer.h"
+//#include "DataFormats/EcalDigi/interface/EcalEBTriggerPrimitiveDigi.h"
+#include "DataFormats/EcalDigi/interface/EcalDigiCollections.h"
 
 // HCAL TPs
 #include "DataFormats/HcalDigi/interface/HcalTriggerPrimitiveDigi.h"
@@ -133,27 +85,43 @@ Implementation:
 
 bool do_brem=true;
 
+int n_crystals_towerEta = 5 ;
+int n_crystals_towerPhi = 5 ;
+int n_towers_cardEta = 17 ;
+int n_towers_Eta = 34 ;
+int n_towers_Phi = 72 ;
+int n_towers_halfPhi = 36 ;
+int n_links_card = 4 ;
+int n_links_GCTcard = 48 ;
+float ECAL_eta_range = 1.4841 ;
+float half_crystal_size = 0.00873 ;
+float PiValue = 3.14159 ;
+float a0_80= 0.85, a1_80= 0.0080 ,a0= 0.21  ;                // passes_iso
+float b0= 0.38 , b1= 1.9, b2= 0.05 ; //passes_looseTkiso
+float c0_ss= 0.94 ,c1_ss= 0.052 ,c2_ss= 0.044 ;//passes_ss
+float d0= 0.96, d1=0.0003 ;//passes_photon
+float e0_looseTkss = 0.944 ,e1_looseTkss= 0.65,e2_looseTkss = 0.4;//passes_looseTkss
 
 float getEta_fromL2LinkCardTowerCrystal(int link, int card, int tower, int crystal){
-    int etaID=5*(17*((link/4)%2)+(tower%17))+crystal%5;
-    float size_cell=2*1.4841/(5*34);
-    return etaID*size_cell-1.4841+0.00873;
+    int etaID=n_crystals_towerEta*(n_towers_cardEta*((link/n_links_card)%2)+(tower%n_towers_cardEta))+crystal%n_crystals_towerEta;
+    float size_cell=2*ECAL_eta_range/(n_crystals_towerEta*n_towers_Eta);
+    return etaID*size_cell-ECAL_eta_range+half_crystal_size;
 }
 
 float getPhi_fromL2LinkCardTowerCrystal(int link, int card, int tower, int crystal){
-    int phiID=5*((card*24)+(4*(link/8))+(tower/17))+crystal/5;
-    float size_cell=2*3.14159/(5*72);
-    return phiID*size_cell-3.14259+0.00873;
+    int phiID=n_crystals_towerPhi*((card*24)+(n_links_card*(link/8))+(tower/n_towers_cardEta))+crystal/n_crystals_towerPhi;
+    float size_cell=2*PiValue/(n_crystals_towerPhi*n_towers_Phi);
+    return phiID*size_cell-PiValue+half_crystal_size;
 }
 
 int getCrystal_etaID(float eta){
-   float size_cell=2*1.4841/(5*34);
-   int etaID=int((eta+1.4841)/size_cell);
+   float size_cell=2*ECAL_eta_range/(n_crystals_towerEta*n_towers_Eta);
+   int etaID=int((eta+ECAL_eta_range)/size_cell);
    return etaID;
 }
 
 int get_insideEta(float eta, float centereta){
-   float size_cell=2*1.4841/(5*34);
+   float size_cell=2*ECAL_eta_range/(n_crystals_towerEta*n_towers_Eta);
    if (eta-centereta<-1.0*size_cell/4) return 0;
    else if (eta-centereta<0) return 1;
    else if (eta-centereta<1.0*size_cell/4) return 2;
@@ -161,7 +129,7 @@ int get_insideEta(float eta, float centereta){
 }
 
 int get_insidePhi(float phi, float centerphi){
-   float size_cell=2*3.14159/(5*72);
+   float size_cell=2*PiValue/(n_crystals_towerPhi*n_towers_Phi);
    if (phi-centerphi<-1*size_cell/4) return 0;
    else if (phi-centerphi<0) return 1;
    else if (phi-centerphi<1*size_cell/4) return 2;
@@ -169,7 +137,7 @@ int get_insidePhi(float phi, float centerphi){
 }
 
 int convert_L2toL1_link(int link){
-   return link%4;
+   return link%n_links_card;
 }
 
 int convert_L2toL1_tower(int tower){
@@ -177,24 +145,24 @@ int convert_L2toL1_tower(int tower){
 }
 
 int convert_L2toL1_card(int card, int link){
-   return card*12+link/4;
+   return card*12+link/n_links_card;
 }
 
 int getCrystal_phiID(float phi){
-   float size_cell=2*3.14159/(5*72);
-   int phiID=int((phi+3.14159)/size_cell);
+   float size_cell=2*PiValue/(n_crystals_towerPhi*n_towers_Phi);
+   int phiID=int((phi+PiValue)/size_cell);
    return phiID;
 }
 
 int getTower_absoluteEtaID(float eta){
-   float size_cell=2*1.4841/(34);
-   int etaID=int((eta+1.4841)/size_cell);
+   float size_cell=2*ECAL_eta_range/n_towers_Eta;
+   int etaID=int((eta+ECAL_eta_range)/size_cell);
    return etaID;
 }
 
 int getTower_absolutePhiID(float phi){
-   float size_cell=2*3.14159/(72);
-   int phiID=int((phi+3.14159)/size_cell);
+   float size_cell=2*PiValue/n_towers_Phi;
+   int phiID=int((phi+PiValue)/size_cell);
    return phiID;
 }
 
@@ -202,45 +170,45 @@ int getTower_absolutePhiID(float phi){
 // 0-16 are iEta -17 to -1
 // 17 to 33 are iEta 1 to 17
 int getToweriEta_fromAbsoluteID(int id){
-   if (id < 17) return id - 17; 
+   if (id < n_towers_cardEta) return id - n_towers_cardEta; 
    else return id - 16;
 }
 
 // absolue IDs range from 0-71.
-// To align with detector tower IDs (1 - 72)
+// To align with detector tower IDs (1 - n_towers_Phi)
 // shift all indices by 37 and loop over after 72
 int getToweriPhi_fromAbsoluteID(int id){
-   if (id < 36) return id + 37;
+   if (id < n_towers_Phi/2) return id + 37;
    else return id - 35;
 }
 
 
 float getTowerEta_fromAbsoluteID(int id){
-   float size_cell=2*1.4841/(34);
-   float eta=(id*size_cell)-1.4841+0.5*size_cell;
+   float size_cell=2*ECAL_eta_range/n_towers_Eta;
+   float eta=(id*size_cell)-ECAL_eta_range+0.5*size_cell;
    return eta;
 }
 
 float getTowerPhi_fromAbsoluteID(int id){
-   float size_cell=2*3.14159/(72);
-   float phi=(id*size_cell)-3.14159+0.5*size_cell;
+   float size_cell=2*PiValue/n_towers_Phi;
+   float phi=(id*size_cell)-PiValue+0.5*size_cell;
    return phi;
 }
 
 int getCrystalIDInTower(int etaID, int phiID){
-   return int(5*(phiID%5)+(etaID%5));
+   return int(n_crystals_towerPhi*(phiID%n_crystals_towerPhi)+(etaID%n_crystals_towerEta));
 }
 
 int get_towerEta_fromCardTowerInCard(int card, int towerincard){
-   return 17*(card%2)+towerincard%17;
+   return n_towers_cardEta*(card%2)+towerincard%n_towers_cardEta;
 }
 
 int get_towerPhi_fromCardTowerInCard(int card, int towerincard){
-   return 4*(card/2)+towerincard/17;
+   return 4*(card/2)+towerincard/n_towers_cardEta;
 }
 
 int get_towerEta_fromCardLinkTower(int card, int link, int tower){
-   return 17*(card%2)+tower;
+   return n_towers_cardEta*(card%2)+tower;
 }
 
 int get_towerPhi_fromCardLinkTower(int card, int link, int tower){
@@ -248,38 +216,38 @@ int get_towerPhi_fromCardLinkTower(int card, int link, int tower){
 }
 
 int getTowerID(int etaID, int phiID){
-   return int(17*((phiID/5)%4)+(etaID/5)%17);
+   return int(n_towers_cardEta*((phiID/n_crystals_towerPhi)%4)+(etaID/n_crystals_towerEta)%n_towers_cardEta);
 }
 
 int getTower_phiID(int cluster_phiID){ // Tower ID in card given crystal ID in total detector
-   return int((cluster_phiID/5)%4);
+   return int((cluster_phiID/n_crystals_towerPhi)%4);
 }
 
 int getTower_etaID(int cluster_etaID){ // Tower ID in card given crystal ID in total detector
-   return int((cluster_etaID/5)%17);
+   return int((cluster_etaID/n_crystals_towerEta)%n_towers_cardEta);
 }
 
 int getEtaMax_card(int card){
     int etamax=0;
-    if (card%2==0) etamax=17*5-1; // First eta half. 5 crystals in eta in 1 tower.
-    else etamax=34*5-1;
+    if (card%2==0) etamax=n_towers_cardEta*n_crystals_towerEta-1; // First eta half. 5 crystals in eta in 1 tower.
+    else etamax=n_towers_Eta*n_crystals_towerEta-1;
     return etamax;
 }
 
 int getEtaMin_card(int card){
     int etamin=0;
-    if (card%2==0) etamin=0*5; // First eta half. 5 crystals in eta in 1 tower.
-    else etamin=17*5;
+    if (card%2==0) etamin=0*n_crystals_towerEta; // First eta half. 5 crystals in eta in 1 tower.
+    else etamin=n_towers_cardEta*n_crystals_towerEta;
     return etamin;
 }
 
 int getPhiMax_card(int card){
-    int phimax=((card/2)+1)*4*5-1; 
+    int phimax=((card/2)+1)*4*n_crystals_towerPhi-1; 
     return phimax;
 }
 
 int getPhiMin_card(int card){
-    int phimin=(card/2)*4*5;
+    int phimin=(card/2)*4*n_crystals_towerPhi;
     return phimin;
 }
 
@@ -331,7 +299,7 @@ class L1EGCrystalClusterEmulatorProducer : public edm::EDProducer {
 	float cphi; // phi ID in the whole detector (between 0 and 5*72-1)
 	int ccrystalid; // crystal ID inside tower (between 0 and 24)
         int cinsidecrystalid;
-	int ctowerid; // tower ID inside card (between 0 and 4*17-1)
+	int ctowerid; // tower ID inside card (between 0 and 4*n_towers_cardEta-1)
       };
 
       bool order_clusters(mycluster c1, mycluster c2){
@@ -490,51 +458,44 @@ void L1EGCrystalClusterEmulatorProducer::produce(edm::Event& iEvent, const edm::
 //*******************************************************************
 
       // Definition of L1 outputs
-      //float energy_tower_L1Card[4][17][36]; // 36 L1 cards send each 4 links with 17 towers
-      float ECAL_tower_L1Card[4][17][36]; // 36 L1 cards send each 4 links with 17 towers
-      float HCAL_tower_L1Card[4][17][36]; // 36 L1 cards send each 4 links with 17 towers
-      int iEta_tower_L1Card[4][17][36]; // 36 L1 cards send each 4 links with 17 towers
-      int iPhi_tower_L1Card[4][17][36]; // 36 L1 cards send each 4 links with 17 towers
-      //float HE_tower_L1Card[4][17][36]; // 36 L1 cards send each 4 links with 17 towers
-      float energy_cluster_L1Card[4][3][36]; // 36 L1 cards send each 4 links with 3 clusters
-      int brem_cluster_L1Card[4][3][36]; // 36 L1 cards send each 4 links with 3 clusters
-      int towerID_cluster_L1Card[4][3][36]; // 36 L1 cards send each 4 links with 3 clusters
-      int crystalID_cluster_L1Card[4][3][36]; // 36 L1 cards send each 4 links with 3 clusters
-      //int insideCrystalID_cluster_L1Card[4][3][36]; // 36 L1 cards send each 4 links with 3 clusters
-      int showerShape_cluster_L1Card[4][3][36]; // 36 L1 cards send each 4 links with 3 clusters
-      int showerShapeLooseTk_cluster_L1Card[4][3][36]; // 36 L1 cards send each 4 links with 3 clusters
-      //float valueShowerShape_cluster_L1Card[4][3][36];
-      int photonShowerShape_cluster_L1Card[4][3][36]; // 36 L1 cards send each 4 links with 3 clusters
+      float ECAL_tower_L1Card[n_links_card][n_towers_cardEta][n_towers_halfPhi]; // 36 L1 cards send each 4 links with 17 towers
+      float HCAL_tower_L1Card[n_links_card][n_towers_cardEta][n_towers_halfPhi]; // 36 L1 cards send each 4 links with 17 towers
+      int iEta_tower_L1Card[n_links_card][n_towers_cardEta][n_towers_halfPhi]; // 36 L1 cards send each 4 links with 17 towers
+      int iPhi_tower_L1Card[n_links_card][n_towers_cardEta][n_towers_halfPhi]; // 36 L1 cards send each 4 links with 17 towers
+      //float HE_tower_L1Card[n_links_card][n_towers_cardEta][n_towers_halfPhi]; // 36 L1 cards send each 4 links with 17 towers
+      float energy_cluster_L1Card[n_links_card][3][n_towers_halfPhi]; // 36 L1 cards send each 4 links with 3 clusters
+      int brem_cluster_L1Card[n_links_card][3][n_towers_halfPhi]; // 36 L1 cards send each 4 links with 3 clusters
+      int towerID_cluster_L1Card[n_links_card][3][n_towers_halfPhi]; // 36 L1 cards send each 4 links with 3 clusters
+      int crystalID_cluster_L1Card[n_links_card][3][n_towers_halfPhi]; // 36 L1 cards send each 4 links with 3 clusters
+      int showerShape_cluster_L1Card[n_links_card][3][n_towers_halfPhi]; // 36 L1 cards send each 4 links with 3 clusters
+      int showerShapeLooseTk_cluster_L1Card[n_links_card][3][n_towers_halfPhi]; // 36 L1 cards send each 4 links with 3 clusters
+      int photonShowerShape_cluster_L1Card[n_links_card][3][n_towers_halfPhi]; // 36 L1 cards send each 4 links with 3 clusters
 
-      for (int ii=0; ii<4; ++ii){
-	 for (int jj=0; jj<17; ++jj){
-	    for (int ll=0; ll<36; ++ll){
-	       //energy_tower_L1Card[ii][jj][ll]=0;
+      for (int ii=0; ii<n_links_card; ++ii){
+	 for (int jj=0; jj<n_towers_cardEta; ++jj){
+	    for (int ll=0; ll<n_towers_halfPhi; ++ll){
                ECAL_tower_L1Card[ii][jj][ll]=0;
                HCAL_tower_L1Card[ii][jj][ll]=0;
                iPhi_tower_L1Card[ii][jj][ll]=-999;
                iEta_tower_L1Card[ii][jj][ll]=-999;
-	       //HE_tower_L1Card[ii][jj][ll]=0;
 	    }
 	 }
       }
-      for (int ii=0; ii<4; ++ii){
+      for (int ii=0; ii<n_links_card; ++ii){
          for (int jj=0; jj<3; ++jj){
-            for (int ll=0; ll<36; ++ll){
+            for (int ll=0; ll<n_towers_halfPhi; ++ll){
                energy_cluster_L1Card[ii][jj][ll]=0;
                brem_cluster_L1Card[ii][jj][ll]=0;
                towerID_cluster_L1Card[ii][jj][ll]=0;
                crystalID_cluster_L1Card[ii][jj][ll]=0;
-               //insideCrystalID_cluster_L1Card[ii][jj][ll]=0;
-	       //valueShowerShape_cluster_L1Card[ii][jj][ll]=0;
 	    }
          }
       }
 
-      vector<mycluster> cluster_list[36]; // There is one list of clusters per card. We take the 12 highest pt per card
-      vector<mycluster> cluster_list_merged[36]; // After merging the clusters in different regions of a single L1 card
+      vector<mycluster> cluster_list[n_towers_halfPhi]; // There is one list of clusters per card. We take the 12 highest pt per card
+      vector<mycluster> cluster_list_merged[n_towers_halfPhi]; // After merging the clusters in different regions of a single L1 card
 
-      for (int cc=0; cc<36; ++cc){ // Loop over 36 L1 cards
+      for (int cc=0; cc<n_towers_halfPhi; ++cc){ // Loop over 36 L1 cards
 
           for (int nregion=0; nregion<6; ++nregion){ // Loop over 3x4 etaxphi regions to search for max 5 clusters
              int nclusters=0;
@@ -698,27 +659,23 @@ void L1EGCrystalClusterEmulatorProducer::produce(edm::Event& iEvent, const edm::
               towerID_cluster_L1Card[jj%4][jj/4][cc]=getTowerID(cluster_list_merged[cc][jj].ceta,cluster_list_merged[cc][jj].cphi);
               energy_cluster_L1Card[jj%4][jj/4][cc]=cluster_list_merged[cc][jj].cpt;
               brem_cluster_L1Card[jj%4][jj/4][cc]=cluster_list_merged[cc][jj].cbrem;
-	      //valueShowerShape_cluster_L1Card[jj%4][jj/4][cc]=(cluster_list_merged[cc][jj].c2x5/cluster_list_merged[cc][jj].c5x5);
 	      if (passes_ss(cluster_list_merged[cc][jj].cpt,cluster_list_merged[cc][jj].c2x5/cluster_list_merged[cc][jj].c5x5)) showerShape_cluster_L1Card[jj%4][jj/4][cc]=1;
 	      else showerShape_cluster_L1Card[jj%4][jj/4][cc]=0;
               if (passes_looseTkss(cluster_list_merged[cc][jj].cpt,cluster_list_merged[cc][jj].c2x5/cluster_list_merged[cc][jj].c5x5)) showerShapeLooseTk_cluster_L1Card[jj%4][jj/4][cc]=1;
               else showerShapeLooseTk_cluster_L1Card[jj%4][jj/4][cc]=0;
 	      if (passes_photon(cluster_list_merged[cc][jj].cpt,cluster_list_merged[cc][jj].c2x2/cluster_list_merged[cc][jj].c2x5)) photonShowerShape_cluster_L1Card[jj%4][jj/4][cc]=1;
               else photonShowerShape_cluster_L1Card[jj%4][jj/4][cc]=0;
-              //insideCrystalID_cluster_L1Card[jj%4][jj/4][cc]=get_insideEta(cluster_list_merged[cc][jj].cWeightedEta,cluster_list_merged[cc][jj].craweta);
-              //insideCrystalID_cluster_L1Card[jj%4][jj/4][cc]+=4*get_insidePhi(cluster_list_merged[cc][jj].cWeightedPhi,cluster_list_merged[cc][jj].crawphi);
           }
 
           // Loop over calo ecal hits to get the ECAL towers. Take only hits that have not been used to make clusters
           for(const auto& hit : ecalhits)
           {
-	    //cout<<"ieta, iphi: "<<hit.id.ieta()<<" "<<hit.id.iphi()<<endl;
             if (getCrystal_phiID(hit.position.phi())<=getPhiMax_card(cc) && getCrystal_phiID(hit.position.phi())>=getPhiMin_card(cc) && getCrystal_etaID(hit.position.eta())<=getEtaMax_card(cc) && getCrystal_etaID(hit.position.eta())>=getEtaMin_card(cc) && !hit.used){ // Take all the hits inside the card that have not been used yet 
-                for (int jj=0; jj<4; ++jj){ // loop over 4 links per card
-                   if ((getCrystal_phiID(hit.position.phi())/5)%4==jj){ // Go to ID tower modulo 4
-             	      for (int ii=0; ii<17; ++ii){
+                for (int jj=0; jj<n_links_card; ++jj){ // loop over 4 links per card
+                   if ((getCrystal_phiID(hit.position.phi())/n_crystals_towerPhi)%4==jj){ // Go to ID tower modulo 4
+             	      for (int ii=0; ii<n_towers_cardEta; ++ii){
 			 //Apply Mark's calibration at the same time (row of the lowest pT, as a function of eta)
-            	         if ((getCrystal_etaID(hit.position.eta())/5)%17==ii){ 
+            	         if ((getCrystal_etaID(hit.position.eta())/n_crystals_towerEta)%n_towers_cardEta==ii){ 
 			     ECAL_tower_L1Card[jj][ii][cc]+=hit.pt()*calib_(0,fabs(hit.position.eta()));
                              iEta_tower_L1Card[jj][ii][cc]=getTower_absoluteEtaID(hit.position.eta());//hit.id.ieta();
                              iPhi_tower_L1Card[jj][ii][cc]=getTower_absolutePhiID(hit.position.phi());//hit.id.iphi();
@@ -729,10 +686,9 @@ void L1EGCrystalClusterEmulatorProducer::produce(edm::Event& iEvent, const edm::
             // Make sure towers with 0 ET are initialized with proper iEta, iPhi coordinates
             float tower_width=0.0873;
             for (int jj=0; jj<4; ++jj){
-                for (int ii=0; ii<17; ++ii){
-                    float phi=getPhiMin_card(cc)*tower_width/5 -3.14159 + (jj+0.5)*tower_width;
-                    float eta=getEtaMin_card(cc)*tower_width/5 -17*tower_width + (ii+0.5)*tower_width;
-                    //if (ECAL_tower_L1Card[jj][ii][cc]>0) cout<<eta<<" "<<getEtaMin_card(cc)<<" "<<iEta_tower_L1Card[jj][ii][cc]<<" "<<getTower_absoluteEtaID(eta)<<" "<<phi<<" "<<iPhi_tower_L1Card[jj][ii][cc]<<" "<<getTower_absolutePhiID(phi)<<endl;
+                for (int ii=0; ii<n_towers_cardEta; ++ii){
+                    float phi=getPhiMin_card(cc)*tower_width/n_crystals_towerPhi -PiValue + (jj+0.5)*tower_width;
+                    float eta=getEtaMin_card(cc)*tower_width/n_crystals_towerEta -n_towers_cardEta*tower_width + (ii+0.5)*tower_width;
                     iEta_tower_L1Card[jj][ii][cc]=getTower_absoluteEtaID(eta);
                     iPhi_tower_L1Card[jj][ii][cc]=getTower_absolutePhiID(phi);
                 }
@@ -745,12 +701,11 @@ void L1EGCrystalClusterEmulatorProducer::produce(edm::Event& iEvent, const edm::
           // Loop over hcal hits to get the HCAL towers.
           for(const auto& hit : hcalhits)
           {
-            //cout<<"H ieta, iphi: "<<hit.id.ieta()<<" "<<hit.id.iphi()<<endl;
             if (getCrystal_phiID(hit.position.phi())<=getPhiMax_card(cc) && getCrystal_phiID(hit.position.phi())>=getPhiMin_card(cc) && getCrystal_etaID(hit.position.eta())<=getEtaMax_card(cc) && getCrystal_etaID(hit.position.eta())>=getEtaMin_card(cc) && hit.pt()>0){ 
                 for (int jj=0; jj<4; ++jj){
-                   if ((getCrystal_phiID(hit.position.phi())/5)%4==jj){
-                      for (int ii=0; ii<17; ++ii){
-                         if ((getCrystal_etaID(hit.position.eta())/5)%17==ii){ 
+                   if ((getCrystal_phiID(hit.position.phi())/n_crystals_towerPhi)%4==jj){
+                      for (int ii=0; ii<n_towers_cardEta; ++ii){
+                         if ((getCrystal_etaID(hit.position.eta())/n_crystals_towerEta)%n_towers_cardEta==ii){ 
 			     HCAL_tower_L1Card[jj][ii][cc]+=hit.pt();
 			     iEta_tower_L1Card[jj][ii][cc]=getTower_absoluteEtaID(hit.position.eta());//hit.id.ieta();
                              iPhi_tower_L1Card[jj][ii][cc]=getTower_absolutePhiID(hit.position.phi());//hit.id.iphi();
@@ -769,48 +724,32 @@ void L1EGCrystalClusterEmulatorProducer::produce(edm::Event& iEvent, const edm::
           }
      } //End of loop over cards
 
-     /*
-     // From ECAL and HCAL energies of the towers compute H/E and H+E
-      for (int ii=0; ii<4; ++ii){
-         for (int jj=0; jj<17; ++jj){
-            for (int ll=0; ll<36; ++ll){
-               energy_tower_L1Card[ii][jj][ll]=ECAL_tower_L1Card[ii][jj][ll]+HCAL_tower_L1Card[ii][jj][ll];
-               if (ECAL_tower_L1Card[ii][jj][ll]!=0) HE_tower_L1Card[ii][jj][ll]=HCAL_tower_L1Card[ii][jj][ll]/ECAL_tower_L1Card[ii][jj][ll];
-	       else HE_tower_L1Card[ii][jj][ll]=-1;
-            }
-         }
-      }*/
 
-     //cout<<"Default printout: "<<energy_tower_L1Card[0][0][0]<<" "<<insideCrystalID_cluster_L1Card[0][0][0]<<" "<<crystalID_cluster_L1Card[0][0][0]<<" "<<towerID_cluster_L1Card[0][0][0]<<" "<<energy_cluster_L1Card[0][0][0]<<" "<<HE_tower_L1Card[0][0][0]<<" "<<showerShape_cluster_L1Card[0][0][0]<<" "<<photonShowerShape_cluster_L1Card[0][0][0]<<" "<<valueShowerShape_cluster_L1Card[0][0][0]<<endl;
 
 //*********************************************************
 //******************** Do layer 2 *************************
 //*********************************************************
 
       // Definition of L2 outputs
-      //float energy_tower_L2Card[48][17][3]; // 3 L2 cards send each 48 links with 17 towers
-      //float HE_tower_L2Card[48][17][3]; // 3 L2 cards send each 48 links with 17 towers
-      float HCAL_tower_L2Card[48][17][3]; // 3 L2 cards send each 48 links with 17 towers
-      float ECAL_tower_L2Card[48][17][3]; // 3 L2 cards send each 48 links with 17 towers
-      int iEta_tower_L2Card[48][17][3]; // 3 L2 cards send each 48 links with 17 towers
-      int iPhi_tower_L2Card[48][17][3]; // 3 L2 cards send each 48 links with 17 towers
-      float energy_cluster_L2Card[48][2][3]; // 3 L2 cards send each 48 links with 2 clusters
-      float brem_cluster_L2Card[48][2][3]; // 3 L2 cards send each 48 links with 2 clusters
-      int towerID_cluster_L2Card[48][2][3]; // 3 L2 cards send each 48 links with 2 clusters
-      int crystalID_cluster_L2Card[48][2][3]; // 3 L2 cards send each 48 links with 2 clusters
-      //int insideCrystalID_cluster_L2Card[48][2][3]; // 3 L2 cards send each 48 links with 2 clusters
-      float isolation_cluster_L2Card[48][2][3]; // 3 L2 cards send each 48 links with 2 clusters
-      float HE_cluster_L2Card[48][2][3]; // 3 L2 cards send each 48 links with 2 clusters
-      int showerShape_cluster_L2Card[48][2][3];
-      int showerShapeLooseTk_cluster_L2Card[48][2][3];
-      //float valueShowerShape_cluster_L2Card[48][2][3];
-      int photonShowerShape_cluster_L2Card[48][2][3];
+      float HCAL_tower_L2Card[n_links_GCTcard][n_towers_cardEta][3]; // 3 L2 cards send each 48 links with 17 towers
+      float ECAL_tower_L2Card[n_links_GCTcard][n_towers_cardEta][3]; // 3 L2 cards send each 48 links with 17 towers
+      int iEta_tower_L2Card[n_links_GCTcard][n_towers_cardEta][3]; // 3 L2 cards send each 48 links with 17 towers
+      int iPhi_tower_L2Card[n_links_GCTcard][n_towers_cardEta][3]; // 3 L2 cards send each 48 links with 17 towers
+      float energy_cluster_L2Card[n_links_GCTcard][2][3]; // 3 L2 cards send each 48 links with 2 clusters
+      float brem_cluster_L2Card[n_links_GCTcard][2][3]; // 3 L2 cards send each 48 links with 2 clusters
+      int towerID_cluster_L2Card[n_links_GCTcard][2][3]; // 3 L2 cards send each 48 links with 2 clusters
+      int crystalID_cluster_L2Card[n_links_GCTcard][2][3]; // 3 L2 cards send each 48 links with 2 clusters
+      //int insideCrystalID_cluster_L2Card[n_links_GCTcard][2][3]; // 3 L2 cards send each 48 links with 2 clusters
+      float isolation_cluster_L2Card[n_links_GCTcard][2][3]; // 3 L2 cards send each 48 links with 2 clusters
+      float HE_cluster_L2Card[n_links_GCTcard][2][3]; // 3 L2 cards send each 48 links with 2 clusters
+      int showerShape_cluster_L2Card[n_links_GCTcard][2][3];
+      int showerShapeLooseTk_cluster_L2Card[n_links_GCTcard][2][3];
+      //float valueShowerShape_cluster_L2Card[n_links_GCTcard][2][3];
+      int photonShowerShape_cluster_L2Card[n_links_GCTcard][2][3];
 
-      for (int ii=0; ii<48; ++ii){
-         for (int jj=0; jj<17; ++jj){
+      for (int ii=0; ii<n_links_GCTcard; ++ii){
+         for (int jj=0; jj<n_towers_cardEta; ++jj){
             for (int ll=0; ll<3; ++ll){
-               //energy_tower_L2Card[ii][jj][ll]=0;
-               //HE_tower_L2Card[ii][jj][ll]=0;
                HCAL_tower_L2Card[ii][jj][ll]=0;
                ECAL_tower_L2Card[ii][jj][ll]=0;
                iEta_tower_L2Card[ii][jj][ll]=0;
@@ -818,36 +757,34 @@ void L1EGCrystalClusterEmulatorProducer::produce(edm::Event& iEvent, const edm::
             }
          }
       }
-      for (int ii=0; ii<48; ++ii){
+      for (int ii=0; ii<n_links_GCTcard; ++ii){
          for (int jj=0; jj<2; ++jj){
             for (int ll=0; ll<3; ++ll){
                energy_cluster_L2Card[ii][jj][ll]=0;
                brem_cluster_L2Card[ii][jj][ll]=0;
                towerID_cluster_L2Card[ii][jj][ll]=0;
                crystalID_cluster_L2Card[ii][jj][ll]=0;
-               //insideCrystalID_cluster_L2Card[ii][jj][ll]=0;
                isolation_cluster_L2Card[ii][jj][ll]=0;
                HE_cluster_L2Card[ii][jj][ll]=0;
                photonShowerShape_cluster_L2Card[ii][jj][ll]=0;
                showerShape_cluster_L2Card[ii][jj][ll]=0;
                showerShapeLooseTk_cluster_L2Card[ii][jj][ll]=0;
-	       //valueShowerShape_cluster_L2Card[ii][jj][ll]=0;
             }
          }
       }
 
-      vector<mycluster> cluster_list_L2[36]; // There is one list of clusters per equivalent of L1 card. We take the 8 highest pt.
+      vector<mycluster> cluster_list_L2[n_towers_halfPhi]; // There is one list of clusters per equivalent of L1 card. We take the 8 highest pt.
 
       // Merge clusters on the phi edges
       for (int ii=0; ii<18; ++ii){ // 18 borders in phi
 	 for (int jj=0; jj<2; ++jj){ // 2 eta bins
 	     int card_left=2*ii+jj;
 	     int card_right=2*ii+jj+2;
-	     if (card_right>35) card_right=card_right-36;
+	     if (card_right>35) card_right=card_right-n_towers_halfPhi;
 	     for (int kk=0; kk<12; ++kk){ // 12 clusters in the first card. We check the right side
 		  if (towerID_cluster_L1Card[kk%4][kk/4][card_left]>50 && crystalID_cluster_L1Card[kk%4][kk/4][card_left]>19 && energy_cluster_L1Card[kk%4][kk/4][card_left]>0){
 		       for (int ll=0; ll<12; ++ll){ // We check the 12 clusters in the card on the right
-			    if (towerID_cluster_L1Card[ll%4][ll/4][card_right]<17 && crystalID_cluster_L1Card[ll%4][ll/4][card_right]<5 && fabs(5*(towerID_cluster_L1Card[ll%4][ll/4][card_right])%17+crystalID_cluster_L1Card[ll%4][ll/4][card_right]%5-5*(towerID_cluster_L1Card[kk%4][kk/4][card_left])%17-crystalID_cluster_L1Card[kk%4][kk/4][card_left]%5)<2){ 
+			    if (towerID_cluster_L1Card[ll%4][ll/4][card_right]<n_towers_cardEta && crystalID_cluster_L1Card[ll%4][ll/4][card_right]<5 && fabs(5*(towerID_cluster_L1Card[ll%4][ll/4][card_right])%n_towers_cardEta+crystalID_cluster_L1Card[ll%4][ll/4][card_right]%5-5*(towerID_cluster_L1Card[kk%4][kk/4][card_left])%n_towers_cardEta-crystalID_cluster_L1Card[kk%4][kk/4][card_left]%5)<2){ 
 				if (energy_cluster_L1Card[kk%4][kk/4][card_left]>energy_cluster_L1Card[ll%4][ll/4][card_right]){
 				    energy_cluster_L1Card[kk%4][kk/4][card_left]+=energy_cluster_L1Card[ll%4][ll/4][card_right];
 				    energy_cluster_L1Card[ll%4][ll/4][card_right]=0;
@@ -869,12 +806,12 @@ void L1EGCrystalClusterEmulatorProducer::produce(edm::Event& iEvent, const edm::
            for (int jj=0; jj<2; ++jj){ // 2 eta bins
              int card_left=2*ii+jj;
              int card_right=2*ii+jj+2;
-             if (card_right>35) card_right=card_right-36;
+             if (card_right>35) card_right=card_right-n_towers_halfPhi;
              for (int kk=0; kk<12; ++kk){ // 12 clusters in the first card. We check the right side crystalID_cluster_L1Card[kk%4][kk/4][card_left] 
                   if (towerID_cluster_L1Card[kk%4][kk/4][card_left]>50 && energy_cluster_L1Card[kk%4][kk/4][card_left]>0){ // if the tower is at the edge there might be brem corrections, whatever the crystal ID
                        for (int ll=0; ll<12; ++ll){ // We check the 12 clusters in the card on the right
-                            if (towerID_cluster_L1Card[ll%4][ll/4][card_right]<17 && fabs(5*(towerID_cluster_L1Card[ll%4][ll/4][card_right])%17+crystalID_cluster_L1Card[ll%4][ll/4][card_right]%5-5*(towerID_cluster_L1Card[kk%4][kk/4][card_left])%17-crystalID_cluster_L1Card[kk%4][kk/4][card_left]%5)<=1){ //Distance of 1 max in eta
-                            if (towerID_cluster_L1Card[ll%4][ll/4][card_right]<17 && fabs(5+crystalID_cluster_L1Card[ll%4][ll/4][card_right]/5-(crystalID_cluster_L1Card[kk%4][kk/4][card_left]/5))<=5){ //Distance of 5 max in phi
+                            if (towerID_cluster_L1Card[ll%4][ll/4][card_right]<n_towers_cardEta && fabs(5*(towerID_cluster_L1Card[ll%4][ll/4][card_right])%n_towers_cardEta+crystalID_cluster_L1Card[ll%4][ll/4][card_right]%5-5*(towerID_cluster_L1Card[kk%4][kk/4][card_left])%n_towers_cardEta-crystalID_cluster_L1Card[kk%4][kk/4][card_left]%5)<=1){ //Distance of 1 max in eta
+                            if (towerID_cluster_L1Card[ll%4][ll/4][card_right]<n_towers_cardEta && fabs(5+crystalID_cluster_L1Card[ll%4][ll/4][card_right]/5-(crystalID_cluster_L1Card[kk%4][kk/4][card_left]/5))<=5){ //Distance of 5 max in phi
                                 if (energy_cluster_L1Card[kk%4][kk/4][card_left]>energy_cluster_L1Card[ll%4][ll/4][card_right] && energy_cluster_L1Card[ll%4][ll/4][card_right]>0.10*energy_cluster_L1Card[kk%4][kk/4][card_left]){
                                     energy_cluster_L1Card[kk%4][kk/4][card_left]+=energy_cluster_L1Card[ll%4][ll/4][card_right];                            
                                     energy_cluster_L1Card[ll%4][ll/4][card_right]=0;
@@ -899,9 +836,9 @@ void L1EGCrystalClusterEmulatorProducer::produce(edm::Event& iEvent, const edm::
 	     int card_bottom=2*ii;
 	     int card_top=2*ii+1;
              for (int kk=0; kk<12; ++kk){ // 12 clusters in the first card. We check the top side
-                  if (towerID_cluster_L1Card[kk%4][kk/4][card_bottom]%17==16 && crystalID_cluster_L1Card[kk%4][kk/4][card_bottom]%5==4 && energy_cluster_L1Card[kk%4][kk/4][card_bottom]>0){ // If there is one cluster on the right side of the first card
+                  if (towerID_cluster_L1Card[kk%4][kk/4][card_bottom]%n_towers_cardEta==16 && crystalID_cluster_L1Card[kk%4][kk/4][card_bottom]%5==4 && energy_cluster_L1Card[kk%4][kk/4][card_bottom]>0){ // If there is one cluster on the right side of the first card
                        for (int ll=0; ll<12; ++ll){ // We check the card on the right
-                            if (fabs(5*(towerID_cluster_L1Card[kk%4][kk/4][card_bottom]/17)+crystalID_cluster_L1Card[kk%4][kk/4][card_bottom]/5-5*(towerID_cluster_L1Card[ll%4][ll/4][card_top]/17)-crystalID_cluster_L1Card[ll%4][ll/4][card_top]/5)<2){
+                            if (fabs(5*(towerID_cluster_L1Card[kk%4][kk/4][card_bottom]/n_towers_cardEta)+crystalID_cluster_L1Card[kk%4][kk/4][card_bottom]/5-5*(towerID_cluster_L1Card[ll%4][ll/4][card_top]/n_towers_cardEta)-crystalID_cluster_L1Card[ll%4][ll/4][card_top]/5)<2){
                                 if (energy_cluster_L1Card[kk%4][kk/4][card_bottom]>energy_cluster_L1Card[ll%4][ll/4][card_bottom]){
                                     energy_cluster_L1Card[kk%4][kk/4][card_bottom]+=energy_cluster_L1Card[ll%4][ll/4][card_top];
                                     energy_cluster_L1Card[ll%4][ll/4][card_top]=0;
@@ -917,7 +854,7 @@ void L1EGCrystalClusterEmulatorProducer::produce(edm::Event& iEvent, const edm::
         }
 
 	// Regroup the new clusters per equivalent of L1 card geometry
-	for (int ii=0; ii<36; ++ii){
+	for (int ii=0; ii<n_towers_halfPhi; ++ii){
 	   for (int jj=0; jj<12; ++jj){
 	       if (energy_cluster_L1Card[jj%4][jj/4][ii]>0){
 		  mycluster mc1;
@@ -925,10 +862,8 @@ void L1EGCrystalClusterEmulatorProducer::produce(edm::Event& iEvent, const edm::
 		  mc1.cbrem=brem_cluster_L1Card[jj%4][jj/4][ii];
                   mc1.ctowerid=towerID_cluster_L1Card[jj%4][jj/4][ii];
                   mc1.ccrystalid=crystalID_cluster_L1Card[jj%4][jj/4][ii];
-		  //mc1.cinsidecrystalid=insideCrystalID_cluster_L1Card[jj%4][jj/4][ii];
                   mc1.cshowershape=showerShape_cluster_L1Card[jj%4][jj/4][ii];
                   mc1.cshowershapeloosetk=showerShapeLooseTk_cluster_L1Card[jj%4][jj/4][ii];
-                  //mc1.cvalueshowershape=valueShowerShape_cluster_L1Card[jj%4][jj/4][ii];
                   mc1.cphotonshowershape=photonShowerShape_cluster_L1Card[jj%4][jj/4][ii];
 		  cluster_list_L2[ii].push_back(mc1);
 		}
@@ -937,10 +872,10 @@ void L1EGCrystalClusterEmulatorProducer::produce(edm::Event& iEvent, const edm::
 	}
 
 	// If there are more than 8 clusters per equivalent of L1 card we need to put them back in the towers
-	for (int ii=0; ii<36; ++ii){
+	for (int ii=0; ii<n_towers_halfPhi; ++ii){
 	    for (unsigned int jj=8; jj<12 && jj<cluster_list_L2[ii].size(); ++jj){
 		if (cluster_list_L2[ii][jj].cpt>0){
-		   ECAL_tower_L1Card[cluster_list_L2[ii][jj].ctowerid/17][cluster_list_L2[ii][jj].ctowerid%17][ii]+=cluster_list_L2[ii][jj].cpt; 
+		   ECAL_tower_L1Card[cluster_list_L2[ii][jj].ctowerid/n_towers_cardEta][cluster_list_L2[ii][jj].ctowerid%n_towers_cardEta][ii]+=cluster_list_L2[ii][jj].cpt; 
 		   cluster_list_L2[ii][jj].cpt=0;
                    cluster_list_L2[ii][jj].ctowerid=0;
                    cluster_list_L2[ii][jj].ccrystalid=0;
@@ -949,38 +884,38 @@ void L1EGCrystalClusterEmulatorProducer::produce(edm::Event& iEvent, const edm::
 	}
 
 	// Compute isolation (7*7 ECAL towers) and HCAL energy (5x5 HCAL towers)
-	for (int ii=0; ii<36; ++ii){ // Loop over the new cluster list (stored in 36x8 format)
+	for (int ii=0; ii<n_towers_halfPhi; ++ii){ // Loop over the new cluster list (stored in 36x8 format)
 	    for (unsigned int jj=0; jj<8 && jj<cluster_list_L2[ii].size(); ++jj){
                 int cluster_etaOfTower_fullDetector=get_towerEta_fromCardTowerInCard(ii,cluster_list_L2[ii][jj].ctowerid);
                 int cluster_phiOfTower_fullDetector=get_towerPhi_fromCardTowerInCard(ii,cluster_list_L2[ii][jj].ctowerid);
 		float hcal_nrj=0.0;
 		float isolation=0.0;
 		int ntowers=0;
-                for (int iii=0; iii<36; ++iii){ // The clusters have to be added to the isolation
+                for (int iii=0; iii<n_towers_halfPhi; ++iii){ // The clusters have to be added to the isolation
                     for (unsigned int jjj=0; jjj<8 && jjj<cluster_list_L2[iii].size(); ++jjj){
 			if (!(iii==ii && jjj==jj)){
 			    int cluster2_eta=get_towerEta_fromCardTowerInCard(iii,cluster_list_L2[iii][jjj].ctowerid);
                 	    int cluster2_phi=get_towerPhi_fromCardTowerInCard(iii,cluster_list_L2[iii][jjj].ctowerid);
-                            if (abs(cluster2_eta-cluster_etaOfTower_fullDetector)<=2 && (abs(cluster2_phi-cluster_phiOfTower_fullDetector)<=2 or abs(cluster2_phi-72-cluster_phiOfTower_fullDetector)<=2)){
+                            if (abs(cluster2_eta-cluster_etaOfTower_fullDetector)<=2 && (abs(cluster2_phi-cluster_phiOfTower_fullDetector)<=2 or abs(cluster2_phi-n_towers_Phi-cluster_phiOfTower_fullDetector)<=2)){
 			       isolation+=cluster_list_L2[iii][jjj].cpt;
 			    }
 			}
 		    }
 		}
-		for (int kk=0; kk<36; ++kk){ // 36 cards
+		for (int kk=0; kk<n_towers_halfPhi; ++kk){ // 36 cards
 		    for (int ll=0; ll<4; ++ll){ // 4 links per card
-			for (int mm=0; mm<17; ++mm){ // 17 towers per link
+			for (int mm=0; mm<n_towers_cardEta; ++mm){ // 17 towers per link
 			    int etaOftower_fullDetector=get_towerEta_fromCardLinkTower(kk,ll,mm);
                             int phiOftower_fullDetector=get_towerPhi_fromCardLinkTower(kk,ll,mm);
 			    // First do ECAL
-			    if (abs(etaOftower_fullDetector-cluster_etaOfTower_fullDetector)<=2 && (abs(phiOftower_fullDetector-cluster_phiOfTower_fullDetector)<=2 or abs(phiOftower_fullDetector-72-cluster_phiOfTower_fullDetector)<=2)){ // The towers are within 3. Needs to stitch the two phi sides together
-				if (!((cluster_phiOfTower_fullDetector==0 && phiOftower_fullDetector==71) or (cluster_phiOfTower_fullDetector==23 && phiOftower_fullDetector==26) or (cluster_phiOfTower_fullDetector==24 && phiOftower_fullDetector==21) or (cluster_phiOfTower_fullDetector==47 && phiOftower_fullDetector==50) or (cluster_phiOfTower_fullDetector==48 && phiOftower_fullDetector==45) or(cluster_phiOfTower_fullDetector==71 && phiOftower_fullDetector==2))){ // Remove the column outside of the L2 card
+			    if (abs(etaOftower_fullDetector-cluster_etaOfTower_fullDetector)<=2 && (abs(phiOftower_fullDetector-cluster_phiOfTower_fullDetector)<=2 or abs(phiOftower_fullDetector-n_towers_Phi-cluster_phiOfTower_fullDetector)<=2)){ // The towers are within 3. Needs to stitch the two phi sides together
+				if (!((cluster_phiOfTower_fullDetector==0 && phiOftower_fullDetector==71) or (cluster_phiOfTower_fullDetector==23 && phiOftower_fullDetector==26) or (cluster_phiOfTower_fullDetector==24 && phiOftower_fullDetector==21) or (cluster_phiOfTower_fullDetector==47 && phiOftower_fullDetector==50) or (cluster_phiOfTower_fullDetector==n_links_GCTcard && phiOftower_fullDetector==45) or(cluster_phiOfTower_fullDetector==71 && phiOftower_fullDetector==2))){ // Remove the column outside of the L2 card
 			           isolation+=ECAL_tower_L1Card[ll][mm][kk];
 			           ntowers++;
 				}
 			    }
 			    // Now do HCAL
-                            if (abs(etaOftower_fullDetector-cluster_etaOfTower_fullDetector)<=2 && (abs(phiOftower_fullDetector-cluster_phiOfTower_fullDetector)<=2 or abs(phiOftower_fullDetector-72-cluster_phiOfTower_fullDetector)<=2)){ // The towers are within 2. Needs to stitch the two phi sides together
+                            if (abs(etaOftower_fullDetector-cluster_etaOfTower_fullDetector)<=2 && (abs(phiOftower_fullDetector-cluster_phiOfTower_fullDetector)<=2 or abs(phiOftower_fullDetector-n_towers_Phi-cluster_phiOfTower_fullDetector)<=2)){ // The towers are within 2. Needs to stitch the two phi sides together
                                 hcal_nrj+=HCAL_tower_L1Card[ll][mm][kk];
                             }
 			}
@@ -993,8 +928,8 @@ void L1EGCrystalClusterEmulatorProducer::produce(edm::Event& iEvent, const edm::
 
       //Reformat the information inside the 3 L2 cards
       //First let's fill the towers
-      for (int ii=0; ii<48; ++ii){
-         for (int jj=0; jj<17; ++jj){
+      for (int ii=0; ii<n_links_GCTcard; ++ii){
+         for (int jj=0; jj<n_towers_cardEta; ++jj){
             for (int ll=0; ll<3; ++ll){
 		ECAL_tower_L2Card[ii][jj][ll]=ECAL_tower_L1Card[convert_L2toL1_link(ii)][convert_L2toL1_tower(jj)][convert_L2toL1_card(ll,ii)];
                 HCAL_tower_L2Card[ii][jj][ll]=HCAL_tower_L1Card[convert_L2toL1_link(ii)][convert_L2toL1_tower(jj)][convert_L2toL1_card(ll,ii)];
@@ -1005,9 +940,8 @@ void L1EGCrystalClusterEmulatorProducer::produce(edm::Event& iEvent, const edm::
       }
 
       //Second let's fill the clusters
-      for (int ii=0; ii<36; ++ii){ // The cluster list is still in the L1 like geometry
+      for (int ii=0; ii<n_towers_halfPhi; ++ii){ // The cluster list is still in the L1 like geometry
           for (unsigned int jj=0; jj<unsigned(cluster_list_L2[ii].size()) && jj<12; ++jj){
-              //insideCrystalID_cluster_L2Card[4*(ii%12)+jj%4][jj/4][ii/12]=cluster_list_L2[ii][jj].cinsidecrystalid;
               crystalID_cluster_L2Card[4*(ii%12)+jj%4][jj/4][ii/12]=cluster_list_L2[ii][jj].ccrystalid;
               towerID_cluster_L2Card[4*(ii%12)+jj%4][jj/4][ii/12]=cluster_list_L2[ii][jj].ctowerid;
               energy_cluster_L2Card[4*(ii%12)+jj%4][jj/4][ii/12]=cluster_list_L2[ii][jj].cpt;
@@ -1016,31 +950,17 @@ void L1EGCrystalClusterEmulatorProducer::produce(edm::Event& iEvent, const edm::
               HE_cluster_L2Card[4*(ii%12)+jj%4][jj/4][ii/12]=cluster_list_L2[ii][jj].chovere;
               showerShape_cluster_L2Card[4*(ii%12)+jj%4][jj/4][ii/12]=cluster_list_L2[ii][jj].cshowershape;
               showerShapeLooseTk_cluster_L2Card[4*(ii%12)+jj%4][jj/4][ii/12]=cluster_list_L2[ii][jj].cshowershapeloosetk;
-              //valueShowerShape_cluster_L2Card[4*(ii%12)+jj%4][jj/4][ii/12]=cluster_list_L2[ii][jj].cvalueshowershape;
               photonShowerShape_cluster_L2Card[4*(ii%12)+jj%4][jj/4][ii/12]=cluster_list_L2[ii][jj].cphotonshowershape;
           }
       }
 
-      /* // Needed at hardware level but not software
-      // From ECAL and HCAL energies of the towers compute H/E and H+E
-      for (int ii=0; ii<48; ++ii){
-         for (int jj=0; jj<17; ++jj){
-            for (int ll=0; ll<3; ++ll){
-               energy_tower_L2Card[ii][jj][ll]=ECAL_tower_L2Card[ii][jj][ll]+HCAL_tower_L2Card[ii][jj][ll];
-               if (ECAL_tower_L2Card[ii][jj][ll]>0) HE_tower_L2Card[ii][jj][ll]=HCAL_tower_L2Card[ii][jj][ll]/ECAL_tower_L2Card[ii][jj][ll];
-	       else HE_tower_L2Card[ii][jj][ll]=-1;
-            }
-         }
-      }*/
-
-     //cout<<energy_tower_L2Card[0][0][0]<<" "<<HE_tower_L2Card[0][0][0]<<" "<<crystalID_cluster_L2Card[0][0][0]<<" "<<towerID_cluster_L2Card[0][0][0]<<" "<<energy_cluster_L2Card[0][0][0]<<" "<<HE_cluster_L2Card[0][0][0]<<" "<<isolation_cluster_L2Card[0][0][0]<<" "<<insideCrystalID_cluster_L2Card[0][0][0]<<" "<<photonShowerShape_cluster_L2Card[0][0][0]<<" "<<showerShape_cluster_L2Card[0][0][0]<<" "<<valueShowerShape_cluster_L2Card[0][0][0]<<endl;
 
    std::unique_ptr<l1slhc::L1EGCrystalClusterCollection> L1EGXtalClusterEmulator( new l1slhc::L1EGCrystalClusterCollection );
    std::unique_ptr< BXVector<l1t::EGamma> > L1EGammaCollectionBXVEmulator(new l1t::EGammaBxCollection);
    std::unique_ptr< L1CaloTowerCollection > l1CaloTowerCollection(new L1CaloTowerCollection);
 
     // Fill the cluster collection and towers as well
-    for (int ii=0; ii<48; ++ii){ // 48 links
+    for (int ii=0; ii<n_links_GCTcard; ++ii){ // 48 links
         for (int ll=0; ll<3; ++ll){ // 3 cards
             // For looping over the Towers a few lines below
             for (int jj=0; jj<2; ++jj){ // 2 L1EGs
@@ -1052,7 +972,6 @@ void L1EGCrystalClusterEmulatorProducer::produce(edm::Event& iEvent, const edm::
                     bool is_ss=(showerShape_cluster_L2Card[ii][jj][ll]==1);
                     bool is_photon=(photonShowerShape_cluster_L2Card[ii][jj][ll]==1) && is_ss && is_iso;
                     bool is_looseTkss=(showerShapeLooseTk_cluster_L2Card[ii][jj][ll]==1);
-                    //bool is_he=passes_he(energy_cluster_L2Card[ii][jj][ll],HE_cluster_L2Card[ii][jj][ll]); //not used so far
                     // All the ID set to Standalone WP! Some dummy values for non calculated variables
                     l1slhc::L1EGCrystalCluster cluster(p4calibrated, energy_cluster_L2Card[ii][jj][ll], HE_cluster_L2Card[ii][jj][ll], isolation_cluster_L2Card[ii][jj][ll], centerhit.id,-1000, float(brem_cluster_L2Card[ii][jj][ll]),-1000,-1000, energy_cluster_L2Card[ii][jj][ll],-1, is_iso && is_ss, is_iso && is_ss, is_photon, is_iso && is_ss, is_looseTkiso && is_looseTkss, is_iso && is_ss); 
                     // Experimental parameters, don't want to bother with hardcoding them in data format
@@ -1078,12 +997,11 @@ void L1EGCrystalClusterEmulatorProducer::produce(edm::Event& iEvent, const edm::
         }
     }
 
-    for (int ii=0; ii<48; ++ii){ // 48 links
+    for (int ii=0; ii<n_links_GCTcard; ++ii){ // 48 links
         for (int ll=0; ll<3; ++ll){ // 3 cards
             // Fill the tower collection
-            for (int jj=0; jj<17; ++jj){ // 17 TTs
+            for (int jj=0; jj<n_towers_cardEta; ++jj){ // 17 TTs
                 L1CaloTower l1CaloTower;
-                //if (HCAL_tower_L2Card[ii][jj][ll]>0 or ECAL_tower_L2Card[ii][jj][ll]>0){
                 l1CaloTower.ecal_tower_et = ECAL_tower_L2Card[ii][jj][ll];
                 l1CaloTower.hcal_tower_et = HCAL_tower_L2Card[ii][jj][ll];
                 l1CaloTower.tower_iEta = getToweriEta_fromAbsoluteID(iEta_tower_L2Card[ii][jj][ll]);
@@ -1129,44 +1047,34 @@ void L1EGCrystalClusterEmulatorProducer::produce(edm::Event& iEvent, const edm::
 
 bool L1EGCrystalClusterEmulatorProducer::passes_iso(float pt, float iso) {
    if (pt<80){
-        if (!((0.85-0.0080*pt)>iso)) return false;
+        if (!((a0_80-a1_80*pt)>iso)) return false;
    }
    if (pt>=80){
-        if (iso>0.21) return false;
+        if (iso>a0) return false;
    }
    return true;
 }
 
 bool L1EGCrystalClusterEmulatorProducer::passes_looseTkiso(float pt, float iso) {
-   if (( 0.38 + 1.9 * TMath::Exp( -0.05 * pt ) > iso)) return true;
+   if (( b0 + b1 * TMath::Exp( -b2 * pt ) > iso)) return true;
    else return false;
 }
 
 bool L1EGCrystalClusterEmulatorProducer::passes_ss(float pt, float ss) {
-   if ((0.94+0.052*TMath::Exp(-0.044*pt))>ss) return false;
+   if ((c0_ss+c1_ss*TMath::Exp(-c2_ss*pt))>ss) return false;
    else return true;
 }
 
 bool L1EGCrystalClusterEmulatorProducer::passes_photon(float pt, float pss) {
-   if ( pss > 0.96 - 0.0003 * pt ) return true;
+   if ( pss > d0 - d1 * pt ) return true;
    return false;
 }
 
 
 bool L1EGCrystalClusterEmulatorProducer::passes_looseTkss(float pt, float ss) {
-   if ((0.944-0.65*TMath::Exp(-0.4*pt))>ss) return false;
+   if ((e0_looseTkss-e1_looseTkss*TMath::Exp(-e2_looseTkss*pt))>ss) return false;
    else return true;
 }
-
-bool L1EGCrystalClusterEmulatorProducer::passes_he(float pt, float he) {
-   if (he<(0.269+TMath::Exp(1.2504-0.0478*pt))) return true;
-   else return false;
-}
-
-float L1EGCrystalClusterEmulatorProducer::get_calibrate(float uncorr){
-   return uncorr*(1.0712 + TMath::Exp(-0.6819-0.0462*uncorr));
-}
-
 
 //define this as a plug-in
 DEFINE_FWK_MODULE(L1EGCrystalClusterEmulatorProducer);
