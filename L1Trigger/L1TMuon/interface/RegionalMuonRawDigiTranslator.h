@@ -9,9 +9,12 @@ namespace l1t {
     static void fillRegionalMuonCand(
         RegionalMuonCand& mu, uint32_t raw_data_00_31, uint32_t raw_data_32_63, int proc, tftype tf, bool isKalman);
     static void fillRegionalMuonCand(RegionalMuonCand& mu, uint64_t dataword, int proc, tftype tf, bool isKalman);
-    static void generatePackedDataWords(const RegionalMuonCand&, uint32_t&, uint32_t&);
-    static uint64_t generate64bitDataWord(const RegionalMuonCand&);
-    static int generateRawTrkAddress(const RegionalMuonCand&);
+    static void generatePackedDataWords(const RegionalMuonCand& mu,
+                                        uint32_t& raw_data_00_31,
+                                        uint32_t& raw_data_32_63,
+                                        bool isKalman);
+    static uint64_t generate64bitDataWord(const RegionalMuonCand& mu, bool isKalman);
+    static int generateRawTrkAddress(const RegionalMuonCand&, bool isKalman);
 
     static constexpr unsigned ptMask_ = 0x1FF;
     static constexpr unsigned ptShift_ = 0;

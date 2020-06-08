@@ -39,7 +39,6 @@ void L1Analysis::L1AnalysisL1UpgradeTfMuon::SetTfMuon(const l1t::RegionalMuonCan
           l1upgradetfmuon_.tfMuonTrAdd.push_back(stat2);
           l1upgradetfmuon_.tfMuonTrAdd.push_back(stat3);
           l1upgradetfmuon_.tfMuonTrAdd.push_back(stat4);
-
           decoded_track_address["wheel"] = wheel;
           decoded_track_address["station1"] = stat1;
           decoded_track_address["station2"] = stat2;
@@ -61,8 +60,7 @@ void L1Analysis::L1AnalysisL1UpgradeTfMuon::SetTfMuon(const l1t::RegionalMuonCan
           decoded_track_address["kBX"] = it->trackSubAddress(l1t::RegionalMuonCand::kBX);
         }
         l1upgradetfmuon_.tfMuonDecodedTrAdd.push_back(decoded_track_address);
-        l1upgradetfmuon_.tfMuonHwTrAdd.push_back(l1t::RegionalMuonRawDigiTranslator::generateRawTrkAddress(*it));
-
+        l1upgradetfmuon_.tfMuonHwTrAdd.push_back(l1t::RegionalMuonRawDigiTranslator::generateRawTrkAddress(*it, true));  // TODO: We're assuming that we're dealing with Kalman muons here.
         l1upgradetfmuon_.nTfMuons++;
       }
     }
