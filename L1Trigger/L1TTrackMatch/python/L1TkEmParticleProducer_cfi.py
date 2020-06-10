@@ -46,7 +46,7 @@ L1TkPhotonsTightIsol.IsoCut = cms.double( 0.10)
 # The important change is the EG seed -> PhaseII instead of PhaseI
 
 L1TkPhotonsCrystal=L1TkPhotons.clone()
-L1TkPhotonsCrystal.L1EGammaInputTag = cms.InputTag("L1EGammaClusterEmuProducer", "L1EGammaCollectionBXVEmulator")
+L1TkPhotonsCrystal.L1EGammaInputTag = cms.InputTag("L1EGammaClusterEmuProducer", )
 L1TkPhotonsCrystal.IsoCut = cms.double(-0.1)
 
 

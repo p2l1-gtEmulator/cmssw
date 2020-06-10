@@ -44,7 +44,7 @@ L1TkElectronsLoose.TrackMinPt = cms.double( 3.0 )
 
 #barrel
 L1TkElectronsCrystal = L1TkElectrons.clone()
-L1TkElectronsCrystal.L1EGammaInputTag = cms.InputTag("L1EGammaClusterEmuProducer","L1EGammaCollectionBXVEmulator")
+L1TkElectronsCrystal.L1EGammaInputTag = cms.InputTag("L1EGammaClusterEmuProducer",)
 L1TkElectronsCrystal.IsoCut = cms.double(-0.1)
 
 L1TkIsoElectronsCrystal=L1TkElectronsCrystal.clone()
