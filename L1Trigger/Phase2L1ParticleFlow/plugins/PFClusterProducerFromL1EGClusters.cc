@@ -7,7 +7,7 @@
 #include "DataFormats/L1TParticleFlow/interface/PFCluster.h"
 #include "L1Trigger/Phase2L1ParticleFlow/src/corrector.h"
 #include "L1Trigger/Phase2L1ParticleFlow/interface/ParametricResolution.h"
-#include "DataFormats/Phase2L1CaloTrig/interface/L1EGCrystalCluster.h"
+#include "DataFormats/L1TCalorimeterPhase2/interface/CaloCrystalCluster.h"
 
 
 namespace l1tpf {
@@ -17,7 +17,7 @@ namespace l1tpf {
             ~PFClusterProducerFromL1EGClusters() {}
 
         private:
-            edm::EDGetTokenT<l1slhc::L1EGCrystalClusterCollection> src_;
+            edm::EDGetTokenT<l1tp2::CaloCrystalClusterCollection> src_;
             double etCut_;
             l1tpf::corrector corrector_;
             l1tpf::ParametricResolution resol_;
@@ -28,7 +28,7 @@ namespace l1tpf {
 } // namespace
 
 l1tpf::PFClusterProducerFromL1EGClusters::PFClusterProducerFromL1EGClusters(const edm::ParameterSet & iConfig) :
-    src_(consumes<l1slhc::L1EGCrystalClusterCollection>(iConfig.getParameter<edm::InputTag>("src"))),
+    src_(consumes<l1tp2::CaloCrystalClusterCollection>(iConfig.getParameter<edm::InputTag>("src"))),
     etCut_(iConfig.getParameter<double>("etMin")),
     corrector_(iConfig.getParameter<std::string>("corrector"), -1),
     resol_(iConfig.getParameter<edm::ParameterSet>("resol"))
@@ -41,7 +41,7 @@ void
 l1tpf::PFClusterProducerFromL1EGClusters::produce(edm::Event & iEvent, const edm::EventSetup &) 
 {
   std::unique_ptr<l1t::PFClusterCollection> out(new l1t::PFClusterCollection());
-  edm::Handle<l1slhc::L1EGCrystalClusterCollection> clusters;
+  edm::Handle<l1tp2::CaloCrystalClusterCollection> clusters;
   iEvent.getByToken(src_, clusters);
 
   unsigned int index = 0;
