@@ -2,10 +2,10 @@ import FWCore.ParameterSet.Config as cms
 
 l1UpgradeTfMuonTree = cms.EDAnalyzer(
     "L1UpgradeTfMuonTreeProducer",
-    bmtfMuonToken = cms.untracked.InputTag("bmtfDigis","BMTF"),
-    kbmtfMuonToken = cms.untracked.InputTag("kbmtfDigis","BMTF"),
-    bmtfInputPhMuonToken = cms.untracked.InputTag("kbmtfDigis",""),
-    bmtfInputThMuonToken = cms.untracked.InputTag("kbmtfDigis",""),
+    bmtfMuonToken = cms.untracked.InputTag("bmtfDigis","BMTF2"),
+    kbmtfMuonToken = cms.untracked.InputTag("bmtfDigis","BMTF"),
+    bmtfInputPhMuonToken = cms.untracked.InputTag("bmtfDigis",""),
+    bmtfInputThMuonToken = cms.untracked.InputTag("bmtfDigis",""),
     omtfMuonToken = cms.untracked.InputTag("omtfDigis","OMTF"),
     emtfMuonToken = cms.untracked.InputTag("emtfDigis","EMTF"),
     maxL1UpgradeTfMuon = cms.uint32(60)
