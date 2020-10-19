@@ -8,11 +8,6 @@ from L1Trigger.L1TNtuples.l1UpgradeTree_cfi import *
 from L1Trigger.L1TNtuples.l1uGTTree_cfi import *
 from L1Trigger.L1TNtuples.l1HOTree_cfi import *
 
-# we don't have omtfDigis yet, use unpacked input payloads of GMT
-l1UpgradeTfMuonTree.omtfMuonToken = cms.untracked.InputTag("gmtStage2Digis","OMTF") 
-# we don't have emtfDigis yet, use unpacked input payloads of GMT
-l1UpgradeTfMuonTree.emtfMuonToken = cms.untracked.InputTag("gmtStage2Digis","EMTF") 
-
 L1NtupleRAW = cms.Sequence(
   l1EventTree
   #+l1ExtraTree
