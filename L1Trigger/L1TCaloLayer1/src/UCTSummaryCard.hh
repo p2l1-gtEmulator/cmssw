@@ -8,12 +8,12 @@
 
 class UCTLayer1;
 class UCTObject;
+class UCTRegion;
 
 class UCTSummaryCard {
 public:
 
-  UCTSummaryCard(const UCTLayer1* in, 
-		 const std::vector< std::vector< std::vector < uint32_t > > > *l,
+  UCTSummaryCard(const std::vector< std::vector< std::vector < uint32_t > > > *l,
 		 uint32_t jetSeedIn = 10,
 		 uint32_t tauSeedIn = 10,
 		 double tauIsolationFactorIn = 0.3,
@@ -23,9 +23,15 @@ public:
 
   virtual ~UCTSummaryCard();
 
+  // To set up event data before processing
+
+  const UCTRegion* getRegion(int regionEtaIndex, uint32_t regionPhiIndex) const;
+
   // UCTSummaryCard process event
 
   bool clearEvent();
+  bool clearRegions();
+  bool setRegionData(std::vector<UCTRegion*> inputRegions); // Use when the region collection is available and no direct access to TPGs
   bool process();
 
   // Access to data
@@ -62,7 +68,7 @@ private:
 
   // Parameters specified at constructor level
 
-  const UCTLayer1 *uctLayer1;
+//  const UCTLayer1 *uctLayer1;
   const std::vector< std::vector< std::vector < uint32_t > > > *pumLUT;
   uint32_t jetSeed;
   uint32_t tauSeed;
@@ -71,6 +77,8 @@ private:
   double eGammaIsolationFactor;
 
   // Owned card level data 
+
+  std::vector<UCTRegion*> regions;
 
   double sinPhi[73]; // Make one extra so caloPhi : 1-72 can be used as index directly
   double cosPhi[73];
