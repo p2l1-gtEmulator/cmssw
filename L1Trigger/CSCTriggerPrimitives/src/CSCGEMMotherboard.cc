@@ -16,8 +16,8 @@ CSCGEMMotherboard::CSCGEMMotherboard(unsigned endcap,
   // super chamber has layer=0!
   gemId = GEMDetId(theRegion, 1, theStation, 0, theChamber, 0).rawId();
 
-  const edm::ParameterSet coPadParams(station == 1 ? conf.getParameter<edm::ParameterSet>("copadParamGE11")
-                                                   : conf.getParameter<edm::ParameterSet>("copadParamGE21"));
+  const edm::ParameterSet coPadParams(station == 1 ? conf.getParameterSet("copadParamGE11")
+                                                   : conf.getParameterSet("copadParamGE21"));
   coPadProcessor = std::make_unique<GEMCoPadProcessor>(theRegion, theStation, theChamber, coPadParams);
 
   maxDeltaPadL1_ = (theParity ? tmbParams_.getParameter<int>("maxDeltaPadL1Even")
@@ -250,9 +250,6 @@ CSCCorrelatedLCTDigi CSCGEMMotherboard::constructLCTsGEM(const CSCALCTDigi& alct
   thisLCT.setSyncErr(0);
   thisLCT.setCSCID(theTrigChamber);
   thisLCT.setRun3(true);
-  // in Run-3 we plan to denote the presence of exotic signatures in the chamber
-  if (useHighMultiplicityBits_)
-    thisLCT.setHMT(highMultiplicityBits_);
 
   // future work: add a section that produces LCTs according
   // to the new LCT dataformat (not yet defined)

@@ -8,6 +8,7 @@
 #include "DataFormats/L1TMuon/interface/EMTFHit.h"
 #include "DataFormats/L1TMuon/interface/EMTFRoad.h"
 #include "DataFormats/L1TMuon/interface/EMTFTrack.h"
+#include "DataFormats/L1TMuon/interface/RegionalMuonShower.h"
 
 #include "L1Trigger/L1TMuon/interface/GeometryTranslator.h"
 #include "L1Trigger/L1TMuon/interface/MuonTriggerPrimitive.h"
@@ -26,6 +27,7 @@ typedef l1t::EMTFRoadCollection EMTFRoadCollection;
 typedef l1t::EMTFTrack EMTFTrack;
 typedef l1t::EMTFTrackCollection EMTFTrackCollection;
 typedef l1t::EMTFPtLUT EMTFPtLUT;
+typedef l1t::RegionalMuonShowerBxCollection RegionalMuonShowerBxCollection;
 
 typedef L1TMuon::GeometryTranslator GeometryTranslator;
 typedef L1TMuon::TriggerPrimitive TriggerPrimitive;
@@ -63,6 +65,13 @@ namespace emtf {
   using sector_array = std::array<T, NUM_SECTORS>;
   template <typename T>
   using zone_array = std::array<T, NUM_ZONES>;
+
+  // NN features and predictions
+  constexpr int NUM_FEATURES = 23;    // NN features
+  constexpr int NUM_PREDICTIONS = 2;  // NN outputs
+
+  using Feature = std::array<float, NUM_FEATURES>;
+  using Prediction = std::array<float, NUM_PREDICTIONS>;
 
 }  // namespace emtf
 
