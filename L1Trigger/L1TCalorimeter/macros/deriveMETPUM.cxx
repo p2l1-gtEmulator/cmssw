@@ -30,17 +30,17 @@ void fitProfile(TH1D* prof){
   TF1 *fit1 = new TF1("fit1","[0]*x+[1]");
   fit1->SetParameter(0,1.0); 
   fit1->SetParameter(1,20);   
-  fit1->SetRange(0,110);     
+  fit1->SetRange(20,100);     
   prof->Fit("fit1","R");
   TF1 *fit2 = new TF1("fit2","[0]*x+[1]");
   fit2->SetParameter(0,0.8); 
   fit2->SetParameter(1,60);   
-  fit2->SetRange(90,155);
+  fit2->SetRange(80,100);
   prof_fit2->Fit("fit2","R");
   TF1 *fit3 = new TF1("fit3","[0]*x+[1]");
   fit3->SetParameter(0,0.5);
   fit3->SetParameter(1,4);  
-  fit3->SetRange(110,140);
+  fit3->SetRange(100,150);
   prof_fit3->Fit("fit3","R");   
   TF1 *fit4 = new TF1("fit4","[0]*x+[1]");
   fit4->SetParameter(0,0.5);
@@ -208,7 +208,7 @@ void makeLUT(TFile* file, int puBins){
         p5   << addr  << " "  << tp5  << "             # ieta = " << eta+1 << "\n"; 
         p05  << addr  << " "  << tp05 << "             # ieta = " << eta+1 << "\n";
       } else {
-        int ft1=floor(t1*1.5), ftp3=floor(tp3*1.5), ftp5=floor(tp5*1.5), ftp05=floor(tp05*1.5);
+        int ft1=t1*2, ftp3=tp3*2, ftp5=tp5*2, ftp05=tp05*2;
         one  << addr  << " "  << ft1   << "             # ieta = " << eta+1 << "\n";
         p3   << addr  << " "  << ftp3  << "             # ieta = " << eta+1 << "\n";
         p5   << addr  << " "  << ftp5  << "             # ieta = " << eta+1 << "\n"; 
@@ -262,7 +262,8 @@ void deriveMETPUM(bool doTow, bool doLUT, bool doFit, bool doMC){
   //output filename
   string outFilename = "metPUM_out.root";
   //vector<int> puBinBs   = {0,0,0,0,0, 0, 0, 0, 1, 5,10,14,18,23,27,32,36,41,45,50, 56, 62, 68, 74, 80, 86, 93, 99,105,111,117,123,999};
-  vector<int> puBinBs   = {0,0,0,0,4,10,16,22,28,34,40,46,52,58,64,70,76,82,88,94,100,106,112,118,124,130,136,142,148,154,160,166,999};
+  //vector<int> puBinBs   = {0,0,0,0,4,10,16,22,28,34,40,46,52,58,64,70,76,82,88,94,100,106,112,118,124,130,136,142,148,154,160,166,999};
+  vector<int> puBinBs   =   {0,0,0,0,3, 9,15,21,28,34,40,46,52,58,64,70,76,82,89,95,101,107,113,119,125,131,137,143,150,156,162,168,999};
 
   int puBins = puBinBs.size()-1;
 
@@ -286,7 +287,7 @@ void deriveMETPUM(bool doTow, bool doLUT, bool doFit, bool doMC){
   }
 
   //input ntuple
-  string  inputFile01 = "root://eoscms.cern.ch//eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/bundocka/condor/reHcalTP_PFA1p_Nu_110X_FixGhosts_1621595179/*.root";
+  string  inputFile01 = "root://eoscms.cern.ch//eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/bundocka/condor/reHcalTP_Nu_11_2_105p20p1_1623921599/*.root";
   
   //check file doesn't exist
   if (file!=0){
@@ -561,7 +562,7 @@ void deriveMETPUM(bool doTow, bool doLUT, bool doFit, bool doMC){
   hProfNVtxNTowemu4->Write();
   canvas->SaveAs("ProfNVtxNTowemu4.pdf");
 
-  fitProfile(hProfNTowemuNVtx4);
+  fitProfile(hProfNVtxNTowemu4);
 
   if(!doTow){ 
 
