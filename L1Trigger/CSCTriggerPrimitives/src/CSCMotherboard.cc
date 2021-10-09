@@ -572,6 +572,10 @@ void CSCMotherboard::encodeHighMultiplicityBits() {
       inTimeHMT_ = anodeInTime | cathodeInTime;
       outTimeHMT_ = anodeOutTime | cathodeOutTime;
       break;
+    case 3:
+      inTimeHMT_ = anodeInTime & cathodeInTime;
+      outTimeHMT_ = anodeOutTime & cathodeOutTime;
+      break;
     default:
       inTimeHMT_ = cathodeInTime;
       outTimeHMT_ = cathodeOutTime;
