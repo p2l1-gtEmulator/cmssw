@@ -172,6 +172,8 @@ from L1Trigger.L1TTrackMatch.L1TrackFastJetProducer_cfi import *
 from L1Trigger.L1TTrackMatch.L1TrackerEtMissProducer_cfi import *
 from L1Trigger.L1TTrackMatch.L1TkHTMissProducer_cfi import *
 # make the input tags consistent with the choice L1VertexFinder above
+L1TrackJets.L1PVertexCollection  = cms.InputTag("L1VertexFinder", L1VertexFinder.l1VertexCollectionName.value())
+L1TrackJetsExtended.L1PVertexCollection  = cms.InputTag("L1VertexFinder", L1VertexFinder.l1VertexCollectionName.value())
 L1TrackerEtMiss.L1VertexInputTag = cms.InputTag("L1VertexFinder", L1VertexFinder.l1VertexCollectionName.value())
 L1TrackerEtMissExtended.L1VertexInputTag = cms.InputTag("L1VertexFinder", L1VertexFinder.l1VertexCollectionName.value())
 L1TrackJets.L1PVertexCollection  = cms.InputTag("L1VertexFinder", L1VertexFinder.l1VertexCollectionName.value())
