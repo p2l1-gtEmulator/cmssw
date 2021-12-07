@@ -171,11 +171,14 @@ from L1Trigger.L1TTrackMatch.L1TrackJetProducer_cfi import *
 from L1Trigger.L1TTrackMatch.L1TrackFastJetProducer_cfi import *
 from L1Trigger.L1TTrackMatch.L1TrackerEtMissProducer_cfi import *
 from L1Trigger.L1TTrackMatch.L1TkHTMissProducer_cfi import *
+
 # make the input tags consistent with the choice L1VertexFinder above
 L1TrackJets.L1PVertexCollection  = cms.InputTag("L1VertexFinder", L1VertexFinder.l1VertexCollectionName.value())
 L1TrackJetsExtended.L1PVertexCollection  = cms.InputTag("L1VertexFinder", L1VertexFinder.l1VertexCollectionName.value())
+
 L1TrackerEtMiss.L1VertexInputTag = cms.InputTag("L1VertexFinder", L1VertexFinder.l1VertexCollectionName.value())
 L1TrackerEtMissExtended.L1VertexInputTag = cms.InputTag("L1VertexFinder", L1VertexFinder.l1VertexCollectionName.value())
+
 L1TrackJets.L1PVertexCollection  = cms.InputTag("L1VertexFinder", L1VertexFinder.l1VertexCollectionName.value())
 L1TrackJetsExtended.L1PVertexCollection  = cms.InputTag("L1VertexFinder", L1VertexFinder.l1VertexCollectionName.value())
 
@@ -185,7 +188,7 @@ _phase2_siml1emulator.add(L1TrackFastJets)
 
 _phase2_siml1emulator.add(L1TrackerEtMiss)
 _phase2_siml1emulator.add(L1TrackerHTMiss)
-_phase2_siml1emulator.add(L1TrackerEtMissExtended)
+#_phase2_siml1emulator.add(L1TrackerEtMissExtended) #remove, issue with some parameter
 _phase2_siml1emulator.add(L1TrackerHTMissExtended)
 
 #Emulated tracker objects
@@ -196,6 +199,10 @@ _phase2_siml1emulator.add(L1TrackJetsExtendedEmulation)
 from L1Trigger.L1TTrackMatch.L1TrackerEtMissEmulatorProducer_cfi import *
 L1TrackerEmuEtMiss.L1VertexInputTag = cms.InputTag("L1VertexFinderEmulator","l1verticesEmulation")
 _phase2_siml1emulator.add(L1TrackerEmuEtMiss)
+
+from L1Trigger.L1TTrackMatch.L1TkHTMissEmulatorProducer_cfi import *
+_phase2_siml1emulator.add(L1TrackerEmuHTMiss)
+_phase2_siml1emulator.add(L1TrackerEmuHTMissExtended)
 
 
 # PF Candidates

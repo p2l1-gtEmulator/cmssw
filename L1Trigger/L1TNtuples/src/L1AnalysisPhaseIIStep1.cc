@@ -2,6 +2,7 @@
 #include "L1Trigger/L1TNtuples/interface/L1AnalysisPhaseIIStep1.h"
 #include "L1Trigger/L1TMuon/interface/MicroGMTConfiguration.h"
 #include "L1Trigger/Phase2L1GMT/interface/Constants.h"
+#include "L1Trigger/L1TTrackMatch/interface/L1TkHTMissEmulatorProducer.h"
 
 L1Analysis::L1AnalysisPhaseIIStep1::L1AnalysisPhaseIIStep1() {}
 
@@ -604,15 +605,18 @@ void L1Analysis::L1AnalysisPhaseIIStep1::SetTkMET(const   edm::Handle< std::vect
   //}
 }
 
-void L1Analysis::L1AnalysisPhaseIIStep1::SetTkMHT(const edm::Handle<l1t::TkHTMissCollection> trackerMHTs) {
+void L1Analysis::L1AnalysisPhaseIIStep1::SetTkMHT(const edm::Handle< std::vector<l1t::EtSum> > trackerMHTs) {
   // Hardcoding it like this, but this needs to be changed to a vector
 
-  for (l1t::TkHTMissCollection::const_iterator it = trackerMHTs->begin(); it != trackerMHTs->end(); it++) {
-    l1extra_.trackerHT.push_back(it->etTotal());
-    l1extra_.trackerMHT.push_back(it->EtMiss());
-    l1extra_.trackerMHTPhi.push_back(it->phi());
-    l1extra_.nTrackerMHT++;
-  }
+  //trkMHTEmu = L1TkMHTEmuHandle->begin()->p4().energy() * l1tmhtemu::kStepMHT;
+  //	trkHTEmu = L1TkMHTEmuHandle->begin()->hwPt() * l1tmhtemu::kStepPt;
+  //      trkMHTEmuPhi = L1TkMHTEmuHandle->begin()->hwPhi() * l1tmhtemu::kStepMHTPhi - M_PI;
+  //for (l1t::TkHTMissCollection::const_iterator it = trackerMHTs->begin(); it != trackerMHTs->end(); it++) {
+  l1extra_.trackerHT.push_back(trackerMHTs->begin()->hwPt() * l1tmhtemu::kStepPt);
+  l1extra_.trackerMHT.push_back(trackerMHTs->begin()->p4().energy() * l1tmhtemu::kStepMHT);
+  l1extra_.trackerMHTPhi.push_back(trackerMHTs->begin()->hwPhi() * l1tmhtemu::kStepMHTPhi - M_PI);
+  l1extra_.nTrackerMHT++;
+  //}
 }
 
 // trackerMetDisplaced
@@ -626,15 +630,15 @@ void L1Analysis::L1AnalysisPhaseIIStep1::SetTkMETDisplaced(const edm::Handle<l1t
   }
 }
 
-void L1Analysis::L1AnalysisPhaseIIStep1::SetTkMHTDisplaced(const edm::Handle<l1t::TkHTMissCollection> trackerMHTs) {
+void L1Analysis::L1AnalysisPhaseIIStep1::SetTkMHTDisplaced(const edm::Handle< std::vector<l1t::EtSum> > trackerMHTs) {
   // Hardcoding it like this, but this needs to be changed to a vector
 
-  for (l1t::TkHTMissCollection::const_iterator it = trackerMHTs->begin(); it != trackerMHTs->end(); it++) {
-    l1extra_.trackerHTDisplaced.push_back(it->etTotal());
-    l1extra_.trackerMHTDisplaced.push_back(it->EtMiss());
-    l1extra_.trackerMHTPhiDisplaced.push_back(it->phi());
-    l1extra_.nTrackerMHTDisplaced++;
-  }
+  //for (l1t::TkHTMissCollection::const_iterator it = trackerMHTs->begin(); it != trackerMHTs->end(); it++) {
+  l1extra_.trackerHTDisplaced.push_back(trackerMHTs->begin()->hwPt() * l1tmhtemu::kStepPt);
+  l1extra_.trackerMHTDisplaced.push_back(trackerMHTs->begin()->p4().energy() * l1tmhtemu::kStepMHT);
+  l1extra_.trackerMHTPhiDisplaced.push_back(trackerMHTs->begin()->hwPhi() * l1tmhtemu::kStepMHTPhi - M_PI);
+  l1extra_.nTrackerMHTDisplaced++;
+  //}
 }
 
 
