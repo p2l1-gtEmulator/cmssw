@@ -22,7 +22,7 @@ scPFL1PuppiEmulator = L1SeedConePFJetEmulatorProducer.clone(L1PFObject = cms.Inp
 
 _correctedJets = cms.EDProducer("L1TCorrectedPFJetProducer", 
     jets = cms.InputTag("_tag_"),
-    correctorFile = cms.string("L1Trigger/Phase2L1ParticleFlow/data/jecs/jecs.PU200.root"),
+    correctorFile = cms.string("L1Trigger/Phase2L1ParticleFlow/data/jecs/jecs.PU200_110X.root"),
     correctorDir = cms.string("_dir_"),
     copyDaughters = cms.bool(False)
 )
@@ -36,7 +36,7 @@ ak4PFL1CaloCorrected = _correctedJets.clone(jets = 'ak4PFL1Calo', correctorDir =
 ak4PFL1PFCorrected = _correctedJets.clone(jets = 'ak4PFL1PF', correctorDir = 'L1PFJets')
 ak4PFL1PuppiCorrected = _correctedJets.clone(jets = 'ak4PFL1Puppi', correctorDir = 'L1PuppiJets')
 
-scPFL1PuppiCorrectedEmulator = _correctedJets.clone(jets = 'scPFL1PuppiEmulator', correctorDir = '????????')
+scPFL1PuppiCorrectedEmulator = _correctedJets.clone(jets = 'scPFL1PuppiEmulator', correctorDir = 'L1PuppiSC4EmuDeregJets')
 
 l1PFJetsTask = cms.Task(
     ak4PFL1Calo, ak4PFL1PF, ak4PFL1Puppi,
