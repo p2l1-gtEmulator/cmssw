@@ -37,7 +37,6 @@ ak4PFL1PFCorrected = _correctedJets.clone(jets = 'ak4PFL1PF', correctorDir = 'L1
 ak4PFL1PuppiCorrected = _correctedJets.clone(jets = 'ak4PFL1Puppi', correctorDir = 'L1PuppiJets')
 
 scPFL1PuppiCorrectedEmulator = _correctedJets.clone(jets = 'scPFL1PuppiEmulator', correctorDir = 'L1PuppiSC4EmuDeregJets')
-#scPFL1PuppiCorrectedEmulator = _correctedJets.clone(jets = cms.InputTag('scPFL1PuppiEmulator'), correctorDir = 'L1PuppiSC4EmuDeregJets')
 
 l1PFJetsTask = cms.Task(
     ak4PFL1Calo, ak4PFL1PF, ak4PFL1Puppi,
