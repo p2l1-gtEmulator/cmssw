@@ -4,6 +4,7 @@ L1TrackSelectionProducer = cms.EDProducer('L1TrackSelectionProducer',
   l1TracksInputTag = cms.InputTag("L1GTTInputProducer","Level1TTTracksConverted"),
   l1VerticesInputTag = cms.InputTag("L1VertexFinder", "l1vertices"),
   l1VerticesEmulationInputTag = cms.InputTag("L1VertexFinderEmulator", "l1verticesEmulation"),
+  # If no vertex collection is provided, then the DeltaZ cuts will not be run
   outputCollectionName = cms.string("Level1TTTracksSelected"),
   cutSet = cms.PSet(
                     ptMin = cms.double(2.0), # pt must be greater than this value, [GeV]
@@ -20,14 +21,13 @@ L1TrackSelectionProducer = cms.EDProducer('L1TrackSelectionProducer',
                     deltaZMaxEtaBounds = cms.vdouble(0.0, 0.7, 1.0, 1.2, 1.6, 2.0, 2.4), # these values define the bin boundaries in |eta|
                     deltaZMax = cms.vdouble(0.37, 0.50, 0.60, 0.75, 1.00, 1.60), # delta z must be less than these values, there will be one less value here than in deltaZMaxEtaBounds, [cm]
                     ),
+  processSimulatedTracks = cms.bool(True), # return selected tracks after cutting on the floating point values
+  processEmulatedTracks = cms.bool(True), # return selected tracks after cutting on the bitwise emulated values
   debug = cms.int32(2) # Verbosity levels: 0, 1, 2, 3
 )
 
-L1TrackSelectionProducerExtended = cms.EDProducer('L1TrackSelectionProducer',
+L1TrackSelectionProducerExtended = L1TrackSelectionProducer.clone(
   l1TracksInputTag = cms.InputTag("L1GTTInputProducerExtended","Level1TTTracksExtendedConverted"),
-  l1VerticesInputTag = cms.InputTag("L1VertexFinder", "l1vertices"),
-  l1VerticesEmulationInputTag = cms.InputTag("L1VertexFinderEmulator", "l1verticesEmulation"),
   outputCollectionName = cms.string("Level1TTTracksExtendedSelected"),
-  cutSet = L1TrackSelectionProducer.cutSet,
-  debug = cms.int32(2) # Verbosity levels: 0, 1, 2, 3
 )
+

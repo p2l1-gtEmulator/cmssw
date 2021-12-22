@@ -274,13 +274,14 @@ private:
 
   // ----------member data ---------------------------
   const edm::EDGetTokenT<TTTrackCollectionView> l1TracksToken_;
-  const edm::EDGetTokenT<l1t::VertexCollection> l1VerticesToken_;
-  const edm::EDGetTokenT<l1t::VertexWordCollection> l1VerticesEmulationToken_;
+  edm::EDGetTokenT<l1t::VertexCollection> l1VerticesToken_;
+  edm::EDGetTokenT<l1t::VertexWordCollection> l1VerticesEmulationToken_;
   const std::string outputCollectionName_;
   const edm::ParameterSet cutSet_;
   const double ptMin_, absEtaMax_, absZ0Max_, bendChi2Max_, reducedChi2RZMax_, reducedChi2RPhiMax_;
   const int nStubsMin_;
   const std::vector<double> deltaZMaxEtaBounds_, deltaZMax_;
+  bool processSimulatedTracks_, processEmulatedTracks_;
   int debug_;
 };
 
@@ -289,8 +290,6 @@ private:
 //
 L1TrackSelectionProducer::L1TrackSelectionProducer(const edm::ParameterSet& iConfig)
     : l1TracksToken_(consumes<TTTrackCollectionView>(iConfig.getParameter<edm::InputTag>("l1TracksInputTag"))),
-      l1VerticesToken_(consumes<l1t::VertexCollection>(iConfig.getParameter<edm::InputTag>("l1VerticesInputTag"))),
-      l1VerticesEmulationToken_(consumes<l1t::VertexWordCollection>(iConfig.getParameter<edm::InputTag>("l1VerticesEmulationInputTag"))),
       outputCollectionName_(iConfig.getParameter<std::string>("outputCollectionName")),
       cutSet_(iConfig.getParameter<edm::ParameterSet>("cutSet")),
 
@@ -304,16 +303,29 @@ L1TrackSelectionProducer::L1TrackSelectionProducer(const edm::ParameterSet& iCon
       deltaZMaxEtaBounds_(cutSet_.getParameter<std::vector<double>>("deltaZMaxEtaBounds")),
       deltaZMax_(cutSet_.getParameter<std::vector<double>>("deltaZMax")),
 
+      processSimulatedTracks_(iConfig.getParameter<bool>("processSimulatedTracks")),
+      processEmulatedTracks_(iConfig.getParameter<bool>("processEmulatedTracks")),
       debug_(iConfig.getParameter<int>("debug")) {
 
   // Confirm the the configuration makes sense
+  if (!processSimulatedTracks_ && !processEmulatedTracks_) {
+    throw cms::Exception("You must process at least one of the track collections (simulated or emulated).");
+  }
+
   if (deltaZMax_.size() != deltaZMaxEtaBounds_.size() - 1) {
     throw cms::Exception("The number of deltaZ cuts does not match the number of eta bins!");
   }
 
-  // Define EDM output to be written to file (if required)
-  produces<TTTrackCollection>(outputCollectionName_);
-  produces<TTTrackCollection>(outputCollectionName_+"Emulation");
+  // Get additional input tags and define the EDM output based on the previous configuration parameters
+  if (processSimulatedTracks_) {
+    l1VerticesToken_ = consumes<l1t::VertexCollection>(iConfig.getParameter<edm::InputTag>("l1VerticesInputTag"));
+    produces<TTTrackCollection>(outputCollectionName_);
+  }
+  if (processEmulatedTracks_) {
+    l1VerticesEmulationToken_ = consumes<l1t::VertexWordCollection>(iConfig.getParameter<edm::InputTag>("l1VerticesEmulationInputTag"));
+    produces<TTTrackCollection>(outputCollectionName_+"Emulation");
+  }
+
 }
 
 L1TrackSelectionProducer::~L1TrackSelectionProducer() {}
@@ -328,19 +340,24 @@ void L1TrackSelectionProducer::produce(edm::StreamID, edm::Event& iEvent, const 
   auto vTTTrackEmulationOutput = std::make_unique<TTTrackCollection>();
   
   edm::Handle<TTTrackCollectionView> l1TracksHandle;
-  iEvent.getByToken(l1TracksToken_, l1TracksHandle);
-
   edm::Handle<l1t::VertexCollection> l1VerticesHandle;
-  iEvent.getByToken(l1VerticesToken_, l1VerticesHandle);
-  l1t::Vertex leadingVertex = l1VerticesHandle->at(0);
-
   edm::Handle<l1t::VertexWordCollection> l1VerticesEmulationHandle;
-  iEvent.getByToken(l1VerticesEmulationToken_, l1VerticesEmulationHandle);
-  l1t::VertexWord leadingEmulationVertex = l1VerticesEmulationHandle->at(0);
-  
+
+  l1t::Vertex leadingVertex;
+  l1t::VertexWord leadingEmulationVertex;
+
+  iEvent.getByToken(l1TracksToken_, l1TracksHandle);
   unsigned int nOutputApproximate = l1TracksHandle->size();
-  vTTTrackOutput->reserve(nOutputApproximate);
-  vTTTrackEmulationOutput->reserve(nOutputApproximate);
+  if (processSimulatedTracks_) {
+    iEvent.getByToken(l1VerticesToken_, l1VerticesHandle);
+    leadingVertex = l1VerticesHandle->at(0);
+    vTTTrackOutput->reserve(nOutputApproximate);
+  }
+  if (processEmulatedTracks_) {
+    iEvent.getByToken(l1VerticesEmulationToken_, l1VerticesEmulationHandle);
+    leadingEmulationVertex = l1VerticesEmulationHandle->at(0);
+    vTTTrackEmulationOutput->reserve(nOutputApproximate);
+  }
 
   TTTrackPtMinEtaMaxZ0MaxNStubsMinSelector kinSel(ptMin_, absEtaMax_, absZ0Max_, nStubsMin_);
   TTTrackWordPtMinEtaMaxZ0MaxNStubsMinSelector kinSelEmu(ptMin_, absEtaMax_, absZ0Max_, nStubsMin_);
@@ -352,12 +369,12 @@ void L1TrackSelectionProducer::produce(edm::StreamID, edm::Event& iEvent, const 
   for (const auto& track : *l1TracksHandle) {
 
     // Select tracks based on the floating point TTTrack
-    if (kinSel(track) && chi2Sel(track) && deltaZSel(track, leadingVertex)) {
+    if (processSimulatedTracks_ && kinSel(track) && chi2Sel(track) && deltaZSel(track, leadingVertex)) {
       vTTTrackOutput->push_back(track);
     }
 
     // Select tracks based on the bitwise accurate TTTrack_TrackWord
-    if (kinSelEmu(track) && chi2SelEmu(track) && deltaZSelEmu(track, leadingEmulationVertex)) {
+    if (processEmulatedTracks_ && kinSelEmu(track) && chi2SelEmu(track) && deltaZSelEmu(track, leadingEmulationVertex)) {
       vTTTrackEmulationOutput->push_back(track);
     }
 
@@ -370,24 +387,32 @@ void L1TrackSelectionProducer::produce(edm::StreamID, edm::Event& iEvent, const 
       log << "\t(" << track.momentum().perp() << ", " << track.eta() << ", " << track.phi() << ", " << track.getStubRefs().size() << ", "
           << track.stubPtConsistency() << ", " << track.chi2ZRed() << ", " << track.chi2XYRed() << ", " << std::abs(leadingVertex.z0() - track.z0()) << ")\n";
     }
-    log << "---\n" << "Total number of tracks = " << l1TracksHandle->size() << "\n\n"
-        << "The selected track collection (pt, eta, phi, nstub, bendchi2, chi2rz, chi2rphi, deltaz) values are ... \n";
-    for (const auto& track : *vTTTrackOutput) {
-      log << "\t(" << track.momentum().perp() << ", " << track.eta() << ", " << track.phi() << ", " << track.getStubRefs().size() << ", "
-          << track.stubPtConsistency() << ", " << track.chi2ZRed() << ", " << track.chi2XYRed() << ", " << std::abs(leadingVertex.z0() - track.z0()) << ")\n";
+    log << "---\n" << "Total number of tracks = " << l1TracksHandle->size() << "\n\n";
+    if (processSimulatedTracks_) {
+      log << "The selected track collection (pt, eta, phi, nstub, bendchi2, chi2rz, chi2rphi, deltaz) values are ... \n";
+      for (const auto& track : *vTTTrackOutput) {
+        log << "\t(" << track.momentum().perp() << ", " << track.eta() << ", " << track.phi() << ", " << track.getStubRefs().size() << ", "
+            << track.stubPtConsistency() << ", " << track.chi2ZRed() << ", " << track.chi2XYRed() << ", " << std::abs(leadingVertex.z0() - track.z0()) << ")\n";
+      }
+      log << "---\n" << "Total number of tracks selected = " << vTTTrackOutput->size() << "\n\n";
     }
-    log << "---\n" << "Total number of tracks selected = " << vTTTrackOutput->size() << "\n\n"
-        << "\nThe emulation selected track collection (pt, eta, phi, nstub, bendchi2, chi2rz, chi2rphi, deltaz) values are ... \n";
-    for (const auto& track : *vTTTrackEmulationOutput) {
-      log << "\t(" << track.momentum().perp() << ", " << track.eta() << ", " << track.phi() << ", " << track.getStubRefs().size() << ", "
-          << track.stubPtConsistency() << ", " << track.chi2ZRed() << ", " << track.chi2XYRed() << ", " << std::abs(leadingVertex.z0() - track.z0()) << ")\n";
+    if (processEmulatedTracks_) {
+      log << "The emulation selected track collection (pt, eta, phi, nstub, bendchi2, chi2rz, chi2rphi, deltaz) values are ... \n";
+      for (const auto& track : *vTTTrackEmulationOutput) {
+        log << "\t(" << track.momentum().perp() << ", " << track.eta() << ", " << track.phi() << ", " << track.getStubRefs().size() << ", "
+            << track.stubPtConsistency() << ", " << track.chi2ZRed() << ", " << track.chi2XYRed() << ", " << std::abs(leadingVertex.z0() - track.z0()) << ")\n";
+      }
+      log << "---\n" << "Total number of tracks selected = " << vTTTrackEmulationOutput->size() << "\n\n";
     }
-    log << "---\n" << "Total number of tracks selected = " << vTTTrackEmulationOutput->size() << "\n";
   }
 
   // Put the outputs into the event
-  iEvent.put(std::move(vTTTrackOutput), outputCollectionName_);
-  iEvent.put(std::move(vTTTrackEmulationOutput), outputCollectionName_+"Emulation");
+  if (processSimulatedTracks_) {
+    iEvent.put(std::move(vTTTrackOutput), outputCollectionName_);
+  }
+  if (processEmulatedTracks_) {
+    iEvent.put(std::move(vTTTrackEmulationOutput), outputCollectionName_+"Emulation");
+  }
 }
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
@@ -413,6 +438,8 @@ void L1TrackSelectionProducer::fillDescriptions(edm::ConfigurationDescriptions& 
     descCutSet.add<std::vector<double>>("deltaZMax", {0.37, 0.50, 0.60, 0.75, 1.00, 1.60})->setComment("delta z must be less than these values, there will be one less value here than in deltaZMaxEtaBounds, [cm]");
     desc.add<edm::ParameterSetDescription>("cutSet", descCutSet);
   }
+  desc.add<bool>("processSimulatedTracks", true)->setComment("return selected tracks after cutting on the floating point values");
+  desc.add<bool>("processEmulatedTracks", true)->setComment("return selected tracks after cutting on the bitwise emulated values");
   desc.add<int>("debug", 0)->setComment("Verbosity levels: 0, 1, 2, 3");
   descriptions.addWithDefaultLabel(desc);
 }
