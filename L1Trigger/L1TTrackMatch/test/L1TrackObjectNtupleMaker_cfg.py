@@ -33,6 +33,9 @@ process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 from Configuration.AlCa.GlobalTag import GlobalTag
 process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase2_realistic', '')
 
+process.load("FWCore.MessageLogger.MessageLogger_cfi")
+process.MessageLogger.cerr.INFO.limit = cms.untracked.int32(1000000000) # default: 0
+
 ############################################################
 # input and output
 ############################################################
@@ -71,6 +74,7 @@ process.TFileService = cms.Service("TFileService", fileName = cms.string('Checki
 
 process.load("L1Trigger.TrackFindingTracklet.L1HybridEmulationTracks_cff")
 process.load("L1Trigger.L1TTrackMatch.L1TrackJetProducer_cfi")
+process.load("L1Trigger.L1TTrackMatch.L1TrackSelectionProducer_cfi")
 process.load("L1Trigger.L1TTrackMatch.L1GTTInputProducer_cfi")
 process.load("L1Trigger.L1TTrackMatch.L1TrackJetEmulationProducer_cfi")
 process.load("L1Trigger.L1TTrackMatch.L1TrackFastJetProducer_cfi")
@@ -108,6 +112,7 @@ if (L1TRKALGO == 'HYBRID'):
     process.TTTracksEmuWithTruth = cms.Path(process.L1HybridTracksWithAssociators)
     process.pL1TrackJets = cms.Path(process.L1TrackJets)
     process.pL1TrackFastJets=cms.Path(process.L1TrackFastJets)
+    process.pL1TrackSelection = cms.Path(process.L1TrackSelectionProducer)
     process.pL1GTTInput = cms.Path(process.L1GTTInputProducer)
     process.pL1TrackJetsEmu = cms.Path(process.L1TrackJetsEmulation)
     process.pTkMET = cms.Path(process.L1TrackerEtMiss)
@@ -122,6 +127,7 @@ elif (L1TRKALGO == 'HYBRID_DISPLACED'):
     process.TTTracksEmuWithTruth = cms.Path(process.L1ExtendedHybridTracksWithAssociators)
     process.pL1TrackJets = cms.Path(process.L1TrackJetsExtended)
     process.pL1TrackFastJets = cms.Path(process.L1TrackFastJetsExtended)
+    process.pL1TrackSelection = cms.Path(process.L1TrackSelectionProducerExtended)
     process.pL1GTTInput = cms.Path(process.L1GTTInputProducerExtended)
     process.pL1TrackJetsEmu = cms.Path(process.L1TrackJetsExtendedEmulation)
     process.pTkMET = cms.Path(process.L1TrackerEtMissExtended)
@@ -136,6 +142,7 @@ elif (L1TRKALGO == 'HYBRID_PROMPTANDDISP'):
     process.TTTracksEmuWithTruth = cms.Path(process.L1PromptExtendedHybridTracksWithAssociators)
     process.pL1TrackJets = cms.Path(process.L1TrackJets*process.L1TrackJetsExtended)
     process.pL1TrackFastJets = cms.Path(process.L1TrackFastJets*process.L1TrackFastJetsExtended)
+    process.pL1TrackSelection = cms.Path(process.L1TrackSelectionProducer*process.L1TrackSelectionProducerExtended)
     process.pL1GTTInput = cms.Path(process.L1GTTInputProducer*process.L1GTTInputProducerExtended)
     process.pL1TrackJetsEmu = cms.Path(process.L1TrackJetsEmulation*process.L1TrackJetsExtendedEmulation)
     process.pTkMET = cms.Path(process.L1TrackerEtMiss*process.L1TrackerEtMissExtended)
@@ -216,5 +223,5 @@ process.pOut = cms.EndPath(process.out)
 # use this if cluster/stub associators not available
 # process.schedule = cms.Schedule(process.TTClusterStubTruth,process.TTTracksEmuWithTruth,process.ntuple)
 
-process.schedule = cms.Schedule(process.TTTracksEmuWithTruth, process.pL1GTTInput, process.pPV, process.pPVemu, process.pL1TrackJets, process.pL1TrackJetsEmu,
+process.schedule = cms.Schedule(process.TTTracksEmuWithTruth, process.pL1GTTInput, process.pPV, process.pPVemu, process.pL1TrackSelection, process.pL1TrackJets, process.pL1TrackJetsEmu,
 process.pL1TrackFastJets, process.pTkMET, process.pTkMETEmu, process.pTkMHT, process.pTkMHTEmulator, process.ntuple)
