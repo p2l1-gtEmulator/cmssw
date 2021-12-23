@@ -2,9 +2,9 @@ import FWCore.ParameterSet.Config as cms
 
 L1TrackSelectionProducer = cms.EDProducer('L1TrackSelectionProducer',
   l1TracksInputTag = cms.InputTag("L1GTTInputProducer","Level1TTTracksConverted"),
+  # If no vertex collection is provided, then the DeltaZ cuts will not be run
   l1VerticesInputTag = cms.InputTag("L1VertexFinder", "l1vertices"),
   l1VerticesEmulationInputTag = cms.InputTag("L1VertexFinderEmulator", "l1verticesEmulation"),
-  # If no vertex collection is provided, then the DeltaZ cuts will not be run
   outputCollectionName = cms.string("Level1TTTracksSelected"),
   cutSet = cms.PSet(
                     ptMin = cms.double(2.0), # pt must be greater than this value, [GeV]
@@ -23,7 +23,7 @@ L1TrackSelectionProducer = cms.EDProducer('L1TrackSelectionProducer',
                     ),
   processSimulatedTracks = cms.bool(True), # return selected tracks after cutting on the floating point values
   processEmulatedTracks = cms.bool(True), # return selected tracks after cutting on the bitwise emulated values
-  debug = cms.int32(2) # Verbosity levels: 0, 1, 2, 3
+  debug = cms.int32(3) # Verbosity levels: 0, 1, 2, 3, 4
 )
 
 L1TrackSelectionProducerExtended = L1TrackSelectionProducer.clone(
