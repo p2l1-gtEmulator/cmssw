@@ -813,8 +813,8 @@ void L1TrackObjectNtupleMaker::beginJob() {
     eventTree->Branch("trk_gtt_pt", &m_trk_gtt_pt);
     eventTree->Branch("trk_gtt_eta", &m_trk_gtt_eta);
     eventTree->Branch("trk_gtt_phi", &m_trk_gtt_phi);
-    eventTree->Branch("trk_selected_index", &m_trk_selected_index);
-    eventTree->Branch("trk_selected_emulation_index", &m_trk_selected_emulation_index);
+    eventTree->Branch("trk_gtt_selected_index", &m_trk_selected_index);
+    eventTree->Branch("trk_gtt_selected_emulation_index", &m_trk_selected_emulation_index);
   }
 
   if (SaveAllTracks && (Displaced == "Displaced" || Displaced == "Both")) {
@@ -850,8 +850,8 @@ void L1TrackObjectNtupleMaker::beginJob() {
     eventTree->Branch("trkExt_gtt_pt", &m_trkExt_gtt_pt);
     eventTree->Branch("trkExt_gtt_eta", &m_trkExt_gtt_eta);
     eventTree->Branch("trkExt_gtt_phi", &m_trkExt_gtt_phi);
-    eventTree->Branch("trkExt_selected_index", &m_trkExt_selected_index);
-    eventTree->Branch("trkExt_selected_emulation_index", &m_trkExt_selected_emulation_index);
+    eventTree->Branch("trkExt_gtt_selected_index", &m_trkExt_selected_index);
+    eventTree->Branch("trkExt_gtt_selected_emulation_index", &m_trkExt_selected_emulation_index);
   }
   eventTree->Branch("tp_pt", &m_tp_pt);
   eventTree->Branch("tp_eta", &m_tp_eta);
