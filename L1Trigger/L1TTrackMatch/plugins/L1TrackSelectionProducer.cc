@@ -67,7 +67,7 @@ public:
   static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 
 private:
-	// ----------constants, enums and typedefs ---------
+  // ----------constants, enums and typedefs ---------
   // Relevant constants for the converted track word
   enum TrackBitWidths {
       kPtSize = TTTrack_TrackWord::TrackBitWidths::kRinvSize - 1, // Width of pt
@@ -79,9 +79,9 @@ private:
   typedef TTTrack<Ref_Phase2TrackerDigi_> L1Track;
   typedef std::vector<L1Track> TTTrackCollection;
   typedef edm::Ref<TTTrackCollection> TTTrackRef;
+  typedef std::vector<TTTrackRef> TTTrackRefCollection;
 
   // ----------member functions ----------------------
-  template <typename T>
   void printTrackInfo(edm::LogInfo & log, const L1Track & track, bool printEmulation = false) const;
   void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
 
@@ -114,7 +114,7 @@ private:
     TTTrackAbsEtaMaxSelector( double absEtaMax ) : absEtaMax_( absEtaMax ) { }
     TTTrackAbsEtaMaxSelector( const edm::ParameterSet & cfg ) :
       absEtaMax_( cfg.template getParameter<double>( "absEtaMax" ) ) { }
-    bool operator()( const L1Track & t ) const { return std::abs(t.eta()) <= absEtaMax_; }
+    bool operator()( const L1Track & t ) const { return std::abs(t.momentum().eta()) <= absEtaMax_; }
   private:
     double absEtaMax_;
   };
@@ -218,7 +218,7 @@ private:
       deltaZMaxEtaBounds_( cfg.template getParameter<double>( "deltaZMaxEtaBounds" ) ),
       deltaZMax_( cfg.template getParameter<double>( "deltaZMax" ) ) { }
     bool operator()( const L1Track & t, const l1t::Vertex & v ) const {
-      size_t etaIndex = std::lower_bound (deltaZMaxEtaBounds_.begin(), deltaZMaxEtaBounds_.end(), std::abs(t.eta())) - deltaZMaxEtaBounds_.begin() - 1;
+      size_t etaIndex = std::lower_bound (deltaZMaxEtaBounds_.begin(), deltaZMaxEtaBounds_.end(), std::abs(t.momentum().eta())) - deltaZMaxEtaBounds_.begin() - 1;
       if (etaIndex > deltaZMax_.size() - 1) etaIndex = deltaZMax_.size() - 1;
       return std::abs(v.z0() - t.z0()) <= deltaZMax_[etaIndex];
     }
@@ -233,7 +233,7 @@ private:
       deltaZMaxEtaBounds_( cfg.template getParameter<double>( "deltaZMaxEtaBounds" ) ),
       deltaZMax_( cfg.template getParameter<double>( "deltaZMax" ) ) { }
     bool operator()( const L1Track & t, const l1t::VertexWord & v ) const {
-      size_t etaIndex = std::lower_bound(deltaZMaxEtaBounds_.begin(), deltaZMaxEtaBounds_.end(), std::abs(t.eta())) - deltaZMaxEtaBounds_.begin() - 1;
+      size_t etaIndex = std::lower_bound(deltaZMaxEtaBounds_.begin(), deltaZMaxEtaBounds_.end(), std::abs(t.momentum().eta())) - deltaZMaxEtaBounds_.begin() - 1;
       if (etaIndex > deltaZMax_.size() - 1) etaIndex = deltaZMax_.size() - 1;
       return std::abs(v.z0() - t.getZ0()) <= deltaZMax_[etaIndex];
     }
@@ -317,14 +317,14 @@ L1TrackSelectionProducer::L1TrackSelectionProducer(const edm::ParameterSet& iCon
       l1VerticesToken_ = consumes<l1t::VertexCollection>(iConfig.getParameter<edm::InputTag>("l1VerticesInputTag"));
       doDeltaZCutSim_ = true;
     }
-    produces<std::vector<TTTrackRef>>(outputCollectionName_);
+    produces<TTTrackRefCollection>(outputCollectionName_);
   }
   if (processEmulatedTracks_) {
     if (iConfig.exists("l1VerticesEmulationInputTag")) {
       l1VerticesEmulationToken_ = consumes<l1t::VertexWordCollection>(iConfig.getParameter<edm::InputTag>("l1VerticesEmulationInputTag"));
       doDeltaZCutEmu_ = true;
     }
-    produces<std::vector<TTTrackRef>>(outputCollectionName_+"Emulation");
+    produces<TTTrackRefCollection>(outputCollectionName_+"Emulation");
   }
 
 }
@@ -335,9 +335,8 @@ L1TrackSelectionProducer::~L1TrackSelectionProducer() {}
 // member functions
 //
 
-template <typename T>
 void L1TrackSelectionProducer::printTrackInfo(edm::LogInfo & log, const L1Track & track, bool printEmulation) const {
-  log << "\t(" << track.momentum().perp() << ", " << track.eta() << ", " << track.phi() << ", " << track.getStubRefs().size() << ", "
+  log << "\t(" << track.momentum().perp() << ", " << track.momentum().eta() << ", " << track.momentum().phi() << ", " << track.getStubRefs().size() << ", "
       << track.stubPtConsistency() << ", " << track.chi2ZRed() << ", " << track.chi2XYRed() << ", " << track.z0() << ")\n";
 
   if (printEmulation) {
@@ -355,8 +354,8 @@ void L1TrackSelectionProducer::printTrackInfo(edm::LogInfo & log, const L1Track 
 
 // ------------ method called to produce the data  ------------
 void L1TrackSelectionProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const {
-  auto vTTTrackOutput = std::make_unique<std::vector<TTTrackRef>>();
-  auto vTTTrackEmulationOutput = std::make_unique<std::vector<TTTrackRef>>();
+  auto vTTTrackOutput = std::make_unique<TTTrackRefCollection>();
+  auto vTTTrackEmulationOutput = std::make_unique<TTTrackRefCollection>();
   
   edm::Handle<TTTrackCollection> l1TracksHandle;
   edm::Handle<l1t::VertexCollection> l1VerticesHandle;
@@ -414,36 +413,36 @@ void L1TrackSelectionProducer::produce(edm::StreamID, edm::Event& iEvent, const 
     edm::LogInfo log("L1TrackSelectionProducer");
     log << "The original track collection (pt, eta, phi, nstub, bendchi2, chi2rz, chi2rphi, z0) values are ... \n";
     for (const auto& track : *l1TracksHandle) {
-      printTrackInfo<l1t::Vertex>(log, track, debug_ >= 4);
+      printTrackInfo(log, track, debug_ >= 4);
     }
     log << "\t---\n\tNumber of tracks in this selection = " << l1TracksHandle->size() << "\n\n";
     if (processSimulatedTracks_) {
       log << "The selected track collection (pt, eta, phi, nstub, bendchi2, chi2rz, chi2rphi, z0) values are ... \n";
       for (const auto& track : *vTTTrackOutput) {
-        printTrackInfo<l1t::Vertex>(log, *track, debug_ >= 4);
+        printTrackInfo(log, *track, debug_ >= 4);
       }
       log << "\t---\n\tNumber of tracks in this selection = " << vTTTrackOutput->size() << "\n\n";
     }
     if (processEmulatedTracks_) {
       log << "The emulation selected track collection (pt, eta, phi, nstub, bendchi2, chi2rz, chi2rphi, z0) values are ... \n";
       for (const auto& track : *vTTTrackEmulationOutput) {
-        printTrackInfo<l1t::VertexWord>(log, *track, debug_ >= 4);
+        printTrackInfo(log, *track, debug_ >= 4);
       }
       log << "\t---\n\tNumber of tracks in this selection = " << vTTTrackEmulationOutput->size() << "\n\n";
     }
     if (processSimulatedTracks_ && processEmulatedTracks_) {
-      std::vector<TTTrackRef> inSimButNotEmu;
-      std::vector<TTTrackRef> inEmuButNotSim;
+      TTTrackRefCollection inSimButNotEmu;
+      TTTrackRefCollection inEmuButNotSim;
       std::set_difference(vTTTrackOutput->begin(), vTTTrackOutput->end(), vTTTrackEmulationOutput->begin(), vTTTrackEmulationOutput->end(), std::back_inserter(inSimButNotEmu));
       std::set_difference(vTTTrackEmulationOutput->begin(), vTTTrackEmulationOutput->end(), vTTTrackOutput->begin(), vTTTrackOutput->end(), std::back_inserter(inEmuButNotSim));
       log << "The set of tracks selected via cuts on the simulated values which are not in the set of tracks selected by cutting on the emulated values ... \n";
       for (const auto& track : inSimButNotEmu) {
-        printTrackInfo<l1t::Vertex>(log, *track, debug_ >= 3);
+        printTrackInfo(log, *track, debug_ >= 3);
       }
       log << "\t---\n\tNumber of tracks in this selection = " << inSimButNotEmu.size() << "\n\n"
           << "The set of tracks selected via cuts on the emulated values which are not in the set of tracks selected by cutting on the simulated values ... \n";
       for (const auto& track : inEmuButNotSim) {
-        printTrackInfo<l1t::VertexWord>(log, *track, debug_ >= 3);
+        printTrackInfo(log, *track, debug_ >= 3);
       }
       log << "\t---\n\tNumber of tracks in this selection = " << inEmuButNotSim.size() << "\n\n";
     }

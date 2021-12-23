@@ -101,6 +101,15 @@ using namespace edm;
 //////////////////////////////
 
 class L1TrackObjectNtupleMaker : public edm::EDAnalyzer {
+private:
+  // ----------constants, enums and typedefs ---------
+  typedef TTTrack<Ref_Phase2TrackerDigi_> L1Track;
+  typedef edm::Ptr<L1Track> L1TrackPtr;
+  typedef std::vector<L1TrackPtr> L1TrackPtrCollection;
+  typedef std::vector<L1Track> L1TrackCollection;
+  typedef edm::Ref<L1TrackCollection> L1TrackRef;
+  typedef std::vector<L1TrackRef> L1TrackRefCollection;
+
 public:
   // Constructor/destructor
   explicit L1TrackObjectNtupleMaker(const edm::ParameterSet& iConfig);
@@ -111,7 +120,9 @@ public:
   void endJob() override;
   void analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) override;
 
-protected:
+  // Other member functions
+  int getSelectedTrackIndex(const L1TrackRef & trackRef, const edm::Handle<L1TrackRefCollection> & selectedTrackRefs) const;
+
 private:
   //-----------------------------------------------------------------------------------------------
   // Containers of parameters passed by python configuration file
@@ -131,10 +142,16 @@ private:
   bool SaveTrackJets;
   bool SaveTrackSums;
 
-  edm::InputTag L1TrackInputTag;               // L1 track collection
-  edm::InputTag MCTruthTrackInputTag;          // MC truth collection
-  edm::InputTag L1TrackExtendedInputTag;       // L1 track collection
-  edm::InputTag MCTruthTrackExtendedInputTag;  // MC truth collection
+  edm::InputTag L1TrackInputTag;                          // L1 track collection
+  edm::InputTag MCTruthTrackInputTag;                     // MC truth collection
+  edm::InputTag L1TrackGTTInputTag;                       // L1 track collection
+  edm::InputTag L1TrackSelectedInputTag;                  // L1 track collection
+  edm::InputTag L1TrackSelectedEmulationInputTag;         // L1 track collection
+  edm::InputTag L1TrackExtendedInputTag;                  // L1 track collection
+  edm::InputTag MCTruthTrackExtendedInputTag;             // MC truth collection
+  edm::InputTag L1TrackExtendedGTTInputTag;               // L1 track collection
+  edm::InputTag L1TrackExtendedSelectedInputTag;          // L1 track collection
+  edm::InputTag L1TrackExtendedSelectedEmulationInputTag; // L1 track collection
   edm::InputTag MCTruthClusterInputTag;
   edm::InputTag L1StubInputTag;
   edm::InputTag MCTruthStubInputTag;
@@ -166,10 +183,16 @@ private:
   edm::EDGetTokenT<TTClusterAssociationMap<Ref_Phase2TrackerDigi_>> ttClusterMCTruthToken_;
   edm::EDGetTokenT<TTStubAssociationMap<Ref_Phase2TrackerDigi_>> ttStubMCTruthToken_;
 
-  edm::EDGetTokenT<std::vector<TTTrack<Ref_Phase2TrackerDigi_>>> ttTrackToken_;
+  edm::EDGetTokenT<L1TrackCollection> ttTrackToken_;
   edm::EDGetTokenT<TTTrackAssociationMap<Ref_Phase2TrackerDigi_>> ttTrackMCTruthToken_;
-  edm::EDGetTokenT<std::vector<TTTrack<Ref_Phase2TrackerDigi_>>> ttTrackExtendedToken_;
+  edm::EDGetTokenT<L1TrackCollection> ttTrackGTTToken_;
+  edm::EDGetTokenT<L1TrackRefCollection> ttTrackSelectedToken_;
+  edm::EDGetTokenT<L1TrackRefCollection> ttTrackSelectedEmulationToken_;
+  edm::EDGetTokenT<L1TrackCollection> ttTrackExtendedToken_;
   edm::EDGetTokenT<TTTrackAssociationMap<Ref_Phase2TrackerDigi_>> ttTrackMCTruthExtendedToken_;
+  edm::EDGetTokenT<L1TrackCollection> ttTrackExtendedGTTToken_;
+  edm::EDGetTokenT<L1TrackRefCollection> ttTrackExtendedSelectedToken_;
+  edm::EDGetTokenT<L1TrackRefCollection> ttTrackExtendedSelectedEmulationToken_;
 
   edm::EDGetTokenT<std::vector<TrackingParticle>> TrackingParticleToken_;
   edm::EDGetTokenT<std::vector<TrackingVertex>> TrackingVertexToken_;
@@ -241,6 +264,11 @@ private:
   std::vector<float>* m_trk_matchtp_phi;
   std::vector<float>* m_trk_matchtp_z0;
   std::vector<float>* m_trk_matchtp_dxy;
+  std::vector<float>* m_trk_gtt_pt;
+  std::vector<float>* m_trk_gtt_eta;
+  std::vector<float>* m_trk_gtt_phi;
+  std::vector<int>* m_trk_selected_index;
+  std::vector<int>* m_trk_selected_emulation_index;
 
   // all L1 tracks (extended)
   std::vector<float>* m_trkExt_pt;
@@ -272,6 +300,11 @@ private:
   std::vector<float>* m_trkExt_matchtp_phi;
   std::vector<float>* m_trkExt_matchtp_z0;
   std::vector<float>* m_trkExt_matchtp_dxy;
+  std::vector<float>* m_trkExt_gtt_pt;
+  std::vector<float>* m_trkExt_gtt_eta;
+  std::vector<float>* m_trkExt_gtt_phi;
+  std::vector<int>* m_trkExt_selected_index;
+  std::vector<int>* m_trkExt_selected_emulation_index;
 
   // all tracking particles
   std::vector<float>* m_tp_pt;
@@ -456,6 +489,9 @@ L1TrackObjectNtupleMaker::L1TrackObjectNtupleMaker(edm::ParameterSet const& iCon
   if (Displaced == "Prompt" || Displaced == "Both") {
     L1TrackInputTag = iConfig.getParameter<edm::InputTag>("L1TrackInputTag");
     MCTruthTrackInputTag = iConfig.getParameter<edm::InputTag>("MCTruthTrackInputTag");
+    L1TrackGTTInputTag = iConfig.getParameter<edm::InputTag>("L1TrackGTTInputTag");
+    L1TrackSelectedInputTag = iConfig.getParameter<edm::InputTag>("L1TrackSelectedInputTag");
+    L1TrackSelectedEmulationInputTag = iConfig.getParameter<edm::InputTag>("L1TrackSelectedEmulationInputTag");
     TrackFastJetsInputTag = iConfig.getParameter<InputTag>("TrackFastJetsInputTag");
     TrackJetsInputTag = iConfig.getParameter<InputTag>("TrackJetsInputTag");
     TrackJetsEmuInputTag = iConfig.getParameter<InputTag>("TrackJetsEmuInputTag");
@@ -464,8 +500,11 @@ L1TrackObjectNtupleMaker::L1TrackObjectNtupleMaker(edm::ParameterSet const& iCon
     TrackMHTInputTag = iConfig.getParameter<InputTag>("TrackMHTInputTag");
     TrackMHTEmuInputTag = iConfig.getParameter<InputTag>("TrackMHTEmuInputTag");
 
-    ttTrackToken_ = consumes<std::vector<TTTrack<Ref_Phase2TrackerDigi_>>>(L1TrackInputTag);
+    ttTrackToken_ = consumes<L1TrackCollection>(L1TrackInputTag);
     ttTrackMCTruthToken_ = consumes<TTTrackAssociationMap<Ref_Phase2TrackerDigi_>>(MCTruthTrackInputTag);
+    ttTrackGTTToken_ = consumes<L1TrackCollection>(L1TrackGTTInputTag);
+    ttTrackSelectedToken_ = consumes<L1TrackRefCollection>(L1TrackSelectedInputTag);
+    ttTrackSelectedEmulationToken_ = consumes<L1TrackRefCollection>(L1TrackSelectedEmulationInputTag);
     TrackFastJetsToken_ = consumes<std::vector<l1t::TkJet>>(TrackFastJetsInputTag);
     TrackJetsToken_ = consumes<l1t::TkJetCollection>(TrackJetsInputTag);
     TrackJetsEmuToken_ = consumes<l1t::TkJetWordCollection>(TrackJetsEmuInputTag);
@@ -478,6 +517,9 @@ L1TrackObjectNtupleMaker::L1TrackObjectNtupleMaker(edm::ParameterSet const& iCon
   if (Displaced == "Displaced" || Displaced == "Both") {
     L1TrackExtendedInputTag = iConfig.getParameter<edm::InputTag>("L1TrackExtendedInputTag");
     MCTruthTrackExtendedInputTag = iConfig.getParameter<edm::InputTag>("MCTruthTrackExtendedInputTag");
+    L1TrackExtendedGTTInputTag = iConfig.getParameter<edm::InputTag>("L1TrackExtendedGTTInputTag");
+    L1TrackExtendedSelectedInputTag = iConfig.getParameter<edm::InputTag>("L1TrackExtendedSelectedInputTag");
+    L1TrackExtendedSelectedEmulationInputTag = iConfig.getParameter<edm::InputTag>("L1TrackExtendedSelectedEmulationInputTag");
     TrackFastJetsExtendedInputTag = iConfig.getParameter<InputTag>("TrackFastJetsExtendedInputTag");
     TrackJetsExtendedInputTag = iConfig.getParameter<InputTag>("TrackJetsExtendedInputTag");
     TrackJetsExtendedEmuInputTag = iConfig.getParameter<InputTag>("TrackJetsExtendedEmuInputTag");
@@ -486,9 +528,12 @@ L1TrackObjectNtupleMaker::L1TrackObjectNtupleMaker(edm::ParameterSet const& iCon
     TrackMHTEmuInputTag = iConfig.getParameter<InputTag>("TrackMHTEmuInputTag");
     TrackMHTEmuExtendedInputTag = iConfig.getParameter<InputTag>("TrackMHTEmuExtendedInputTag");
 
-    ttTrackExtendedToken_ = consumes<std::vector<TTTrack<Ref_Phase2TrackerDigi_>>>(L1TrackExtendedInputTag);
+    ttTrackExtendedToken_ = consumes<L1TrackCollection>(L1TrackExtendedInputTag);
     ttTrackMCTruthExtendedToken_ =
         consumes<TTTrackAssociationMap<Ref_Phase2TrackerDigi_>>(MCTruthTrackExtendedInputTag);
+    ttTrackExtendedGTTToken_ = consumes<L1TrackCollection>(L1TrackExtendedGTTInputTag);
+    ttTrackExtendedSelectedToken_ = consumes<L1TrackRefCollection>(L1TrackExtendedSelectedInputTag);
+    ttTrackExtendedSelectedEmulationToken_ = consumes<L1TrackRefCollection>(L1TrackExtendedSelectedEmulationInputTag);
     TrackFastJetsExtendedToken_ = consumes<std::vector<l1t::TkJet>>(TrackFastJetsExtendedInputTag);
     TrackJetsExtendedToken_ = consumes<l1t::TkJetCollection>(TrackJetsExtendedInputTag);
     TrackJetsExtendedEmuToken_ = consumes<l1t::TkJetWordCollection>(TrackJetsExtendedEmuInputTag);
@@ -563,6 +608,11 @@ void L1TrackObjectNtupleMaker::beginJob() {
   m_trk_matchtp_phi = new std::vector<float>;
   m_trk_matchtp_z0 = new std::vector<float>;
   m_trk_matchtp_dxy = new std::vector<float>;
+  m_trk_gtt_pt = new std::vector<float>;
+  m_trk_gtt_eta = new std::vector<float>;
+  m_trk_gtt_phi = new std::vector<float>;
+  m_trk_selected_index = new std::vector<int>;
+  m_trk_selected_emulation_index = new std::vector<int>;
 
   m_trkExt_pt = new std::vector<float>;
   m_trkExt_eta = new std::vector<float>;
@@ -593,6 +643,11 @@ void L1TrackObjectNtupleMaker::beginJob() {
   m_trkExt_matchtp_phi = new std::vector<float>;
   m_trkExt_matchtp_z0 = new std::vector<float>;
   m_trkExt_matchtp_dxy = new std::vector<float>;
+  m_trkExt_gtt_pt = new std::vector<float>;
+  m_trkExt_gtt_eta = new std::vector<float>;
+  m_trkExt_gtt_phi = new std::vector<float>;
+  m_trkExt_selected_index = new std::vector<int>;
+  m_trkExt_selected_emulation_index = new std::vector<int>;
 
   m_tp_pt = new std::vector<float>;
   m_tp_eta = new std::vector<float>;
@@ -755,6 +810,11 @@ void L1TrackObjectNtupleMaker::beginJob() {
     eventTree->Branch("trk_matchtp_phi", &m_trk_matchtp_phi);
     eventTree->Branch("trk_matchtp_z0", &m_trk_matchtp_z0);
     eventTree->Branch("trk_matchtp_dxy", &m_trk_matchtp_dxy);
+    eventTree->Branch("trk_gtt_pt", &m_trk_gtt_pt);
+    eventTree->Branch("trk_gtt_eta", &m_trk_gtt_eta);
+    eventTree->Branch("trk_gtt_phi", &m_trk_gtt_phi);
+    eventTree->Branch("trk_selected_index", &m_trk_selected_index);
+    eventTree->Branch("trk_selected_emulation_index", &m_trk_selected_emulation_index);
   }
 
   if (SaveAllTracks && (Displaced == "Displaced" || Displaced == "Both")) {
@@ -787,6 +847,11 @@ void L1TrackObjectNtupleMaker::beginJob() {
     eventTree->Branch("trkExt_matchtp_phi", &m_trkExt_matchtp_phi);
     eventTree->Branch("trkExt_matchtp_z0", &m_trkExt_matchtp_z0);
     eventTree->Branch("trkExt_matchtp_dxy", &m_trkExt_matchtp_dxy);
+    eventTree->Branch("trkExt_gtt_pt", &m_trkExt_gtt_pt);
+    eventTree->Branch("trkExt_gtt_eta", &m_trkExt_gtt_eta);
+    eventTree->Branch("trkExt_gtt_phi", &m_trkExt_gtt_phi);
+    eventTree->Branch("trkExt_selected_index", &m_trkExt_selected_index);
+    eventTree->Branch("trkExt_selected_emulation_index", &m_trkExt_selected_emulation_index);
   }
   eventTree->Branch("tp_pt", &m_tp_pt);
   eventTree->Branch("tp_eta", &m_tp_eta);
@@ -990,6 +1055,11 @@ void L1TrackObjectNtupleMaker::analyze(const edm::Event& iEvent, const edm::Even
     m_trk_matchtp_phi->clear();
     m_trk_matchtp_z0->clear();
     m_trk_matchtp_dxy->clear();
+    m_trk_gtt_pt->clear();
+    m_trk_gtt_eta->clear();
+    m_trk_gtt_phi->clear();
+    m_trk_selected_index->clear();
+    m_trk_selected_emulation_index->clear();
   }
   if (SaveAllTracks && (Displaced == "Displaced" || Displaced == "Both")) {
     m_trkExt_pt->clear();
@@ -1021,6 +1091,11 @@ void L1TrackObjectNtupleMaker::analyze(const edm::Event& iEvent, const edm::Even
     m_trkExt_matchtp_phi->clear();
     m_trkExt_matchtp_z0->clear();
     m_trkExt_matchtp_dxy->clear();
+    m_trkExt_gtt_pt->clear();
+    m_trkExt_gtt_eta->clear();
+    m_trkExt_gtt_phi->clear();
+    m_trkExt_selected_index->clear();
+    m_trkExt_selected_emulation_index->clear();
   }
   m_tp_pt->clear();
   m_tp_eta->clear();
@@ -1226,11 +1301,17 @@ void L1TrackObjectNtupleMaker::analyze(const edm::Event& iEvent, const edm::Even
   edm::Handle<std::vector<l1t::EtSum>> L1TkMHTEmuExtendedHandle;
 
   // L1 tracks
-  edm::Handle<std::vector<TTTrack<Ref_Phase2TrackerDigi_>>> TTTrackHandle;
-  edm::Handle<std::vector<TTTrack<Ref_Phase2TrackerDigi_>>> TTTrackExtendedHandle;
+  edm::Handle<L1TrackCollection> TTTrackHandle;
+  edm::Handle<L1TrackCollection> TTTrackExtendedHandle;
   edm::Handle<TTTrackAssociationMap<Ref_Phase2TrackerDigi_>> MCTruthTTTrackHandle;
   edm::Handle<TTTrackAssociationMap<Ref_Phase2TrackerDigi_>> MCTruthTTTrackExtendedHandle;
-  std::vector<TTTrack<Ref_Phase2TrackerDigi_>>::const_iterator iterL1Track;
+  edm::Handle<L1TrackCollection> TTTrackGTTHandle;
+  edm::Handle<L1TrackCollection> TTTrackExtendedGTTHandle;
+  edm::Handle<L1TrackRefCollection> TTTrackSelectedHandle;
+  edm::Handle<L1TrackRefCollection> TTTrackSelectedEmulationHandle;
+  edm::Handle<L1TrackRefCollection> TTTrackExtendedSelectedHandle;
+  edm::Handle<L1TrackRefCollection> TTTrackExtendedSelectedEmulationHandle;
+  L1TrackCollection::const_iterator iterL1Track;
 
   if (Displaced == "Prompt" || Displaced == "Both") {
     iEvent.getByToken(TrackFastJetsToken_, TrackFastJetsHandle);
@@ -1242,6 +1323,9 @@ void L1TrackObjectNtupleMaker::analyze(const edm::Event& iEvent, const edm::Even
     iEvent.getByToken(TrackMHTEmuToken_, L1TkMHTEmuHandle);
     iEvent.getByToken(ttTrackToken_, TTTrackHandle);
     iEvent.getByToken(ttTrackMCTruthToken_, MCTruthTTTrackHandle);
+    iEvent.getByToken(ttTrackGTTToken_, TTTrackGTTHandle);
+    iEvent.getByToken(ttTrackSelectedToken_, TTTrackSelectedHandle);
+    iEvent.getByToken(ttTrackSelectedEmulationToken_, TTTrackSelectedEmulationHandle);
   }
   if (Displaced == "Displaced" || Displaced == "Both") {
     iEvent.getByToken(TrackFastJetsExtendedToken_, TrackFastJetsExtendedHandle);
@@ -1252,6 +1336,9 @@ void L1TrackObjectNtupleMaker::analyze(const edm::Event& iEvent, const edm::Even
     iEvent.getByToken(TrackMHTEmuExtendedToken_, L1TkMHTEmuExtendedHandle);
     iEvent.getByToken(ttTrackExtendedToken_, TTTrackExtendedHandle);
     iEvent.getByToken(ttTrackMCTruthExtendedToken_, MCTruthTTTrackExtendedHandle);
+    iEvent.getByToken(ttTrackExtendedGTTToken_, TTTrackExtendedGTTHandle);
+    iEvent.getByToken(ttTrackExtendedSelectedToken_, TTTrackExtendedSelectedHandle);
+    iEvent.getByToken(ttTrackExtendedSelectedEmulationToken_, TTTrackExtendedSelectedEmulationHandle);
   }
 
   //Loop over gen particles
@@ -1396,7 +1483,8 @@ void L1TrackObjectNtupleMaker::analyze(const edm::Event& iEvent, const edm::Even
 
     int this_l1track = 0;
     for (iterL1Track = TTTrackHandle->begin(); iterL1Track != TTTrackHandle->end(); iterL1Track++) {
-      edm::Ptr<TTTrack<Ref_Phase2TrackerDigi_>> l1track_ptr(TTTrackHandle, this_l1track);
+      L1TrackPtr l1track_ptr(TTTrackHandle, this_l1track);
+      L1TrackRef l1track_ref(TTTrackGTTHandle, this_l1track);
       this_l1track++;
 
       float tmp_trk_pt = iterL1Track->momentum().perp();
@@ -1565,6 +1653,15 @@ void L1TrackObjectNtupleMaker::analyze(const edm::Event& iEvent, const edm::Even
       m_trk_matchtp_phi->push_back(myTP_phi);
       m_trk_matchtp_z0->push_back(myTP_z0);
       m_trk_matchtp_dxy->push_back(myTP_dxy);
+
+      // ----------------------------------------------------------------------------------------------
+      // store the index to the selected track or -1 if not selected
+      // ----------------------------------------------------------------------------------------------
+      m_trk_gtt_pt->push_back(l1track_ref->momentum().perp());
+      m_trk_gtt_eta->push_back(l1track_ref->momentum().eta());
+      m_trk_gtt_phi->push_back(l1track_ref->momentum().phi());
+      m_trk_selected_index->push_back(getSelectedTrackIndex(l1track_ref, TTTrackSelectedHandle));
+      m_trk_selected_emulation_index->push_back(getSelectedTrackIndex(l1track_ref, TTTrackSelectedEmulationHandle));
     }  //end track loop
   }    //end if SaveAllTracks
 
@@ -1579,7 +1676,8 @@ void L1TrackObjectNtupleMaker::analyze(const edm::Event& iEvent, const edm::Even
 
     int this_l1track = 0;
     for (iterL1Track = TTTrackExtendedHandle->begin(); iterL1Track != TTTrackExtendedHandle->end(); iterL1Track++) {
-      edm::Ptr<TTTrack<Ref_Phase2TrackerDigi_>> l1track_ptr(TTTrackExtendedHandle, this_l1track);
+      L1TrackPtr l1track_ptr(TTTrackExtendedHandle, this_l1track);
+      L1TrackRef l1track_ref(TTTrackExtendedGTTHandle, this_l1track);
       this_l1track++;
 
       float tmp_trk_pt = iterL1Track->momentum().perp();
@@ -1748,6 +1846,15 @@ void L1TrackObjectNtupleMaker::analyze(const edm::Event& iEvent, const edm::Even
       m_trkExt_matchtp_phi->push_back(myTP_phi);
       m_trkExt_matchtp_z0->push_back(myTP_z0);
       m_trkExt_matchtp_dxy->push_back(myTP_dxy);
+
+      // ----------------------------------------------------------------------------------------------
+      // store the index to the selected track or -1 if not selected
+      // ----------------------------------------------------------------------------------------------
+      m_trkExt_gtt_pt->push_back(l1track_ref->momentum().perp());
+      m_trkExt_gtt_eta->push_back(l1track_ref->momentum().eta());
+      m_trkExt_gtt_phi->push_back(l1track_ref->momentum().phi());
+      m_trkExt_selected_index->push_back(getSelectedTrackIndex(l1track_ref, TTTrackExtendedSelectedHandle));
+      m_trkExt_selected_emulation_index->push_back(getSelectedTrackIndex(l1track_ref, TTTrackExtendedSelectedEmulationHandle));
     }  //end track loop
   }    //end if SaveAllTracks (displaced)
 
@@ -1921,7 +2028,7 @@ void L1TrackObjectNtupleMaker::analyze(const edm::Event& iEvent, const edm::Even
     // ----------------------------------------------------------------------------------------------
     // look for L1 tracks (prompt) matched to the tracking particle
     if (Displaced == "Prompt" || Displaced == "Both") {
-      std::vector<edm::Ptr<TTTrack<Ref_Phase2TrackerDigi_>>> matchedTracks =
+      L1TrackPtrCollection matchedTracks =
           MCTruthTTTrackHandle->findTTTrackPtrs(tp_ptr);
 
       int nMatch = 0;
@@ -2091,7 +2198,7 @@ void L1TrackObjectNtupleMaker::analyze(const edm::Event& iEvent, const edm::Even
     // ----------------------------------------------------------------------------------------------
     // look for L1 tracks (extended) matched to the tracking particle
     if (Displaced == "Displaced" || Displaced == "Both") {
-      std::vector<edm::Ptr<TTTrack<Ref_Phase2TrackerDigi_>>> matchedTracks =
+      L1TrackPtrCollection matchedTracks =
           MCTruthTTTrackExtendedHandle->findTTTrackPtrs(tp_ptr);
 
       int nMatch = 0;
@@ -2406,6 +2513,14 @@ void L1TrackObjectNtupleMaker::analyze(const edm::Event& iEvent, const edm::Even
 
   eventTree->Fill();
 }  // end of analyze()
+
+int L1TrackObjectNtupleMaker::getSelectedTrackIndex(const L1TrackRef & trackRef, const edm::Handle<L1TrackRefCollection> & selectedTrackRefs) const {
+  auto it = std::find_if(selectedTrackRefs->begin(), selectedTrackRefs->end(), [&trackRef](L1TrackRef const& obj){
+          return obj == trackRef;
+        } );
+  if(it!=selectedTrackRefs->end()) return std::distance(selectedTrackRefs->begin(), it);
+  else return -1;
+}
 
 ///////////////////////////
 // DEFINE THIS AS A PLUG-IN

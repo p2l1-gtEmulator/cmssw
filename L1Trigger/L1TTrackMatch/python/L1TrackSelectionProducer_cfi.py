@@ -23,7 +23,7 @@ L1TrackSelectionProducer = cms.EDProducer('L1TrackSelectionProducer',
                     ),
   processSimulatedTracks = cms.bool(True), # return selected tracks after cutting on the floating point values
   processEmulatedTracks = cms.bool(True), # return selected tracks after cutting on the bitwise emulated values
-  debug = cms.int32(3) # Verbosity levels: 0, 1, 2, 3, 4
+  debug = cms.int32(0) # Verbosity levels: 0, 1, 2, 3, 4
 )
 
 L1TrackSelectionProducerExtended = L1TrackSelectionProducer.clone(
