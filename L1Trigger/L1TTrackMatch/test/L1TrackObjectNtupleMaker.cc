@@ -121,7 +121,8 @@ public:
   void analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) override;
 
   // Other member functions
-  int getSelectedTrackIndex(const L1TrackRef & trackRef, const edm::Handle<L1TrackRefCollection> & selectedTrackRefs) const;
+  int getSelectedTrackIndex(const L1TrackRef& trackRef,
+                            const edm::Handle<L1TrackRefCollection>& selectedTrackRefs) const;
 
 private:
   //-----------------------------------------------------------------------------------------------
@@ -142,16 +143,16 @@ private:
   bool SaveTrackJets;
   bool SaveTrackSums;
 
-  edm::InputTag L1TrackInputTag;                          // L1 track collection
-  edm::InputTag MCTruthTrackInputTag;                     // MC truth collection
-  edm::InputTag L1TrackGTTInputTag;                       // L1 track collection
-  edm::InputTag L1TrackSelectedInputTag;                  // L1 track collection
-  edm::InputTag L1TrackSelectedEmulationInputTag;         // L1 track collection
-  edm::InputTag L1TrackExtendedInputTag;                  // L1 track collection
-  edm::InputTag MCTruthTrackExtendedInputTag;             // MC truth collection
-  edm::InputTag L1TrackExtendedGTTInputTag;               // L1 track collection
-  edm::InputTag L1TrackExtendedSelectedInputTag;          // L1 track collection
-  edm::InputTag L1TrackExtendedSelectedEmulationInputTag; // L1 track collection
+  edm::InputTag L1TrackInputTag;                           // L1 track collection
+  edm::InputTag MCTruthTrackInputTag;                      // MC truth collection
+  edm::InputTag L1TrackGTTInputTag;                        // L1 track collection
+  edm::InputTag L1TrackSelectedInputTag;                   // L1 track collection
+  edm::InputTag L1TrackSelectedEmulationInputTag;          // L1 track collection
+  edm::InputTag L1TrackExtendedInputTag;                   // L1 track collection
+  edm::InputTag MCTruthTrackExtendedInputTag;              // MC truth collection
+  edm::InputTag L1TrackExtendedGTTInputTag;                // L1 track collection
+  edm::InputTag L1TrackExtendedSelectedInputTag;           // L1 track collection
+  edm::InputTag L1TrackExtendedSelectedEmulationInputTag;  // L1 track collection
   edm::InputTag MCTruthClusterInputTag;
   edm::InputTag L1StubInputTag;
   edm::InputTag MCTruthStubInputTag;
@@ -519,7 +520,8 @@ L1TrackObjectNtupleMaker::L1TrackObjectNtupleMaker(edm::ParameterSet const& iCon
     MCTruthTrackExtendedInputTag = iConfig.getParameter<edm::InputTag>("MCTruthTrackExtendedInputTag");
     L1TrackExtendedGTTInputTag = iConfig.getParameter<edm::InputTag>("L1TrackExtendedGTTInputTag");
     L1TrackExtendedSelectedInputTag = iConfig.getParameter<edm::InputTag>("L1TrackExtendedSelectedInputTag");
-    L1TrackExtendedSelectedEmulationInputTag = iConfig.getParameter<edm::InputTag>("L1TrackExtendedSelectedEmulationInputTag");
+    L1TrackExtendedSelectedEmulationInputTag =
+        iConfig.getParameter<edm::InputTag>("L1TrackExtendedSelectedEmulationInputTag");
     TrackFastJetsExtendedInputTag = iConfig.getParameter<InputTag>("TrackFastJetsExtendedInputTag");
     TrackJetsExtendedInputTag = iConfig.getParameter<InputTag>("TrackJetsExtendedInputTag");
     TrackJetsExtendedEmuInputTag = iConfig.getParameter<InputTag>("TrackJetsExtendedEmuInputTag");
@@ -1854,7 +1856,8 @@ void L1TrackObjectNtupleMaker::analyze(const edm::Event& iEvent, const edm::Even
       m_trkExt_gtt_eta->push_back(l1track_ref->momentum().eta());
       m_trkExt_gtt_phi->push_back(l1track_ref->momentum().phi());
       m_trkExt_selected_index->push_back(getSelectedTrackIndex(l1track_ref, TTTrackExtendedSelectedHandle));
-      m_trkExt_selected_emulation_index->push_back(getSelectedTrackIndex(l1track_ref, TTTrackExtendedSelectedEmulationHandle));
+      m_trkExt_selected_emulation_index->push_back(
+          getSelectedTrackIndex(l1track_ref, TTTrackExtendedSelectedEmulationHandle));
     }  //end track loop
   }    //end if SaveAllTracks (displaced)
 
@@ -2028,8 +2031,7 @@ void L1TrackObjectNtupleMaker::analyze(const edm::Event& iEvent, const edm::Even
     // ----------------------------------------------------------------------------------------------
     // look for L1 tracks (prompt) matched to the tracking particle
     if (Displaced == "Prompt" || Displaced == "Both") {
-      L1TrackPtrCollection matchedTracks =
-          MCTruthTTTrackHandle->findTTTrackPtrs(tp_ptr);
+      L1TrackPtrCollection matchedTracks = MCTruthTTTrackHandle->findTTTrackPtrs(tp_ptr);
 
       int nMatch = 0;
       int i_track = -1;
@@ -2198,8 +2200,7 @@ void L1TrackObjectNtupleMaker::analyze(const edm::Event& iEvent, const edm::Even
     // ----------------------------------------------------------------------------------------------
     // look for L1 tracks (extended) matched to the tracking particle
     if (Displaced == "Displaced" || Displaced == "Both") {
-      L1TrackPtrCollection matchedTracks =
-          MCTruthTTTrackExtendedHandle->findTTTrackPtrs(tp_ptr);
+      L1TrackPtrCollection matchedTracks = MCTruthTTTrackExtendedHandle->findTTTrackPtrs(tp_ptr);
 
       int nMatch = 0;
       int i_track = -1;
@@ -2514,12 +2515,15 @@ void L1TrackObjectNtupleMaker::analyze(const edm::Event& iEvent, const edm::Even
   eventTree->Fill();
 }  // end of analyze()
 
-int L1TrackObjectNtupleMaker::getSelectedTrackIndex(const L1TrackRef & trackRef, const edm::Handle<L1TrackRefCollection> & selectedTrackRefs) const {
-  auto it = std::find_if(selectedTrackRefs->begin(), selectedTrackRefs->end(), [&trackRef](L1TrackRef const& obj){
-          return obj == trackRef;
-        } );
-  if(it!=selectedTrackRefs->end()) return std::distance(selectedTrackRefs->begin(), it);
-  else return -1;
+int L1TrackObjectNtupleMaker::getSelectedTrackIndex(const L1TrackRef& trackRef,
+                                                    const edm::Handle<L1TrackRefCollection>& selectedTrackRefs) const {
+  auto it = std::find_if(selectedTrackRefs->begin(), selectedTrackRefs->end(), [&trackRef](L1TrackRef const& obj) {
+    return obj == trackRef;
+  });
+  if (it != selectedTrackRefs->end())
+    return std::distance(selectedTrackRefs->begin(), it);
+  else
+    return -1;
 }
 
 ///////////////////////////
