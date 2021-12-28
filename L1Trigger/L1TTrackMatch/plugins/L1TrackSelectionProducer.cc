@@ -65,7 +65,7 @@
 class L1TrackSelectionProducer : public edm::global::EDProducer<> {
 public:
   explicit L1TrackSelectionProducer(const edm::ParameterSet&);
-  ~L1TrackSelectionProducer();
+  ~L1TrackSelectionProducer() override;
 
   static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 
@@ -87,11 +87,11 @@ private:
   typedef std::unique_ptr<TTTrackRefCollection> TTTrackRefCollectionUPtr;
 
   // ----------member functions ----------------------
-  void printDebugInfo(const TTTrackCollectionHandle & l1TracksHandle,
-                      const TTTrackRefCollectionUPtr & vTTTrackOutput,
-                      const TTTrackRefCollectionUPtr & vTTTrackEmulationOutput,
-                      const TTTrackRefCollectionUPtr & vTTTrackAssociatedOutput,
-                      const TTTrackRefCollectionUPtr & vTTTrackAssociatedEmulationOutput) const;
+  void printDebugInfo(const TTTrackCollectionHandle& l1TracksHandle,
+                      const TTTrackRefCollectionUPtr& vTTTrackOutput,
+                      const TTTrackRefCollectionUPtr& vTTTrackEmulationOutput,
+                      const TTTrackRefCollectionUPtr& vTTTrackAssociatedOutput,
+                      const TTTrackRefCollectionUPtr& vTTTrackAssociatedEmulationOutput) const;
   void printTrackInfo(edm::LogInfo& log, const L1Track& track, bool printEmulation = false) const;
   void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
 
@@ -193,7 +193,7 @@ private:
     }
     bool operator()(const L1Track& t) const {
       int nPSStubs = 0;
-      for (const auto & stub : t.getStubRefs()) {
+      for (const auto& stub : t.getStubRefs()) {
         DetId detId(stub->getDetId());
         if (detId.det() == DetId::Detector::Tracker) {
           if ((detId.subdetId() == StripSubdetector::TOB && tTopo->tobLayer(detId) <= 3) ||
@@ -391,99 +391,101 @@ L1TrackSelectionProducer::~L1TrackSelectionProducer() {}
 // member functions
 //
 
-void L1TrackSelectionProducer::printDebugInfo(const TTTrackCollectionHandle & l1TracksHandle,
-                                              const TTTrackRefCollectionUPtr & vTTTrackOutput,
-                                              const TTTrackRefCollectionUPtr & vTTTrackEmulationOutput,
-                                              const TTTrackRefCollectionUPtr & vTTTrackAssociatedOutput,
-                                              const TTTrackRefCollectionUPtr & vTTTrackAssociatedEmulationOutput) const {
-    edm::LogInfo log("L1TrackSelectionProducer");
-    log << "The original track collection (pt, eta, phi, nstub, bendchi2, chi2rz, chi2rphi, z0) values are ... \n";
-    for (const auto& track : *l1TracksHandle) {
-      printTrackInfo(log, track, debug_ >= 4);
+void L1TrackSelectionProducer::printDebugInfo(const TTTrackCollectionHandle& l1TracksHandle,
+                                              const TTTrackRefCollectionUPtr& vTTTrackOutput,
+                                              const TTTrackRefCollectionUPtr& vTTTrackEmulationOutput,
+                                              const TTTrackRefCollectionUPtr& vTTTrackAssociatedOutput,
+                                              const TTTrackRefCollectionUPtr& vTTTrackAssociatedEmulationOutput) const {
+  edm::LogInfo log("L1TrackSelectionProducer");
+  log << "The original track collection (pt, eta, phi, nstub, bendchi2, chi2rz, chi2rphi, z0) values are ... \n";
+  for (const auto& track : *l1TracksHandle) {
+    printTrackInfo(log, track, debug_ >= 4);
+  }
+  log << "\t---\n\tNumber of tracks in this selection = " << l1TracksHandle->size() << "\n\n";
+  if (processSimulatedTracks_) {
+    log << "The selected track collection (pt, eta, phi, nstub, bendchi2, chi2rz, chi2rphi, z0) values are ... \n";
+    for (const auto& track : *vTTTrackOutput) {
+      printTrackInfo(log, *track, debug_ >= 4);
     }
-    log << "\t---\n\tNumber of tracks in this selection = " << l1TracksHandle->size() << "\n\n";
-    if (processSimulatedTracks_) {
-      log << "The selected track collection (pt, eta, phi, nstub, bendchi2, chi2rz, chi2rphi, z0) values are ... \n";
-      for (const auto& track : *vTTTrackOutput) {
-        printTrackInfo(log, *track, debug_ >= 4);
-      }
-      log << "\t---\n\tNumber of tracks in this selection = " << vTTTrackOutput->size() << "\n\n";
+    log << "\t---\n\tNumber of tracks in this selection = " << vTTTrackOutput->size() << "\n\n";
+  }
+  if (processEmulatedTracks_) {
+    log << "The emulation selected track collection (pt, eta, phi, nstub, bendchi2, chi2rz, chi2rphi, z0) values are "
+           "... \n";
+    for (const auto& track : *vTTTrackEmulationOutput) {
+      printTrackInfo(log, *track, debug_ >= 4);
     }
-    if (processEmulatedTracks_) {
-      log << "The emulation selected track collection (pt, eta, phi, nstub, bendchi2, chi2rz, chi2rphi, z0) values are "
-             "... \n";
-      for (const auto& track : *vTTTrackEmulationOutput) {
-        printTrackInfo(log, *track, debug_ >= 4);
-      }
-      log << "\t---\n\tNumber of tracks in this selection = " << vTTTrackEmulationOutput->size() << "\n\n";
+    log << "\t---\n\tNumber of tracks in this selection = " << vTTTrackEmulationOutput->size() << "\n\n";
+  }
+  if (processSimulatedTracks_ && processEmulatedTracks_) {
+    TTTrackRefCollection inSimButNotEmu;
+    TTTrackRefCollection inEmuButNotSim;
+    std::set_difference(vTTTrackOutput->begin(),
+                        vTTTrackOutput->end(),
+                        vTTTrackEmulationOutput->begin(),
+                        vTTTrackEmulationOutput->end(),
+                        std::back_inserter(inSimButNotEmu));
+    std::set_difference(vTTTrackEmulationOutput->begin(),
+                        vTTTrackEmulationOutput->end(),
+                        vTTTrackOutput->begin(),
+                        vTTTrackOutput->end(),
+                        std::back_inserter(inEmuButNotSim));
+    log << "The set of tracks selected via cuts on the simulated values which are not in the set of tracks selected "
+           "by cutting on the emulated values ... \n";
+    for (const auto& track : inSimButNotEmu) {
+      printTrackInfo(log, *track, debug_ >= 3);
     }
-    if (processSimulatedTracks_ && processEmulatedTracks_) {
-      TTTrackRefCollection inSimButNotEmu;
-      TTTrackRefCollection inEmuButNotSim;
-      std::set_difference(vTTTrackOutput->begin(),
-                          vTTTrackOutput->end(),
-                          vTTTrackEmulationOutput->begin(),
-                          vTTTrackEmulationOutput->end(),
-                          std::back_inserter(inSimButNotEmu));
-      std::set_difference(vTTTrackEmulationOutput->begin(),
-                          vTTTrackEmulationOutput->end(),
-                          vTTTrackOutput->begin(),
-                          vTTTrackOutput->end(),
-                          std::back_inserter(inEmuButNotSim));
-      log << "The set of tracks selected via cuts on the simulated values which are not in the set of tracks selected "
-             "by cutting on the emulated values ... \n";
-      for (const auto& track : inSimButNotEmu) {
-        printTrackInfo(log, *track, debug_ >= 3);
-      }
-      log << "\t---\n\tNumber of tracks in this selection = " << inSimButNotEmu.size() << "\n\n"
-          << "The set of tracks selected via cuts on the emulated values which are not in the set of tracks selected "
-             "by cutting on the simulated values ... \n";
-      for (const auto& track : inEmuButNotSim) {
-        printTrackInfo(log, *track, debug_ >= 3);
-      }
-      log << "\t---\n\tNumber of tracks in this selection = " << inEmuButNotSim.size() << "\n\n";
+    log << "\t---\n\tNumber of tracks in this selection = " << inSimButNotEmu.size() << "\n\n"
+        << "The set of tracks selected via cuts on the emulated values which are not in the set of tracks selected "
+           "by cutting on the simulated values ... \n";
+    for (const auto& track : inEmuButNotSim) {
+      printTrackInfo(log, *track, debug_ >= 3);
     }
-    if (processSimulatedTracks_) {
-      log << "The selected and leading vertex associated track collection (pt, eta, phi, nstub, bendchi2, chi2rz, chi2rphi, z0) values are ... \n";
-      for (const auto& track : *vTTTrackAssociatedOutput) {
-        printTrackInfo(log, *track, debug_ >= 4);
-      }
-      log << "\t---\n\tNumber of tracks in this selection = " << vTTTrackAssociatedOutput->size() << "\n\n";
+    log << "\t---\n\tNumber of tracks in this selection = " << inEmuButNotSim.size() << "\n\n";
+  }
+  if (processSimulatedTracks_) {
+    log << "The selected and leading vertex associated track collection (pt, eta, phi, nstub, bendchi2, chi2rz, "
+           "chi2rphi, z0) values are ... \n";
+    for (const auto& track : *vTTTrackAssociatedOutput) {
+      printTrackInfo(log, *track, debug_ >= 4);
     }
-    if (processEmulatedTracks_) {
-      log << "The emulation selected and leading vertex associated track collection (pt, eta, phi, nstub, bendchi2, chi2rz, chi2rphi, z0) values are "
-             "... \n";
-      for (const auto& track : *vTTTrackAssociatedEmulationOutput) {
-        printTrackInfo(log, *track, debug_ >= 4);
-      }
-      log << "\t---\n\tNumber of tracks in this selection = " << vTTTrackAssociatedEmulationOutput->size() << "\n\n";
+    log << "\t---\n\tNumber of tracks in this selection = " << vTTTrackAssociatedOutput->size() << "\n\n";
+  }
+  if (processEmulatedTracks_) {
+    log << "The emulation selected and leading vertex associated track collection (pt, eta, phi, nstub, bendchi2, "
+           "chi2rz, chi2rphi, z0) values are "
+           "... \n";
+    for (const auto& track : *vTTTrackAssociatedEmulationOutput) {
+      printTrackInfo(log, *track, debug_ >= 4);
     }
-    if (processSimulatedTracks_ && processEmulatedTracks_) {
-      TTTrackRefCollection inSimButNotEmu;
-      TTTrackRefCollection inEmuButNotSim;
-      std::set_difference(vTTTrackAssociatedOutput->begin(),
-                          vTTTrackAssociatedOutput->end(),
-                          vTTTrackAssociatedEmulationOutput->begin(),
-                          vTTTrackAssociatedEmulationOutput->end(),
-                          std::back_inserter(inSimButNotEmu));
-      std::set_difference(vTTTrackAssociatedEmulationOutput->begin(),
-                          vTTTrackAssociatedEmulationOutput->end(),
-                          vTTTrackAssociatedOutput->begin(),
-                          vTTTrackAssociatedOutput->end(),
-                          std::back_inserter(inEmuButNotSim));
-      log << "The set of tracks selected via cuts on the simulated values which are not in the set of tracks selected "
-             "by cutting on the emulated values ... \n";
-      for (const auto& track : inSimButNotEmu) {
-        printTrackInfo(log, *track, debug_ >= 3);
-      }
-      log << "\t---\n\tNumber of tracks in this selection = " << inSimButNotEmu.size() << "\n\n"
-          << "The set of tracks selected via cuts on the emulated values which are not in the set of tracks selected "
-             "by cutting on the simulated values ... \n";
-      for (const auto& track : inEmuButNotSim) {
-        printTrackInfo(log, *track, debug_ >= 3);
-      }
-      log << "\t---\n\tNumber of tracks in this selection = " << inEmuButNotSim.size() << "\n\n";
+    log << "\t---\n\tNumber of tracks in this selection = " << vTTTrackAssociatedEmulationOutput->size() << "\n\n";
+  }
+  if (processSimulatedTracks_ && processEmulatedTracks_) {
+    TTTrackRefCollection inSimButNotEmu;
+    TTTrackRefCollection inEmuButNotSim;
+    std::set_difference(vTTTrackAssociatedOutput->begin(),
+                        vTTTrackAssociatedOutput->end(),
+                        vTTTrackAssociatedEmulationOutput->begin(),
+                        vTTTrackAssociatedEmulationOutput->end(),
+                        std::back_inserter(inSimButNotEmu));
+    std::set_difference(vTTTrackAssociatedEmulationOutput->begin(),
+                        vTTTrackAssociatedEmulationOutput->end(),
+                        vTTTrackAssociatedOutput->begin(),
+                        vTTTrackAssociatedOutput->end(),
+                        std::back_inserter(inEmuButNotSim));
+    log << "The set of tracks selected via cuts on the simulated values which are not in the set of tracks selected "
+           "by cutting on the emulated values ... \n";
+    for (const auto& track : inSimButNotEmu) {
+      printTrackInfo(log, *track, debug_ >= 3);
     }
+    log << "\t---\n\tNumber of tracks in this selection = " << inSimButNotEmu.size() << "\n\n"
+        << "The set of tracks selected via cuts on the emulated values which are not in the set of tracks selected "
+           "by cutting on the simulated values ... \n";
+    for (const auto& track : inEmuButNotSim) {
+      printTrackInfo(log, *track, debug_ >= 3);
+    }
+    log << "\t---\n\tNumber of tracks in this selection = " << inEmuButNotSim.size() << "\n\n";
+  }
 }
 
 void L1TrackSelectionProducer::printTrackInfo(edm::LogInfo& log, const L1Track& track, bool printEmulation) const {
@@ -606,7 +608,8 @@ void L1TrackSelectionProducer::fillDescriptions(edm::ConfigurationDescriptions& 
     descCutSet.add<double>("absEtaMax", 2.4)->setComment("absolute value of eta must be less than this value");
     descCutSet.add<double>("absZ0Max", 15.0)->setComment("z0 must be less than this value, [cm]");
     descCutSet.add<int>("nStubsMin", 4)->setComment("number of stubs must be greater than or equal to this value");
-    descCutSet.add<int>("nPSStubsMin", 0)->setComment("number of stubs in the PS Modules must be greater than or equal to this value");
+    descCutSet.add<int>("nPSStubsMin", 0)
+        ->setComment("number of stubs in the PS Modules must be greater than or equal to this value");
 
     descCutSet.add<double>("reducedBendChi2Max", 2.25)->setComment("bend chi2 must be less than this value");
     descCutSet.add<double>("reducedChi2RZMax", 5.0)->setComment("chi2rz/dof must be less than this value");
@@ -620,7 +623,8 @@ void L1TrackSelectionProducer::fillDescriptions(edm::ConfigurationDescriptions& 
             "[cm]");
     desc.add<edm::ParameterSetDescription>("cutSet", descCutSet);
   }
-  desc.add<double>("useDisplacedTracksDeltaZOverride", -1.0)->setComment("override the deltaZ cut value for displaced tracks");
+  desc.add<double>("useDisplacedTracksDeltaZOverride", -1.0)
+      ->setComment("override the deltaZ cut value for displaced tracks");
   desc.add<bool>("processSimulatedTracks", true)
       ->setComment("return selected tracks after cutting on the floating point values");
   desc.add<bool>("processEmulatedTracks", true)
