@@ -37,6 +37,7 @@
 #include "DataFormats/L1TrackTrigger/interface/TTTypes.h"
 #include "DataFormats/L1Trigger/interface/Vertex.h"
 #include "DataFormats/L1Trigger/interface/VertexWord.h"
+#include "DataFormats/TrackerCommon/interface/TrackerTopology.h"
 #include "CommonTools/Utils/interface/AndSelector.h"
 #include "CommonTools/Utils/interface/EtaRangeSelector.h"
 #include "CommonTools/Utils/interface/MinSelector.h"
@@ -44,6 +45,7 @@
 #include "CommonTools/Utils/interface/MinNumberSelector.h"
 #include "CommonTools/Utils/interface/PtMinSelector.h"
 #include "CommonTools/Utils/interface/Selection.h"
+#include "FWCore/Framework/interface/ESHandle.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/global/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
@@ -54,6 +56,7 @@
 #include "FWCore/ParameterSet/interface/ParameterSetDescription.h"
 #include "FWCore/Utilities/interface/EDMException.h"
 #include "FWCore/Utilities/interface/StreamID.h"
+#include "Geometry/Records/interface/TrackerTopologyRcd.h"
 
 //
 // class declaration
@@ -78,10 +81,17 @@ private:
 
   typedef TTTrack<Ref_Phase2TrackerDigi_> L1Track;
   typedef std::vector<L1Track> TTTrackCollection;
+  typedef edm::Handle<TTTrackCollection> TTTrackCollectionHandle;
   typedef edm::Ref<TTTrackCollection> TTTrackRef;
   typedef std::vector<TTTrackRef> TTTrackRefCollection;
+  typedef std::unique_ptr<TTTrackRefCollection> TTTrackRefCollectionUPtr;
 
   // ----------member functions ----------------------
+  void printDebugInfo(const TTTrackCollectionHandle & l1TracksHandle,
+                      const TTTrackRefCollectionUPtr & vTTTrackOutput,
+                      const TTTrackRefCollectionUPtr & vTTTrackEmulationOutput,
+                      const TTTrackRefCollectionUPtr & vTTTrackAssociatedOutput,
+                      const TTTrackRefCollectionUPtr & vTTTrackAssociatedEmulationOutput) const;
   void printTrackInfo(edm::LogInfo& log, const L1Track& track, bool printEmulation = false) const;
   void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
 
@@ -170,9 +180,17 @@ private:
     double nStubsMin_;
   };
   struct TTTrackNPSStubsMinSelector {
-    TTTrackNPSStubsMinSelector(double nStubsMin) : nPSStubsMin_(nStubsMin) {}
-    TTTrackNPSStubsMinSelector(const edm::ParameterSet& cfg)
-        : nPSStubsMin_(cfg.template getParameter<double>("nPSStubsMin")) {}
+    TTTrackNPSStubsMinSelector(double nStubsMin, const edm::EventSetup& iSetup) : nPSStubsMin_(nStubsMin) {
+      edm::ESHandle<TrackerTopology> tTopoHandle_;
+      iSetup.get<TrackerTopologyRcd>().get(tTopoHandle_);
+      tTopo = tTopoHandle_.product();
+    }
+    TTTrackNPSStubsMinSelector(const edm::ParameterSet& cfg, const edm::EventSetup& iSetup)
+        : nPSStubsMin_(cfg.template getParameter<double>("nPSStubsMin")) {
+      edm::ESHandle<TrackerTopology> tTopoHandle_;
+      iSetup.get<TrackerTopologyRcd>().get(tTopoHandle_);
+      tTopo = tTopoHandle_.product();
+    }
     bool operator()(const L1Track& t) const {
       int nPSStubs = 0;
       for (const auto & stub : t.getStubRefs()) {
@@ -180,7 +198,7 @@ private:
         if (detId.det() == DetId::Detector::Tracker) {
           if ((detId.subdetId() == StripSubdetector::TOB && tTopo->tobLayer(detId) <= 3) ||
               (detId.subdetId() == StripSubdetector::TID && tTopo->tidRing(detId) <= 9))
-            nPS++;
+            nPSStubs++;
         }
       }
       return nPSStubs >= nPSStubsMin_;
@@ -188,6 +206,7 @@ private:
 
   private:
     double nPSStubsMin_;
+    const TrackerTopology* tTopo;
   };
   struct TTTrackBendChi2MaxSelector {
     TTTrackBendChi2MaxSelector(double bendChi2Max) : bendChi2Max_(bendChi2Max) {}
@@ -282,8 +301,8 @@ private:
     std::vector<double> deltaZMax_;
   };
 
-  typedef AndSelector<TTTrackPtMinSelector, TTTrackAbsEtaMaxSelector, TTTrackAbsZ0MaxSelector, TTTrackNStubsMinSelector, TTTrackNPSStubsMinSelector>
-      TTTrackPtMinEtaMaxZ0MaxNStubsMinNPSStubsMinSelector;
+  typedef AndSelector<TTTrackPtMinSelector, TTTrackAbsEtaMaxSelector, TTTrackAbsZ0MaxSelector, TTTrackNStubsMinSelector>
+      TTTrackPtMinEtaMaxZ0MaxNStubsMinSelector;
   typedef AndSelector<TTTrackWordPtMinSelector,
                       TTTrackWordAbsEtaMaxSelector,
                       TTTrackWordAbsZ0MaxSelector,
@@ -302,7 +321,8 @@ private:
   const edm::ParameterSet cutSet_;
   const double ptMin_, absEtaMax_, absZ0Max_, bendChi2Max_, reducedChi2RZMax_, reducedChi2RPhiMax_;
   const int nStubsMin_, nPSStubsMin_;
-  const std::vector<double> deltaZMaxEtaBounds_, deltaZMax_;
+  std::vector<double> deltaZMaxEtaBounds_, deltaZMax_;
+  const double useDisplacedTracksDeltaZOverride_;
   bool processSimulatedTracks_, processEmulatedTracks_, doDeltaZCutSim_, doDeltaZCutEmu_;
   int debug_;
 };
@@ -326,6 +346,7 @@ L1TrackSelectionProducer::L1TrackSelectionProducer(const edm::ParameterSet& iCon
       deltaZMaxEtaBounds_(cutSet_.getParameter<std::vector<double>>("deltaZMaxEtaBounds")),
       deltaZMax_(cutSet_.getParameter<std::vector<double>>("deltaZMax")),
 
+      useDisplacedTracksDeltaZOverride_(iConfig.getParameter<double>("useDisplacedTracksDeltaZOverride")),
       processSimulatedTracks_(iConfig.getParameter<bool>("processSimulatedTracks")),
       processEmulatedTracks_(iConfig.getParameter<bool>("processEmulatedTracks")),
       debug_(iConfig.getParameter<int>("debug")) {
@@ -338,6 +359,10 @@ L1TrackSelectionProducer::L1TrackSelectionProducer(const edm::ParameterSet& iCon
     throw cms::Exception("The number of deltaZ cuts does not match the number of eta bins!");
   }
 
+  if (useDisplacedTracksDeltaZOverride_ >= 0) {
+    deltaZMax_ = std::vector<double>(deltaZMax_.size(), useDisplacedTracksDeltaZOverride_);
+  }
+
   // Get additional input tags and define the EDM output based on the previous configuration parameters
   doDeltaZCutSim_ = false;
   doDeltaZCutEmu_ = false;
@@ -347,6 +372,7 @@ L1TrackSelectionProducer::L1TrackSelectionProducer(const edm::ParameterSet& iCon
       doDeltaZCutSim_ = true;
     }
     produces<TTTrackRefCollection>(outputCollectionName_);
+    produces<TTTrackRefCollection>(outputCollectionName_ + "Associated");
   }
   if (processEmulatedTracks_) {
     if (iConfig.exists("l1VerticesEmulationInputTag")) {
@@ -355,6 +381,7 @@ L1TrackSelectionProducer::L1TrackSelectionProducer(const edm::ParameterSet& iCon
       doDeltaZCutEmu_ = true;
     }
     produces<TTTrackRefCollection>(outputCollectionName_ + "Emulation");
+    produces<TTTrackRefCollection>(outputCollectionName_ + "AssociatedEmulation");
   }
 }
 
@@ -364,84 +391,11 @@ L1TrackSelectionProducer::~L1TrackSelectionProducer() {}
 // member functions
 //
 
-void L1TrackSelectionProducer::printTrackInfo(edm::LogInfo& log, const L1Track& track, bool printEmulation) const {
-  log << "\t(" << track.momentum().perp() << ", " << track.momentum().eta() << ", " << track.momentum().phi() << ", "
-      << track.getStubRefs().size() << ", " << track.stubPtConsistency() << ", " << track.chi2ZRed() << ", "
-      << track.chi2XYRed() << ", " << track.z0() << ")\n";
-
-  if (printEmulation) {
-    ap_uint<TrackBitWidths::kPtSize> ptEmulationBits = track.getTrackWord()(
-        TTTrack_TrackWord::TrackBitLocations::kRinvMSB - 1, TTTrack_TrackWord::TrackBitLocations::kRinvLSB);
-    ap_ufixed<TrackBitWidths::kPtSize, TrackBitWidths::kPtMagSize> ptEmulation;
-    ptEmulation.V = ptEmulationBits.range();
-    TTTrack_TrackWord::tanl_t etaEmulationBits = track.getTanlWord();
-    ap_fixed<TrackBitWidths::kEtaSize, TrackBitWidths::kEtaMagSize> etaEmulation;
-    etaEmulation.V = etaEmulationBits.range();
-    log << "\t\t(" << ptEmulation.to_double() << ", " << etaEmulation.to_double() << ", " << track.getPhi() << ", "
-        << track.getNStubs() << ", " << track.getBendChi2() << ", " << track.getChi2RZ() << ", " << track.getChi2RPhi()
-        << ", " << track.getZ0() << ")\n";
-  }
-}
-
-// ------------ method called to produce the data  ------------
-void L1TrackSelectionProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const {
-  auto vTTTrackOutput = std::make_unique<TTTrackRefCollection>();
-  auto vTTTrackEmulationOutput = std::make_unique<TTTrackRefCollection>();
-
-  edm::Handle<TTTrackCollection> l1TracksHandle;
-  edm::Handle<l1t::VertexCollection> l1VerticesHandle;
-  edm::Handle<l1t::VertexWordCollection> l1VerticesEmulationHandle;
-
-  l1t::Vertex leadingVertex;
-  l1t::VertexWord leadingEmulationVertex;
-
-  iEvent.getByToken(l1TracksToken_, l1TracksHandle);
-  size_t nOutputApproximate = l1TracksHandle->size();
-  if (processSimulatedTracks_) {
-    if (doDeltaZCutSim_) {
-      iEvent.getByToken(l1VerticesToken_, l1VerticesHandle);
-      leadingVertex = l1VerticesHandle->at(0);
-      if (debug_ >= 2) {
-        edm::LogInfo("L1TrackSelectionProducer") << "leading vertex z0 = " << leadingVertex.z0();
-      }
-    }
-    vTTTrackOutput->reserve(nOutputApproximate);
-  }
-  if (processEmulatedTracks_) {
-    if (doDeltaZCutEmu_) {
-      iEvent.getByToken(l1VerticesEmulationToken_, l1VerticesEmulationHandle);
-      leadingEmulationVertex = l1VerticesEmulationHandle->at(0);
-      if (debug_ >= 2) {
-        edm::LogInfo("L1TrackSelectionProducer") << "leading emulation vertex z0 = " << leadingEmulationVertex.z0();
-      }
-    }
-    vTTTrackEmulationOutput->reserve(nOutputApproximate);
-  }
-
-  TTTrackPtMinEtaMaxZ0MaxNStubsMinNPSStubsMinSelector kinSel(ptMin_, absEtaMax_, absZ0Max_, nStubsMin_, nPSStubsMin_);
-  TTTrackWordPtMinEtaMaxZ0MaxNStubsMinSelector kinSelEmu(ptMin_, absEtaMax_, absZ0Max_, nStubsMin_);
-  TTTrackBendChi2Chi2RZChi2RPhiMaxSelector chi2Sel(bendChi2Max_, reducedChi2RZMax_, reducedChi2RPhiMax_);
-  TTTrackWordBendChi2Chi2RZChi2RPhiMaxSelector chi2SelEmu(bendChi2Max_, reducedChi2RZMax_, reducedChi2RPhiMax_);
-  TTTrackDeltaZMaxSelector deltaZSel(deltaZMaxEtaBounds_, deltaZMax_);
-  TTTrackWordDeltaZMaxSelector deltaZSelEmu(deltaZMaxEtaBounds_, deltaZMax_);
-
-  for (size_t i = 0; i < nOutputApproximate; i++) {
-    const auto& track = l1TracksHandle->at(i);
-
-    // Select tracks based on the floating point TTTrack
-    if (processSimulatedTracks_ && kinSel(track) && chi2Sel(track) &&
-        (!doDeltaZCutSim_ || deltaZSel(track, leadingVertex))) {
-      vTTTrackOutput->push_back(TTTrackRef(l1TracksHandle, i));
-    }
-
-    // Select tracks based on the bitwise accurate TTTrack_TrackWord
-    if (processEmulatedTracks_ && kinSelEmu(track) && chi2SelEmu(track) &&
-        (!doDeltaZCutEmu_ || deltaZSelEmu(track, leadingEmulationVertex))) {
-      vTTTrackEmulationOutput->push_back(TTTrackRef(l1TracksHandle, i));
-    }
-  }
-
-  if (debug_ >= 2) {
+void L1TrackSelectionProducer::printDebugInfo(const TTTrackCollectionHandle & l1TracksHandle,
+                                              const TTTrackRefCollectionUPtr & vTTTrackOutput,
+                                              const TTTrackRefCollectionUPtr & vTTTrackEmulationOutput,
+                                              const TTTrackRefCollectionUPtr & vTTTrackAssociatedOutput,
+                                              const TTTrackRefCollectionUPtr & vTTTrackAssociatedEmulationOutput) const {
     edm::LogInfo log("L1TrackSelectionProducer");
     log << "The original track collection (pt, eta, phi, nstub, bendchi2, chi2rz, chi2rphi, z0) values are ... \n";
     for (const auto& track : *l1TracksHandle) {
@@ -489,14 +443,151 @@ void L1TrackSelectionProducer::produce(edm::StreamID, edm::Event& iEvent, const 
       }
       log << "\t---\n\tNumber of tracks in this selection = " << inEmuButNotSim.size() << "\n\n";
     }
+    if (processSimulatedTracks_) {
+      log << "The selected and leading vertex associated track collection (pt, eta, phi, nstub, bendchi2, chi2rz, chi2rphi, z0) values are ... \n";
+      for (const auto& track : *vTTTrackAssociatedOutput) {
+        printTrackInfo(log, *track, debug_ >= 4);
+      }
+      log << "\t---\n\tNumber of tracks in this selection = " << vTTTrackAssociatedOutput->size() << "\n\n";
+    }
+    if (processEmulatedTracks_) {
+      log << "The emulation selected and leading vertex associated track collection (pt, eta, phi, nstub, bendchi2, chi2rz, chi2rphi, z0) values are "
+             "... \n";
+      for (const auto& track : *vTTTrackAssociatedEmulationOutput) {
+        printTrackInfo(log, *track, debug_ >= 4);
+      }
+      log << "\t---\n\tNumber of tracks in this selection = " << vTTTrackAssociatedEmulationOutput->size() << "\n\n";
+    }
+    if (processSimulatedTracks_ && processEmulatedTracks_) {
+      TTTrackRefCollection inSimButNotEmu;
+      TTTrackRefCollection inEmuButNotSim;
+      std::set_difference(vTTTrackAssociatedOutput->begin(),
+                          vTTTrackAssociatedOutput->end(),
+                          vTTTrackAssociatedEmulationOutput->begin(),
+                          vTTTrackAssociatedEmulationOutput->end(),
+                          std::back_inserter(inSimButNotEmu));
+      std::set_difference(vTTTrackAssociatedEmulationOutput->begin(),
+                          vTTTrackAssociatedEmulationOutput->end(),
+                          vTTTrackAssociatedOutput->begin(),
+                          vTTTrackAssociatedOutput->end(),
+                          std::back_inserter(inEmuButNotSim));
+      log << "The set of tracks selected via cuts on the simulated values which are not in the set of tracks selected "
+             "by cutting on the emulated values ... \n";
+      for (const auto& track : inSimButNotEmu) {
+        printTrackInfo(log, *track, debug_ >= 3);
+      }
+      log << "\t---\n\tNumber of tracks in this selection = " << inSimButNotEmu.size() << "\n\n"
+          << "The set of tracks selected via cuts on the emulated values which are not in the set of tracks selected "
+             "by cutting on the simulated values ... \n";
+      for (const auto& track : inEmuButNotSim) {
+        printTrackInfo(log, *track, debug_ >= 3);
+      }
+      log << "\t---\n\tNumber of tracks in this selection = " << inEmuButNotSim.size() << "\n\n";
+    }
+}
+
+void L1TrackSelectionProducer::printTrackInfo(edm::LogInfo& log, const L1Track& track, bool printEmulation) const {
+  log << "\t(" << track.momentum().perp() << ", " << track.momentum().eta() << ", " << track.momentum().phi() << ", "
+      << track.getStubRefs().size() << ", " << track.stubPtConsistency() << ", " << track.chi2ZRed() << ", "
+      << track.chi2XYRed() << ", " << track.z0() << ")\n";
+
+  if (printEmulation) {
+    ap_uint<TrackBitWidths::kPtSize> ptEmulationBits = track.getTrackWord()(
+        TTTrack_TrackWord::TrackBitLocations::kRinvMSB - 1, TTTrack_TrackWord::TrackBitLocations::kRinvLSB);
+    ap_ufixed<TrackBitWidths::kPtSize, TrackBitWidths::kPtMagSize> ptEmulation;
+    ptEmulation.V = ptEmulationBits.range();
+    TTTrack_TrackWord::tanl_t etaEmulationBits = track.getTanlWord();
+    ap_fixed<TrackBitWidths::kEtaSize, TrackBitWidths::kEtaMagSize> etaEmulation;
+    etaEmulation.V = etaEmulationBits.range();
+    log << "\t\t(" << ptEmulation.to_double() << ", " << etaEmulation.to_double() << ", " << track.getPhi() << ", "
+        << track.getNStubs() << ", " << track.getBendChi2() << ", " << track.getChi2RZ() << ", " << track.getChi2RPhi()
+        << ", " << track.getZ0() << ")\n";
+  }
+}
+
+// ------------ method called to produce the data  ------------
+void L1TrackSelectionProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const {
+  auto vTTTrackOutput = std::make_unique<TTTrackRefCollection>();
+  auto vTTTrackAssociatedOutput = std::make_unique<TTTrackRefCollection>();
+  auto vTTTrackEmulationOutput = std::make_unique<TTTrackRefCollection>();
+  auto vTTTrackAssociatedEmulationOutput = std::make_unique<TTTrackRefCollection>();
+
+  TTTrackCollectionHandle l1TracksHandle;
+  edm::Handle<l1t::VertexCollection> l1VerticesHandle;
+  edm::Handle<l1t::VertexWordCollection> l1VerticesEmulationHandle;
+
+  l1t::Vertex leadingVertex;
+  l1t::VertexWord leadingEmulationVertex;
+
+  iEvent.getByToken(l1TracksToken_, l1TracksHandle);
+  size_t nOutputApproximate = l1TracksHandle->size();
+  if (processSimulatedTracks_) {
+    if (doDeltaZCutSim_) {
+      iEvent.getByToken(l1VerticesToken_, l1VerticesHandle);
+      leadingVertex = l1VerticesHandle->at(0);
+      if (debug_ >= 2) {
+        edm::LogInfo("L1TrackSelectionProducer") << "leading vertex z0 = " << leadingVertex.z0();
+      }
+    }
+    vTTTrackOutput->reserve(nOutputApproximate);
+    vTTTrackAssociatedOutput->reserve(nOutputApproximate);
+  }
+  if (processEmulatedTracks_) {
+    if (doDeltaZCutEmu_) {
+      iEvent.getByToken(l1VerticesEmulationToken_, l1VerticesEmulationHandle);
+      leadingEmulationVertex = l1VerticesEmulationHandle->at(0);
+      if (debug_ >= 2) {
+        edm::LogInfo("L1TrackSelectionProducer") << "leading emulation vertex z0 = " << leadingEmulationVertex.z0();
+      }
+    }
+    vTTTrackEmulationOutput->reserve(nOutputApproximate);
+    vTTTrackAssociatedEmulationOutput->reserve(nOutputApproximate);
+  }
+
+  TTTrackPtMinEtaMaxZ0MaxNStubsMinSelector kinSel(ptMin_, absEtaMax_, absZ0Max_, nStubsMin_);
+  TTTrackWordPtMinEtaMaxZ0MaxNStubsMinSelector kinSelEmu(ptMin_, absEtaMax_, absZ0Max_, nStubsMin_);
+  TTTrackBendChi2Chi2RZChi2RPhiMaxSelector chi2Sel(bendChi2Max_, reducedChi2RZMax_, reducedChi2RPhiMax_);
+  TTTrackWordBendChi2Chi2RZChi2RPhiMaxSelector chi2SelEmu(bendChi2Max_, reducedChi2RZMax_, reducedChi2RPhiMax_);
+  TTTrackDeltaZMaxSelector deltaZSel(deltaZMaxEtaBounds_, deltaZMax_);
+  TTTrackWordDeltaZMaxSelector deltaZSelEmu(deltaZMaxEtaBounds_, deltaZMax_);
+  TTTrackNPSStubsMinSelector nPSStubsSel(nPSStubsMin_, iSetup);
+
+  for (size_t i = 0; i < nOutputApproximate; i++) {
+    const auto& track = l1TracksHandle->at(i);
+
+    // Select tracks based on the floating point TTTrack
+    if (processSimulatedTracks_ && kinSel(track) && nPSStubsSel(track) && chi2Sel(track)) {
+      vTTTrackOutput->push_back(TTTrackRef(l1TracksHandle, i));
+      if ((!doDeltaZCutSim_ || deltaZSel(track, leadingVertex))) {
+        vTTTrackAssociatedOutput->push_back(TTTrackRef(l1TracksHandle, i));
+      }
+    }
+
+    // Select tracks based on the bitwise accurate TTTrack_TrackWord
+    if (processEmulatedTracks_ && kinSelEmu(track) && chi2SelEmu(track)) {
+      vTTTrackEmulationOutput->push_back(TTTrackRef(l1TracksHandle, i));
+      if ((!doDeltaZCutEmu_ || deltaZSelEmu(track, leadingEmulationVertex))) {
+        vTTTrackAssociatedEmulationOutput->push_back(TTTrackRef(l1TracksHandle, i));
+      }
+    }
+  }
+
+  if (debug_ >= 2) {
+    printDebugInfo(l1TracksHandle,
+                   vTTTrackOutput,
+                   vTTTrackEmulationOutput,
+                   vTTTrackAssociatedOutput,
+                   vTTTrackAssociatedEmulationOutput);
   }
 
   // Put the outputs into the event
   if (processSimulatedTracks_) {
     iEvent.put(std::move(vTTTrackOutput), outputCollectionName_);
+    iEvent.put(std::move(vTTTrackAssociatedOutput), outputCollectionName_ + "Associated");
   }
   if (processEmulatedTracks_) {
     iEvent.put(std::move(vTTTrackEmulationOutput), outputCollectionName_ + "Emulation");
+    iEvent.put(std::move(vTTTrackAssociatedEmulationOutput), outputCollectionName_ + "AssociatedEmulation");
   }
 }
 
@@ -515,6 +606,7 @@ void L1TrackSelectionProducer::fillDescriptions(edm::ConfigurationDescriptions& 
     descCutSet.add<double>("absEtaMax", 2.4)->setComment("absolute value of eta must be less than this value");
     descCutSet.add<double>("absZ0Max", 15.0)->setComment("z0 must be less than this value, [cm]");
     descCutSet.add<int>("nStubsMin", 4)->setComment("number of stubs must be greater than or equal to this value");
+    descCutSet.add<int>("nPSStubsMin", 0)->setComment("number of stubs in the PS Modules must be greater than or equal to this value");
 
     descCutSet.add<double>("reducedBendChi2Max", 2.25)->setComment("bend chi2 must be less than this value");
     descCutSet.add<double>("reducedChi2RZMax", 5.0)->setComment("chi2rz/dof must be less than this value");
@@ -528,6 +620,7 @@ void L1TrackSelectionProducer::fillDescriptions(edm::ConfigurationDescriptions& 
             "[cm]");
     desc.add<edm::ParameterSetDescription>("cutSet", descCutSet);
   }
+  desc.add<double>("useDisplacedTracksDeltaZOverride", -1.0)->setComment("override the deltaZ cut value for displaced tracks");
   desc.add<bool>("processSimulatedTracks", true)
       ->setComment("return selected tracks after cutting on the floating point values");
   desc.add<bool>("processEmulatedTracks", true)

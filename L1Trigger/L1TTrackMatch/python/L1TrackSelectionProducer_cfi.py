@@ -22,7 +22,7 @@ L1TrackSelectionProducer = cms.EDProducer('L1TrackSelectionProducer',
                     deltaZMaxEtaBounds = cms.vdouble(0.0, 0.7, 1.0, 1.2, 1.6, 2.0, 2.4), # these values define the bin boundaries in |eta|
                     deltaZMax = cms.vdouble(0.37, 0.50, 0.60, 0.75, 1.00, 1.60), # delta z must be less than these values, there will be one less value here than in deltaZMaxEtaBounds, [cm]
                     ),
-  useDisplacedTracksDeltaZOverride = cms.bool(-1.0), # Use promt/displaced tracks
+  useDisplacedTracksDeltaZOverride = cms.double(-1.0), # override the deltaZ cut value for displaced tracks
   processSimulatedTracks = cms.bool(True), # return selected tracks after cutting on the floating point values
   processEmulatedTracks = cms.bool(True), # return selected tracks after cutting on the bitwise emulated values
   debug = cms.int32(0) # Verbosity levels: 0, 1, 2, 3, 4
