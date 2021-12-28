@@ -169,6 +169,26 @@ private:
   private:
     double nStubsMin_;
   };
+  struct TTTrackNPSStubsMinSelector {
+    TTTrackNPSStubsMinSelector(double nStubsMin) : nPSStubsMin_(nStubsMin) {}
+    TTTrackNPSStubsMinSelector(const edm::ParameterSet& cfg)
+        : nPSStubsMin_(cfg.template getParameter<double>("nPSStubsMin")) {}
+    bool operator()(const L1Track& t) const {
+      int nPSStubs = 0;
+      for (const auto & stub : t.getStubRefs()) {
+        DetId detId(stub->getDetId());
+        if (detId.det() == DetId::Detector::Tracker) {
+          if ((detId.subdetId() == StripSubdetector::TOB && tTopo->tobLayer(detId) <= 3) ||
+              (detId.subdetId() == StripSubdetector::TID && tTopo->tidRing(detId) <= 9))
+            nPS++;
+        }
+      }
+      return nPSStubs >= nPSStubsMin_;
+    }
+
+  private:
+    double nPSStubsMin_;
+  };
   struct TTTrackBendChi2MaxSelector {
     TTTrackBendChi2MaxSelector(double bendChi2Max) : bendChi2Max_(bendChi2Max) {}
     TTTrackBendChi2MaxSelector(const edm::ParameterSet& cfg)
@@ -262,8 +282,8 @@ private:
     std::vector<double> deltaZMax_;
   };
 
-  typedef AndSelector<TTTrackPtMinSelector, TTTrackAbsEtaMaxSelector, TTTrackAbsZ0MaxSelector, TTTrackNStubsMinSelector>
-      TTTrackPtMinEtaMaxZ0MaxNStubsMinSelector;
+  typedef AndSelector<TTTrackPtMinSelector, TTTrackAbsEtaMaxSelector, TTTrackAbsZ0MaxSelector, TTTrackNStubsMinSelector, TTTrackNPSStubsMinSelector>
+      TTTrackPtMinEtaMaxZ0MaxNStubsMinNPSStubsMinSelector;
   typedef AndSelector<TTTrackWordPtMinSelector,
                       TTTrackWordAbsEtaMaxSelector,
                       TTTrackWordAbsZ0MaxSelector,
@@ -281,7 +301,7 @@ private:
   const std::string outputCollectionName_;
   const edm::ParameterSet cutSet_;
   const double ptMin_, absEtaMax_, absZ0Max_, bendChi2Max_, reducedChi2RZMax_, reducedChi2RPhiMax_;
-  const int nStubsMin_;
+  const int nStubsMin_, nPSStubsMin_;
   const std::vector<double> deltaZMaxEtaBounds_, deltaZMax_;
   bool processSimulatedTracks_, processEmulatedTracks_, doDeltaZCutSim_, doDeltaZCutEmu_;
   int debug_;
@@ -302,6 +322,7 @@ L1TrackSelectionProducer::L1TrackSelectionProducer(const edm::ParameterSet& iCon
       reducedChi2RZMax_(cutSet_.getParameter<double>("reducedChi2RZMax")),
       reducedChi2RPhiMax_(cutSet_.getParameter<double>("reducedChi2RPhiMax")),
       nStubsMin_(cutSet_.getParameter<int>("nStubsMin")),
+      nPSStubsMin_(cutSet_.getParameter<int>("nPSStubsMin")),
       deltaZMaxEtaBounds_(cutSet_.getParameter<std::vector<double>>("deltaZMaxEtaBounds")),
       deltaZMax_(cutSet_.getParameter<std::vector<double>>("deltaZMax")),
 
@@ -397,7 +418,7 @@ void L1TrackSelectionProducer::produce(edm::StreamID, edm::Event& iEvent, const 
     vTTTrackEmulationOutput->reserve(nOutputApproximate);
   }
 
-  TTTrackPtMinEtaMaxZ0MaxNStubsMinSelector kinSel(ptMin_, absEtaMax_, absZ0Max_, nStubsMin_);
+  TTTrackPtMinEtaMaxZ0MaxNStubsMinNPSStubsMinSelector kinSel(ptMin_, absEtaMax_, absZ0Max_, nStubsMin_, nPSStubsMin_);
   TTTrackWordPtMinEtaMaxZ0MaxNStubsMinSelector kinSelEmu(ptMin_, absEtaMax_, absZ0Max_, nStubsMin_);
   TTTrackBendChi2Chi2RZChi2RPhiMaxSelector chi2Sel(bendChi2Max_, reducedChi2RZMax_, reducedChi2RPhiMax_);
   TTTrackWordBendChi2Chi2RZChi2RPhiMaxSelector chi2SelEmu(bendChi2Max_, reducedChi2RZMax_, reducedChi2RPhiMax_);

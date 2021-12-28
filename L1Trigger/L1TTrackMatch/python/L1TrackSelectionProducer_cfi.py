@@ -11,6 +11,7 @@ L1TrackSelectionProducer = cms.EDProducer('L1TrackSelectionProducer',
                     absEtaMax = cms.double(2.4), # absolute value of eta must be less than this value
                     absZ0Max = cms.double(15.0), # z0 must be less than this value, [cm]
                     nStubsMin = cms.int32(4), # number of stubs must be greater than or equal to this value
+                    nPSStubsMin = cms.int32(0), # the number of stubs in the PS Modules must be greater than or equal to this value
 
                     reducedBendChi2Max = cms.double(2.25), # bend chi2 must be less than this value
                     reducedChi2RZMax = cms.double(5.0), # chi2rz/dof must be less than this value
@@ -21,6 +22,7 @@ L1TrackSelectionProducer = cms.EDProducer('L1TrackSelectionProducer',
                     deltaZMaxEtaBounds = cms.vdouble(0.0, 0.7, 1.0, 1.2, 1.6, 2.0, 2.4), # these values define the bin boundaries in |eta|
                     deltaZMax = cms.vdouble(0.37, 0.50, 0.60, 0.75, 1.00, 1.60), # delta z must be less than these values, there will be one less value here than in deltaZMaxEtaBounds, [cm]
                     ),
+  useDisplacedTracksDeltaZOverride = cms.bool(-1.0), # Use promt/displaced tracks
   processSimulatedTracks = cms.bool(True), # return selected tracks after cutting on the floating point values
   processEmulatedTracks = cms.bool(True), # return selected tracks after cutting on the bitwise emulated values
   debug = cms.int32(0) # Verbosity levels: 0, 1, 2, 3, 4
@@ -29,5 +31,8 @@ L1TrackSelectionProducer = cms.EDProducer('L1TrackSelectionProducer',
 L1TrackSelectionProducerExtended = L1TrackSelectionProducer.clone(
   l1TracksInputTag = cms.InputTag("L1GTTInputProducerExtended","Level1TTTracksExtendedConverted"),
   outputCollectionName = cms.string("Level1TTTracksExtendedSelected"),
+  useDisplacedTracksDeltaZOverride = cms.bool(3.0), # Use promt/displaced tracks
+  deltaZMaxEtaBounds = cms.vdouble(0.0, 0.7, 1.0, 1.2, 1.6, 2.0, 2.4), # Eta bins for choosing deltaZ threshold.
+  deltaZMax = cms.vdouble(3.0, 3.0, 3.0, 3.0, 3.0, 3.0), # Threshold for track to vertex association.
 )
 
