@@ -31,7 +31,7 @@ L1TrackSelectionProducer = cms.EDProducer('L1TrackSelectionProducer',
 L1TrackSelectionProducerExtended = L1TrackSelectionProducer.clone(
   l1TracksInputTag = cms.InputTag("L1GTTInputProducerExtended","Level1TTTracksExtendedConverted"),
   outputCollectionName = cms.string("Level1TTTracksExtendedSelected"),
-  useDisplacedTracksDeltaZOverride = cms.bool(3.0), # Use promt/displaced tracks
+  useDisplacedTracksDeltaZOverride = cms.double(3.0), # Use promt/displaced tracks
   deltaZMaxEtaBounds = cms.vdouble(0.0, 0.7, 1.0, 1.2, 1.6, 2.0, 2.4), # Eta bins for choosing deltaZ threshold.
   deltaZMax = cms.vdouble(3.0, 3.0, 3.0, 3.0, 3.0, 3.0), # Threshold for track to vertex association.
 )

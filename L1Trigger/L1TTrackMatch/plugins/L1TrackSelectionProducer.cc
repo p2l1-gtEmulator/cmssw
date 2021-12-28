@@ -367,21 +367,21 @@ L1TrackSelectionProducer::L1TrackSelectionProducer(const edm::ParameterSet& iCon
   doDeltaZCutSim_ = false;
   doDeltaZCutEmu_ = false;
   if (processSimulatedTracks_) {
+    produces<TTTrackRefCollection>(outputCollectionName_);
     if (iConfig.exists("l1VerticesInputTag")) {
       l1VerticesToken_ = consumes<l1t::VertexCollection>(iConfig.getParameter<edm::InputTag>("l1VerticesInputTag"));
       doDeltaZCutSim_ = true;
+      produces<TTTrackRefCollection>(outputCollectionName_ + "Associated");
     }
-    produces<TTTrackRefCollection>(outputCollectionName_);
-    produces<TTTrackRefCollection>(outputCollectionName_ + "Associated");
   }
   if (processEmulatedTracks_) {
+    produces<TTTrackRefCollection>(outputCollectionName_ + "Emulation");
     if (iConfig.exists("l1VerticesEmulationInputTag")) {
       l1VerticesEmulationToken_ =
           consumes<l1t::VertexWordCollection>(iConfig.getParameter<edm::InputTag>("l1VerticesEmulationInputTag"));
       doDeltaZCutEmu_ = true;
+      produces<TTTrackRefCollection>(outputCollectionName_ + "AssociatedEmulation");
     }
-    produces<TTTrackRefCollection>(outputCollectionName_ + "Emulation");
-    produces<TTTrackRefCollection>(outputCollectionName_ + "AssociatedEmulation");
   }
 }
 
@@ -560,7 +560,7 @@ void L1TrackSelectionProducer::produce(edm::StreamID, edm::Event& iEvent, const 
     // Select tracks based on the floating point TTTrack
     if (processSimulatedTracks_ && kinSel(track) && nPSStubsSel(track) && chi2Sel(track)) {
       vTTTrackOutput->push_back(TTTrackRef(l1TracksHandle, i));
-      if ((!doDeltaZCutSim_ || deltaZSel(track, leadingVertex))) {
+      if (doDeltaZCutSim_ && deltaZSel(track, leadingVertex)) {
         vTTTrackAssociatedOutput->push_back(TTTrackRef(l1TracksHandle, i));
       }
     }
@@ -568,7 +568,7 @@ void L1TrackSelectionProducer::produce(edm::StreamID, edm::Event& iEvent, const 
     // Select tracks based on the bitwise accurate TTTrack_TrackWord
     if (processEmulatedTracks_ && kinSelEmu(track) && chi2SelEmu(track)) {
       vTTTrackEmulationOutput->push_back(TTTrackRef(l1TracksHandle, i));
-      if ((!doDeltaZCutEmu_ || deltaZSelEmu(track, leadingEmulationVertex))) {
+      if (doDeltaZCutEmu_ && deltaZSelEmu(track, leadingEmulationVertex)) {
         vTTTrackAssociatedEmulationOutput->push_back(TTTrackRef(l1TracksHandle, i));
       }
     }
@@ -585,11 +585,15 @@ void L1TrackSelectionProducer::produce(edm::StreamID, edm::Event& iEvent, const 
   // Put the outputs into the event
   if (processSimulatedTracks_) {
     iEvent.put(std::move(vTTTrackOutput), outputCollectionName_);
-    iEvent.put(std::move(vTTTrackAssociatedOutput), outputCollectionName_ + "Associated");
+    if (doDeltaZCutSim_) {
+      iEvent.put(std::move(vTTTrackAssociatedOutput), outputCollectionName_ + "Associated");
+    }
   }
   if (processEmulatedTracks_) {
     iEvent.put(std::move(vTTTrackEmulationOutput), outputCollectionName_ + "Emulation");
-    iEvent.put(std::move(vTTTrackAssociatedEmulationOutput), outputCollectionName_ + "AssociatedEmulation");
+    if (doDeltaZCutEmu_) {
+      iEvent.put(std::move(vTTTrackAssociatedEmulationOutput), outputCollectionName_ + "AssociatedEmulation");
+    }
   }
 }
 
