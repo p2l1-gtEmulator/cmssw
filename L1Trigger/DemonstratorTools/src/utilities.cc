@@ -289,7 +289,7 @@ namespace l1t::demo {
     // Check that number of frames is same for every channel
     const auto firstChannel = data.begin();
 
-    for (const auto& channel: data) {
+    for (const auto& channel : data) {
       const auto i = channel.first;
       const auto channelData = channel.second;
       if (channelData.size() != firstChannel->second.size())
@@ -333,7 +333,7 @@ namespace l1t::demo {
 
     // Channel header
     file << "#LinkLabel";
-    for (const auto& channel: data) {
+    for (const auto& channel : data) {
       const auto i = channel.first;
       file << "                LINK_" << std::setw(2) << i << "    ";
     }
@@ -346,7 +346,7 @@ namespace l1t::demo {
     const auto firstChannel = data.begin();
     for (size_t i = 0; i < firstChannel->second.size(); i++) {
       file << "0x" << std::setw(4) << i;
-      for (const auto& channel: data) {
+      for (const auto& channel : data) {
         const auto j = channel.first;
         const auto channelData = channel.second;
         uint16_t sideband = channelData.at(i).valid;
@@ -367,7 +367,7 @@ namespace l1t::demo {
 
     // Quad/chan header
     file << " Quad/Chan :";
-    for (const auto& channel: data) {
+    for (const auto& channel : data) {
       const auto i = channel.first;
       file << "         q" << std::setw(2) << i / 4 << 'c' << std::setw(1) << i % 4 << "       ";
     }
@@ -375,7 +375,7 @@ namespace l1t::demo {
 
     // Link header
     file << "      Link :";
-    for (const auto& channel: data) {
+    for (const auto& channel : data) {
       const auto i = channel.first;
       file << "          " << std::setw(3) << i << "        ";
     }
@@ -385,7 +385,7 @@ namespace l1t::demo {
     const auto firstChannel = data.begin();
     for (size_t i = 0; i < firstChannel->second.size(); i++) {
       file << "Frame " << std::setw(4) << i << " :";
-      for (const auto& channel: data) {
+      for (const auto& channel : data) {
         const auto j = channel.first;
         const auto channelData = channel.second;
         file << " ";
