@@ -1,8 +1,11 @@
 import FWCore.ParameterSet.Config as cms
+from L1Trigger.VertexFinder.VertexProducer_cff import VertexProducer
 
 L1TrackJetsEmulation = cms.EDProducer('L1TrackJetEmulationProducer',
 	L1TrackInputTag= cms.InputTag("L1GTTInputProducer", "Level1TTTracksConverted"),
-	trk_zMax = cms.double (15.) ,    # maximum track z
+        VertexInputTag=cms.InputTag("L1VertexFinderEmulator", "l1verticesEmulation"),
+	MaxDzTrackPV = cms.double(4.0),
+        trk_zMax = cms.double (15.) ,    # maximum track z
 	trk_ptMax = cms.double(200.),    # maximumum track pT before saturation [GeV]
 	trk_ptMin = cms.double(2.0),     # minimum track pt [GeV]
    	trk_etaMax = cms.double(2.4),    # maximum track eta
@@ -32,7 +35,9 @@ L1TrackJetsEmulation = cms.EDProducer('L1TrackJetEmulationProducer',
 
 L1TrackJetsExtendedEmulation = cms.EDProducer('L1TrackJetEmulationProducer',
 	L1TrackInputTag= cms.InputTag("L1GTTInputProducerExtended", "Level1TTTracksExtendedConverted"),
-	trk_zMax = cms.double (15.) ,    # maximum track z
+        VertexInputTag=cms.InputTag("L1VertexFinderEmulator", "l1verticesEmulation"),
+	MaxDzTrackPV = cms.double(4.0),
+        trk_zMax = cms.double (15.) ,    # maximum track z
 	trk_ptMax = cms.double(200.),    # maximumum track pT before saturation [GeV]
 	trk_ptMin = cms.double(3.0),     # minimum track pt [GeV]
    	trk_etaMax = cms.double(2.4),    # maximum track eta

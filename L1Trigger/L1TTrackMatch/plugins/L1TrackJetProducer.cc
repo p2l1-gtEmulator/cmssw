@@ -279,7 +279,7 @@ void L1TrackJetProducer::L2_cluster(vector<Ptr<L1TTTrackType> > L1TrkPtrs_, vect
   EtaPhiBin *L1clusters[phiBins_];
   EtaPhiBin L2cluster[ntracks];
 
-  for (int zbin = 0; zbin < zBins_ - 1; ++zbin) {
+  for (int zbin = 0; zbin < zBins_; ++zbin) {
     for (int i = 0; i < phiBins_; ++i) {  //First initialize pT, numtracks, used to 0 (or false)
       for (int j = 0; j < etaBins_; ++j) {
         epbins[i][j].pTtot = 0;
@@ -526,7 +526,7 @@ void L1TrackJetProducer::L2_cluster(vector<Ptr<L1TTTrackType> > L1TrkPtrs_, vect
     zmin = zmin + zStep_;
     zmax = zmax + zStep_;
   }  // for each zbin
-  for (int zbin = 0; zbin < zBins_ - 1; ++zbin) {
+  for (int zbin = 0; zbin < zBins_; ++zbin) {
     if (zbin == mzb.znum)
       continue;
     delete[] all_zBins[zbin].clusters;
