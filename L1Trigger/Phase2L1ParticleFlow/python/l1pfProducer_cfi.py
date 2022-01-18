@@ -22,6 +22,7 @@ l1pfProducer = cms.EDProducer("L1TPFProducer",
      puppiPtCuts        = cms.vdouble(0.0, 3.0, 6.0, 8.0),
      puppiPtCutsPhotons = cms.vdouble(0.0, 3.0, 6.0, 8.0),
      puppiUsingBareTracks = cms.bool(False), # use PF
+     nVtx        = cms.int32(2),
      vtxRes      = cms.double(0.333),
      vtxAlgo     = cms.string("TP"),
      vtxAdaptiveCut = cms.bool(True),

@@ -54,6 +54,11 @@ void PuppiAlgo::runNeutralsPU(Region &r, float z0, float npu, const std::vector<
   fillPuppi(r);
 }
 
+void PuppiAlgo::runNeutralsPU(Region &r, std::vector<float> &z0, float npu, const std::vector<float> &globals) const {
+  float z0tmp = 0;
+  runNeutralsPU(r,z0tmp,npu,globals);
+}
+
 void PuppiAlgo::computePuppiAlphas(const Region &r, std::vector<float> &alphaC, std::vector<float> &alphaF) const {
   alphaC.resize(r.pf.size());
   alphaF.resize(r.pf.size());
@@ -157,7 +162,7 @@ void PuppiAlgo::computePuppiWeights(Region &r,
 }
 
 void PuppiAlgo::computePuppiMedRMS(
-    const std::vector<Region> &rs, float &alphaCMed, float &alphaCRms, float &alphaFMed, float &alphaFRms) const {
+				   const std::vector<Region> &rs, float &alphaCMed, float &alphaCRms, float &alphaFMed, float &alphaFRms) const {
   std::vector<float> alphaFs;
   std::vector<float> alphaCs;
   int16_t ietacut = std::round(etaCharged_ * CaloCluster::ETAPHI_SCALE);

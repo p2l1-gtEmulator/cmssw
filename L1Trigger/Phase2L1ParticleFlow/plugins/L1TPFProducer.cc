@@ -266,15 +266,17 @@ void L1TPFProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
   iEvent.put(l1regions_.fetchTracks(/*ptmin=*/0.0, /*fromPV=*/false), "TK");
 
   // Then do the vertexing, and save it out
-  float z0;
+  std::vector<float> z0s;
+  std::vector<std::pair<float,float> > ptsums;
+  float z0 = 0;
   if (vtxAlgo_ == l1tpf_impl::PUAlgoBase::VertexAlgo::External) {
-    z0 = 0;
     double ptsum = 0;
     if (!extTkVtx_.isUninitialized()) {
       edm::Handle<std::vector<l1t::TkPrimaryVertex>> vtxHandle;
       iEvent.getByToken(extTkVtx_, vtxHandle);
       for (const l1t::TkPrimaryVertex& vtx : *vtxHandle) {
-        if (ptsum == 0 || vtx.sum() > ptsum) {
+	ptsums.push_back(std::pair<float,float>(vtx.zvertex(),vtx.sum()));
+	if (ptsum == 0 || vtx.sum() > ptsum) {
           z0 = vtx.zvertex();
           ptsum = vtx.sum();
         }
@@ -282,7 +284,12 @@ void L1TPFProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
     } else
       throw cms::Exception("LogicError", "Inconsistent vertex configuration");
   }
-  l1pualgo_->doVertexing(l1regions_.regions(), vtxAlgo_, z0);
+  std::stable_sort(ptsums.begin(), ptsums.end(),[](const auto& a, const auto& b){return a.first > b.first;});
+  for(unsigned i0 = 0; i0 < ptsums.size(); i0++) { 
+    z0s.push_back(ptsums[i0].second);
+  } 
+  //l1pualgo_->doVertexing(l1regions_.regions(), vtxAlgo_, z0);
+  l1pualgo_->doVertexings(l1regions_.regions(), vtxAlgo_, z0s);
   iEvent.put(std::make_unique<float>(z0), "z0");
 
   // Then also save the tracks with a vertex cut
@@ -292,7 +299,7 @@ void L1TPFProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
   for (auto& l1region : l1regions_.regions()) {
     l1pfalgo_->runPF(l1region);
     l1tkegalgo_->runTkEG(l1region);
-    l1pualgo_->runChargedPV(l1region, z0);
+    l1pualgo_->runChargedPV(l1region, z0s);
     // this is a separate step since the z0 from vertex might come at different latency
     l1tkegalgo_->runTkIso(l1region, z0);
     l1tkegalgo_->runPFIso(l1region, z0);
@@ -309,7 +316,7 @@ void L1TPFProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
   // Then run puppi (regionally)
   for (auto& l1region : l1regions_.regions()) {
-    l1pualgo_->runNeutralsPU(l1region, z0, -1., puGlobals);
+    l1pualgo_->runNeutralsPU(l1region, z0s, -1., puGlobals);
     l1region.outputCrop(sortOutputs_);
   }
 
