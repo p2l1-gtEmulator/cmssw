@@ -58,6 +58,7 @@ private:
   edm::EDGetTokenT<std::vector<l1t::VertexWord>> tkVtxEmu_;
   float vtxRes_;
   int NVtx_;
+  bool addExtraVtx_;
 
   edm::EDGetTokenT<l1t::SAMuonCollection> muCands_;  // standalone muons
 
@@ -235,8 +236,9 @@ L1TCorrelatorLayer1Producer::L1TCorrelatorLayer1Producer(const edm::ParameterSet
   } else {
     extTkVtx_ = consumes<std::vector<l1t::Vertex>>(iConfig.getParameter<edm::InputTag>("vtxCollection"));
   }
-  vtxRes_   = iConfig.getParameter<double>("vtxRes");
-  NVtx_     = iConfig.getParameter<int>("nVtx");
+  vtxRes_      = iConfig.getParameter<double>("vtxRes");
+  NVtx_        = iConfig.getParameter<int>("nVtx");
+  addExtraVtx_ = iConfig.getParameter<bool>("addExtraVtx");
 
   const char *iprefix[4] = {"totNReg", "maxNReg", "totNSec", "maxNSec"};
   for (int i = 0; i <= l1muType; ++i) {
@@ -293,7 +295,6 @@ void L1TCorrelatorLayer1Producer::produce(edm::Event &iEvent, const edm::EventSe
   }
 
   /// ------ READ MUONS ----
-  /*
   edm::Handle<l1t::SAMuonCollection> muons;
   iEvent.getByToken(muCands_, muons);
   for (unsigned int i = 0, n = muons->size(); i < n; ++i) {
@@ -302,7 +303,6 @@ void L1TCorrelatorLayer1Producer::produce(edm::Event &iEvent, const edm::EventSe
       continue;
     addMuon(mu, l1t::PFCandidate::MuonRef(muons, i));
   }
-  */
   // ------ READ CALOS -----
   edm::Handle<l1t::PFClusterCollection> caloHandle;
   for (const auto &tag : emCands_) {
@@ -365,20 +365,22 @@ void L1TCorrelatorLayer1Producer::produce(edm::Event &iEvent, const edm::EventSe
     }
     pvwd = l1t::VertexWord(1, z0, 1, ptsum, 1, 1, 1);
   }
-  std::stable_sort(ptsums.begin(), ptsums.end(),[](const auto& a, const auto& b){return a.first > b.first;});
-  for(int i0 = 0; i0 < std::min(int(ptsums.size()),int(NVtx_)); i0++) { 
-    z0s.push_back(ptsums[i0].second);
-  } 
   l1ct::PVObjEmu hwpv;
   hwpv.hwZ0 = l1ct::Scales::makeZ0(pvwd.z0());
   event_.pvs.push_back(hwpv);
   event_.pvs_emu.push_back(pvwd.vertexWord());
   //Do a quick histogram vertexing to get multiple vertices (Hack for the taus)
-  doVertexings(z0s);
-  for(unsigned int i = 1; i < z0s.size(); ++i) { 
-    l1ct::PVObjEmu hwpv; 
-    hwpv.hwZ0 = l1ct::Scales::makeZ0(z0s[i]);   
-    event_.pvs.push_back(hwpv); //Skip emu
+  if(NVtx_ > 1) { 
+    std::stable_sort(ptsums.begin(), ptsums.end(),[](const auto& a, const auto& b){return a.first > b.first;});
+    for(int i0 = 0; i0 < std::min(int(ptsums.size()),int(NVtx_)); i0++) { 
+      z0s.push_back(ptsums[i0].second);
+    } 
+    if(addExtraVtx_)  doVertexings(z0s);
+    for(unsigned int i = 1; i < z0s.size(); ++i) { 
+      l1ct::PVObjEmu hwpv; 
+      hwpv.hwZ0 = l1ct::Scales::makeZ0(z0s[i]);   
+      event_.pvs.push_back(hwpv); //Skip emu
+    }
   }
   // Then also save the tracks with a vertex cut
 #if 0
@@ -1025,10 +1027,9 @@ void L1TCorrelatorLayer1Producer::doVertexings(std::vector<float> &pvdz) const {
   int lNBins = int(40. / vtxRes_);
   lNBins *= 3;
   std::unique_ptr<TH1F> h_dz(new TH1F("h_dz", "h_dz", lNBins, -20, 20));
-  for (const auto r : event_.pfinputs) {
-    const auto &reg = r.region;
-    for (const auto &p : r.track) {
-      if (p.hwPt == 0 || !reg.isFiducial(p)) continue;
+  for (const auto s : event_.decoded.track) {
+    for (const auto & p : s.obj) {
+      if (p.hwPt == 0) continue;
       //bool pSkip = false; //Skip the first PV 
       //for(const auto pvz : pvdz) if (fabs(p.floatZ0()-pvz) < vtxRes_) pSkip = true; 
       //if(!pSkip) 

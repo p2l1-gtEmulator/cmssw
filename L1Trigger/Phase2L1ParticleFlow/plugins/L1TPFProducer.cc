@@ -274,6 +274,7 @@ void L1TPFProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
     if (!extTkVtx_.isUninitialized()) {
       edm::Handle<std::vector<l1t::TkPrimaryVertex>> vtxHandle;
       iEvent.getByToken(extTkVtx_, vtxHandle);
+      //std::cout << "---> PF Ext       == NVTx == " << vtxHandle->size() << std::endl;
       for (const l1t::TkPrimaryVertex& vtx : *vtxHandle) {
 	ptsums.push_back(std::pair<float,float>(vtx.zvertex(),vtx.sum()));
 	if (ptsum == 0 || vtx.sum() > ptsum) {
