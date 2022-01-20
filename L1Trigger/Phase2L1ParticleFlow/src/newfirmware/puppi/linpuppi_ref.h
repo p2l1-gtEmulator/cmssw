@@ -18,7 +18,7 @@ namespace l1ct {
     LinPuppiEmulator(unsigned int nTrack,
                      unsigned int nIn,
                      unsigned int nOut,
-		     unsigned int nVtx,
+                     unsigned int nVtx,
                      unsigned int dR2Min,
                      unsigned int dR2Max,
                      unsigned int iptMax,
@@ -62,7 +62,7 @@ namespace l1ct {
     LinPuppiEmulator(unsigned int nTrack,
                      unsigned int nIn,
                      unsigned int nOut,
-		     unsigned int nVtx,
+                     unsigned int nVtx,
                      unsigned int dR2Min,
                      unsigned int dR2Max,
                      unsigned int iptMax,
@@ -94,7 +94,7 @@ namespace l1ct {
     LinPuppiEmulator(unsigned int nTrack,
                      unsigned int nIn,
                      unsigned int nOut,
-		     unsigned int nVtx,
+                     unsigned int nVtx,
                      unsigned int dR2Min,
                      unsigned int dR2Max,
                      unsigned int iptMax,
@@ -145,7 +145,7 @@ namespace l1ct {
                           std::vector<PuppiObjEmu> &outallch /*[nTrack]*/) const;
     //vtx vetor
     void linpuppi_chs_ref(const PFRegionEmu &region,
-                          const std::vector<PVObjEmu> &pv  /*[nVtx]*/,
+                          const std::vector<PVObjEmu> &pv /*[nVtx]*/,
                           const std::vector<PFChargedObjEmu> &pfch /*[nTrack]*/,
                           std::vector<PuppiObjEmu> &outallch /*[nTrack]*/) const;
 
@@ -176,21 +176,21 @@ namespace l1ct {
     // neutrals, in the tracker
     void linpuppi_flt(const PFRegionEmu &region,
                       const std::vector<TkObjEmu> &track /*[nTrack]*/,
-		      const std::vector<PVObjEmu> &pv  /*[nVtx]*/,
+                      const std::vector<PVObjEmu> &pv /*[nVtx]*/,
                       const std::vector<PFNeutralObjEmu> &pfallne /*[nIn]*/,
                       std::vector<PuppiObjEmu> &outallne_nocut /*[nIn]*/,
                       std::vector<PuppiObjEmu> &outallne /*[nIn]*/,
                       std::vector<PuppiObjEmu> &outselne /*[nOut]*/) const;
     void linpuppi_ref(const PFRegionEmu &region,
                       const std::vector<TkObjEmu> &track /*[nTrack]*/,
-		      const std::vector<PVObjEmu> &pv  /*[nVtx]*/,
+                      const std::vector<PVObjEmu> &pv /*[nVtx]*/,
                       const std::vector<PFNeutralObjEmu> &pfallne /*[nIn]*/,
                       std::vector<PuppiObjEmu> &outallne_nocut /*[nIn]*/,
                       std::vector<PuppiObjEmu> &outallne /*[nIn]*/,
                       std::vector<PuppiObjEmu> &outselne /*[nOut]*/) const;
     void linpuppi_ref(const PFRegionEmu &region,
                       const std::vector<TkObjEmu> &track /*[nTrack]*/,
-		      const std::vector<PVObjEmu> &pv  /*[nVtx]*/,
+                      const std::vector<PVObjEmu> &pv /*[nVtx]*/,
                       const std::vector<PFNeutralObjEmu> &pfallne /*[nIn]*/,
                       std::vector<PuppiObjEmu> &outselne /*[nOut]*/) const {
       std::vector<PuppiObjEmu> outallne_nocut, outallne;
@@ -223,8 +223,8 @@ namespace l1ct {
     void setFakePuppi(bool fakePuppi = true) { fakePuppi_ = fakePuppi; }
 
   protected:
-    unsigned int nTrack_, nIn_,
-      nOut_,nVtx_;  // nIn_, nOut refer to the calorimeter clusters or neutral PF candidates as input and as output (after sorting)
+    unsigned int nTrack_, nIn_, nOut_,
+        nVtx_;  // nIn_, nOut refer to the calorimeter clusters or neutral PF candidates as input and as output (after sorting)
     unsigned int dR2Min_, dR2Max_, iptMax_, dzCut_;
     std::vector<glbeta_t> absEtaBins_;
     std::vector<double> ptSlopeNe_, ptSlopePh_, ptZeroNe_, ptZeroPh_;

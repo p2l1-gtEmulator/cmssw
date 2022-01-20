@@ -24,14 +24,14 @@
 
 namespace nnet {
 
-// Common type definitions
-enum io_type {io_parallel = 0, io_serial};
+  // Common type definitions
+  enum io_type { io_parallel = 0, io_serial };
 
-// Default data types (??) TODO: Deprecate
-//typedef ap_fixed<16,4>  weight_t_def;
-//typedef ap_fixed<16,4>  bias_t_def;
-//typedef ap_fixed<32,10> accum_t_def;
+  // Default data types (??) TODO: Deprecate
+  //typedef ap_fixed<16,4>  weight_t_def;
+  //typedef ap_fixed<16,4>  bias_t_def;
+  //typedef ap_fixed<32,10> accum_t_def;
 
-}
+}  // namespace nnet
 
 #endif

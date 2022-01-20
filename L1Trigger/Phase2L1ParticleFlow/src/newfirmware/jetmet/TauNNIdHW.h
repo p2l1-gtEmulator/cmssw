@@ -1,7 +1,6 @@
 #ifndef L1Trigger_Phase2L1ParticleFlow_TAUNNIDHW_H_
 #define L1Trigger_Phase2L1ParticleFlow_TAUNNIDHW_H_
 
-
 #ifdef CMSSW_GIT_HASH
 #include "../dataformats/layer1_emulator.h"
 #else
@@ -19,15 +18,14 @@
 typedef ap_ufixed<16, 14> pt_t;
 typedef ap_fixed<10, 4> etaphi_t;
 
-
 namespace L1TauEmu {
   // Data types and constants used in the FPGA and FPGA-optimized functions
   //etaphi_base maps physical eta phi units onto bits
   //This way, the least significant bit of etaphi_t is exactly 0.01
   //Even though 0.01 is not a power of 2
   static float etaphi_base = 100. / 64;
-  static float z0_base     = 0.05;
-  static float dxy_base    = 0.05;
+  static float z0_base = 0.05;
+  static float dxy_base = 0.05;
   typedef ap_ufixed<16, 14> pt_t;        // 1 unit = 0.25 GeV;
   typedef ap_fixed<10, 4> etaphi_t;      // 1 unit = 0.01;
   typedef ap_fixed<12, 6> detaphi_t;     // type for the difference between etas or phis
@@ -35,8 +33,8 @@ namespace L1TauEmu {
   typedef ap_fixed<22, 16> pt_etaphi_t;  // type for product of pt with deta or phi
   typedef ap_int<8> dxy_t;
   typedef ap_int<10> z0_t;
-  typedef ap_uint<5> count_t;            // type for multiplicity
-  typedef ap_uint<5> id_t;               // type for multiplicity
+  typedef ap_uint<5> count_t;  // type for multiplicity
+  typedef ap_uint<5> id_t;     // type for multiplicity
 
   // constants for the axis update
   typedef ap_ufixed<18, -2> inv_pt_t;
@@ -106,15 +104,17 @@ namespace L1TauEmu {
 
     return out;
   }
- 
+
   detaphi_t deltaPhi(l1t::PFCandidate a, l1t::PFCandidate b) {
     // scale the particle eta, phi to hardware units
     etaphi_t aphi = etaphi_t(a.phi() * etaphi_base);
     etaphi_t bphi = etaphi_t(b.phi() * etaphi_base);
     detaphi_t dphi = detaphi_t(aphi) - detaphi_t(bphi);
     // phi wrap
-    detaphi_t dphi0 = dphi > detaphi_t( l1ct::Scales::INTPHI_PI) ? detaphi_t(l1ct::Scales::INTPHI_TWOPI - dphi) : detaphi_t(dphi);
-    detaphi_t dphi1 = dphi < detaphi_t(-l1ct::Scales::INTPHI_PI) ? detaphi_t(l1ct::Scales::INTPHI_TWOPI + dphi) : detaphi_t(dphi);
+    detaphi_t dphi0 =
+        dphi > detaphi_t(l1ct::Scales::INTPHI_PI) ? detaphi_t(l1ct::Scales::INTPHI_TWOPI - dphi) : detaphi_t(dphi);
+    detaphi_t dphi1 =
+        dphi < detaphi_t(-l1ct::Scales::INTPHI_PI) ? detaphi_t(l1ct::Scales::INTPHI_TWOPI + dphi) : detaphi_t(dphi);
     //dphi > PI ? detaphi_t(TWOPI - dphi) : detaphi_t(dphi);
     //dphi < -PI ? detaphi_t(TWOPI + dphi) : detaphi_t(dphi);
     detaphi_t dphiw = dphi > detaphi_t(0) ? dphi0 : dphi1;
@@ -131,7 +131,7 @@ namespace L1TauEmu {
     return ret;
   }
 
-};  
+};  // namespace L1TauEmu
 
 class TauNNIdHW {
 public:
@@ -155,6 +155,5 @@ public:
 private:
   std::vector<input_t> NNvectorVar_;
 };
-
 
 #endif

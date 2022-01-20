@@ -25,8 +25,7 @@
 
 namespace nnet {
 
-struct layer_config
-{
+  struct layer_config {
     // Internal data type definitions
     typedef float bias_t;
     typedef float weight_t;
@@ -41,65 +40,65 @@ struct layer_config
     static const unsigned reuse_factor = 1;
     static const bool store_weights_in_bram = false;
     static const unsigned n_zeros = 0;
-    static const bool  use_lowlatency=true;
+    static const bool use_lowlatency = true;
     // partitioning arrays cyclically to go with roll factors?
-};
+  };
 
-#define DIV_ROUNDUP(n,d) ((n + d - 1) / d)
+#define DIV_ROUNDUP(n, d) ((n + d - 1) / d)
 
- template<class data_T, class res_T, typename CONFIG_T>
-void compute_layer(
-    data_T    data[CONFIG_T::n_in],
-    res_T     res[CONFIG_T::n_out],
-    typename CONFIG_T::weight_t  weights[CONFIG_T::n_in*CONFIG_T::n_out],
-    typename CONFIG_T::bias_t    biases[CONFIG_T::n_out]) {
-    unsigned      cycle_factor = DIV_ROUNDUP(CONFIG_T::n_in*CONFIG_T::n_out, CONFIG_T::reuse_factor);
-    typename CONFIG_T::weight_t mult[CONFIG_T::n_in*CONFIG_T::n_out];
+  template <class data_T, class res_T, typename CONFIG_T>
+  void compute_layer(data_T data[CONFIG_T::n_in],
+                     res_T res[CONFIG_T::n_out],
+                     typename CONFIG_T::weight_t weights[CONFIG_T::n_in * CONFIG_T::n_out],
+                     typename CONFIG_T::bias_t biases[CONFIG_T::n_out]) {
+    unsigned cycle_factor = DIV_ROUNDUP(CONFIG_T::n_in * CONFIG_T::n_out, CONFIG_T::reuse_factor);
+    typename CONFIG_T::weight_t mult[CONFIG_T::n_in * CONFIG_T::n_out];
     /*
     if(CONFIG_T::use_lowlatency) { 
       int multiplier_limit  = ceil(float(CONFIG_T::n_in*CONFIG_T::n_out) / float(CONFIG_T::reuse_factor)) - floor(float(CONFIG_T::n_zeros) / float(CONFIG_T::reuse_factor));
     } 
     */
     typename CONFIG_T::accum_t acc[CONFIG_T::n_out];
-    for(unsigned iacc = 0; iacc < CONFIG_T::n_out; iacc++) {
-        acc[iacc] = (typename CONFIG_T::accum_t) biases[iacc];
+    for (unsigned iacc = 0; iacc < CONFIG_T::n_out; iacc++) {
+      acc[iacc] = (typename CONFIG_T::accum_t)biases[iacc];
     }
-    unsigned rufactor=CONFIG_T::reuse_factor;
-    if(CONFIG_T::use_lowlatency) { 
-      rufactor          = CONFIG_T::n_in;
-      cycle_factor      = CONFIG_T::n_out;
+    unsigned rufactor = CONFIG_T::reuse_factor;
+    if (CONFIG_T::use_lowlatency) {
+      rufactor = CONFIG_T::n_in;
+      cycle_factor = CONFIG_T::n_out;
     }
     data_T cache;
-    for(unsigned ii = 0; ii < rufactor; ii++) {
-       if(CONFIG_T::use_lowlatency) { 
+    for (unsigned ii = 0; ii < rufactor; ii++) {
+      if (CONFIG_T::use_lowlatency) {
         cache = data[ii];
-       }
-    for(unsigned jj = 0; jj < cycle_factor; jj++) {
-        unsigned windex = ii*cycle_factor+jj;
-	unsigned index   = windex/CONFIG_T::n_out;
-	if(windex > CONFIG_T::n_in*CONFIG_T::n_out-1) continue;
-	if(CONFIG_T::use_lowlatency) { 
-	  mult[windex] = cache*(weights[windex]);
-	} else { 
- 	 int aindex  = windex/CONFIG_T::n_in;
-  	 acc[aindex] += data[index]*weights[windex];
-	}
+      }
+      for (unsigned jj = 0; jj < cycle_factor; jj++) {
+        unsigned windex = ii * cycle_factor + jj;
+        unsigned index = windex / CONFIG_T::n_out;
+        if (windex > CONFIG_T::n_in * CONFIG_T::n_out - 1)
+          continue;
+        if (CONFIG_T::use_lowlatency) {
+          mult[windex] = cache * (weights[windex]);
+        } else {
+          int aindex = windex / CONFIG_T::n_in;
+          acc[aindex] += data[index] * weights[windex];
+        }
       }
     }
-    if(CONFIG_T::use_lowlatency) { 
-     // Accumulate multiplication result
-      for(unsigned ii = 0; ii < CONFIG_T::n_in; ii++) {
-	for(unsigned jj = 0; jj < CONFIG_T::n_out; jj++) {
-	    int index = ii*CONFIG_T::n_out+jj;
-	    acc[jj] += mult[index];
-         }
-     }
+    if (CONFIG_T::use_lowlatency) {
+      // Accumulate multiplication result
+      for (unsigned ii = 0; ii < CONFIG_T::n_in; ii++) {
+        for (unsigned jj = 0; jj < CONFIG_T::n_out; jj++) {
+          int index = ii * CONFIG_T::n_out + jj;
+          acc[jj] += mult[index];
+        }
+      }
     }
-    for(unsigned ires = 0; ires < CONFIG_T::n_out; ires++){
-        res[ires] = (res_T) (acc[ires]);
-    }    
-}
+    for (unsigned ires = 0; ires < CONFIG_T::n_out; ires++) {
+      res[ires] = (res_T)(acc[ires]);
+    }
+  }
 
-}
+}  // namespace nnet
 
 #endif

@@ -36,9 +36,10 @@ void PUAlgoBase::runChargedPV(Region &r, std::vector<float> &z0s) const {
           (std::abs(r.globalAbsEta(p.track.floatVtxEta())) < 1.3);  // FIXME could make a better integer implementation
     //p.chargedPV = (p.hwId <= 1 && std::abs(p.track.hwZ0 - iZ0) < (barrel ? iDZ : iDZ2));
     bool pFromPV = false;
-    for(int v = 0; v < NVtx_; v++) { 
-      int16_t iZ0 = round(z0s [v] * InputTrack::Z0_SCALE);
-      if(std::abs(p.track.hwZ0 - iZ0) < (barrel ? iDZ : iDZ2)) pFromPV = true;
+    for (int v = 0; v < NVtx_; v++) {
+      int16_t iZ0 = round(z0s[v] * InputTrack::Z0_SCALE);
+      if (std::abs(p.track.hwZ0 - iZ0) < (barrel ? iDZ : iDZ2))
+        pFromPV = true;
     }
     p.chargedPV = pFromPV;
   }
@@ -102,74 +103,82 @@ void PUAlgoBase::doVertexings(std::vector<Region> &rs, VertexAlgo algo, std::vec
   for (const Region &r : rs) {
     for (const PropagatedTrack &p : r.track) {
       if (rs.size() > 1) {
-	if (!r.fiducialLocal(p.floatVtxEta(), p.floatVtxPhi()))
-	  continue;  // skip duplicates
+        if (!r.fiducialLocal(p.floatVtxEta(), p.floatVtxPhi()))
+          continue;  // skip duplicates
       }
       h_dz->Fill(p.floatDZ(), std::min(p.floatPt(), 50.f));
     }
   }
   switch (algo) {
-  case VertexAlgo::External: {
+    case VertexAlgo::External: {
       int lBin[NVtx_];
-      for(int vtx = 0; vtx < int(NVtx_)-int(pvdz.size()); vtx++) { 
-	float max = 0;
-	for (int b = 1; b <= lNBins; ++b) {
-	  bool pPass = false;
-          for(int v = 0; v < vtx; v++) {
-            if(lBin[v] == b) pPass=true;
+      for (int vtx = 0; vtx < int(NVtx_) - int(pvdz.size()); vtx++) {
+        float max = 0;
+        for (int b = 1; b <= lNBins; ++b) {
+          bool pPass = false;
+          for (int v = 0; v < vtx; v++) {
+            if (lBin[v] == b)
+              pPass = true;
           }
-          if(pPass) continue;
-	  float sum3 = h_dz->GetBinContent(b) + h_dz->GetBinContent(b + 1) + h_dz->GetBinContent(b - 1);
-	  if (lBin[vtx] == -1 || sum3 > max) {
-	    max       = sum3;
-	    lBin[vtx] = b;
-	  }
-	}
-	float tmpdz = h_dz->GetXaxis()->GetBinCenter(lBin[vtx]);
+          if (pPass)
+            continue;
+          float sum3 = h_dz->GetBinContent(b) + h_dz->GetBinContent(b + 1) + h_dz->GetBinContent(b - 1);
+          if (lBin[vtx] == -1 || sum3 > max) {
+            max = sum3;
+            lBin[vtx] = b;
+          }
+        }
+        float tmpdz = h_dz->GetXaxis()->GetBinCenter(lBin[vtx]);
         pvdz.push_back(tmpdz);
       }
-    }
-    break;
+    } break;
     case VertexAlgo::Old: {
       int lBin[NVtx_];
-      for(int vtx = 0; vtx < NVtx_; ++vtx) { 
-	float pMax = 0;
-	lBin[vtx] = -1;
-	for(int b = 1; b <= lNBins; ++b) { 
-	  bool pPass = false;
-	  for(int v = 0; v < vtx; v++) { 
-	    if(lBin[v] == b) pPass=true;
-	  }
-	  if(pPass) continue;
-	  float pVal = h_dz->GetBinContent(b);
-	  if(pMax < pVal || lBin[vtx] == -1) {pVal = pMax; lBin[vtx] = b;} 
-	}
-	float tmpdz = h_dz->GetXaxis()->GetBinCenter(lBin[vtx]);
-	pvdz.push_back(tmpdz);
+      for (int vtx = 0; vtx < NVtx_; ++vtx) {
+        float pMax = 0;
+        lBin[vtx] = -1;
+        for (int b = 1; b <= lNBins; ++b) {
+          bool pPass = false;
+          for (int v = 0; v < vtx; v++) {
+            if (lBin[v] == b)
+              pPass = true;
+          }
+          if (pPass)
+            continue;
+          float pVal = h_dz->GetBinContent(b);
+          if (pMax < pVal || lBin[vtx] == -1) {
+            pVal = pMax;
+            lBin[vtx] = b;
+          }
+        }
+        float tmpdz = h_dz->GetXaxis()->GetBinCenter(lBin[vtx]);
+        pvdz.push_back(tmpdz);
       }
     }; break;
     case VertexAlgo::TP: {
       int lBin[NVtx_];
-      for(int vtx = 0; vtx < NVtx_; vtx++) { 
-	float max = 0;
-	for (int b = 1; b <= lNBins; ++b) {
-	  bool pPass = false;
-          for(int v = 0; v < vtx; v++) {
-            if(lBin[v] == b) pPass=true;
+      for (int vtx = 0; vtx < NVtx_; vtx++) {
+        float max = 0;
+        for (int b = 1; b <= lNBins; ++b) {
+          bool pPass = false;
+          for (int v = 0; v < vtx; v++) {
+            if (lBin[v] == b)
+              pPass = true;
           }
-          if(pPass) continue;
-	  float sum3 = h_dz->GetBinContent(b) + h_dz->GetBinContent(b + 1) + h_dz->GetBinContent(b - 1);
-	  if (lBin[vtx] == -1 || sum3 > max) {
-	    max       = sum3;
-	    lBin[vtx] = b;
-	  }
-	}
-	float tmpdz = h_dz->GetXaxis()->GetBinCenter(lBin[vtx]);
+          if (pPass)
+            continue;
+          float sum3 = h_dz->GetBinContent(b) + h_dz->GetBinContent(b + 1) + h_dz->GetBinContent(b - 1);
+          if (lBin[vtx] == -1 || sum3 > max) {
+            max = sum3;
+            lBin[vtx] = b;
+          }
+        }
+        float tmpdz = h_dz->GetXaxis()->GetBinCenter(lBin[vtx]);
         pvdz.push_back(tmpdz);
       }
     }; break;
   }
-  
+
   int16_t iDZ = round(1.5 * vtxRes_ * InputTrack::Z0_SCALE);
   int16_t iDZ2 = vtxAdaptiveCut_ ? round(4.0 * vtxRes_ * InputTrack::Z0_SCALE) : iDZ;
   for (Region &r : rs) {
@@ -179,9 +188,10 @@ void PUAlgoBase::doVertexings(std::vector<Region> &rs, VertexAlgo algo, std::vec
         central =
             (std::abs(r.globalAbsEta(p.floatVtxEta())) < 1.3);  // FIXME could make a better integer implementation
       bool pFromPV = false;
-      for(int v = 0; v < NVtx_; v++) { 
-	int16_t iZ0 = round(pvdz[v] * InputTrack::Z0_SCALE);
-	if(std::abs(p.hwZ0 - iZ0) < (central ? iDZ : iDZ2)) pFromPV = true;
+      for (int v = 0; v < NVtx_; v++) {
+        int16_t iZ0 = round(pvdz[v] * InputTrack::Z0_SCALE);
+        if (std::abs(p.hwZ0 - iZ0) < (central ? iDZ : iDZ2))
+          pFromPV = true;
       }
       p.fromPV = pFromPV;
     }

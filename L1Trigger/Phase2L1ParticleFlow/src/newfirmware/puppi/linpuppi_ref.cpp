@@ -28,7 +28,7 @@ using namespace l1ct;
 l1ct::LinPuppiEmulator::LinPuppiEmulator(unsigned int nTrack,
                                          unsigned int nIn,
                                          unsigned int nOut,
-					 unsigned int nVtx,
+                                         unsigned int nVtx,
                                          unsigned int dR2Min,
                                          unsigned int dR2Max,
                                          unsigned int iptMax,
@@ -195,16 +195,16 @@ void l1ct::LinPuppiEmulator::linpuppi_chs_ref(const PFRegionEmu &region,
                                               const std::vector<PVObjEmu> &pv,
                                               const std::vector<PFChargedObjEmu> &pfch /*[nTrack]*/,
                                               std::vector<PuppiObjEmu> &outallch /*[nTrack]*/) const {
-
   const unsigned int nTrack = std::min<unsigned int>(nTrack_, pfch.size());
   outallch.resize(nTrack);
   for (unsigned int i = 0; i < nTrack; ++i) {
     int pZ0 = pfch[i].hwZ0;
     int z0diff = -99999;
-    for (unsigned int j = 0; j < nVtx_; ++j) { 
-      if(j < pv.size()) { 
-	int pZ0Diff = pZ0 - pv[j].hwZ0;
-	if(std::abs(z0diff) > std::abs(pZ0Diff)) z0diff = pZ0Diff; 
+    for (unsigned int j = 0; j < nVtx_; ++j) {
+      if (j < pv.size()) {
+        int pZ0Diff = pZ0 - pv[j].hwZ0;
+        if (std::abs(z0diff) > std::abs(pZ0Diff))
+          z0diff = pZ0Diff;
       }
     }
     bool accept = pfch[i].hwPt != 0;
@@ -212,8 +212,8 @@ void l1ct::LinPuppiEmulator::linpuppi_chs_ref(const PFRegionEmu &region,
       accept = accept && region.isFiducial(pfch[i]) && (std::abs(z0diff) <= int(dzCut_) || pfch[i].hwId.isMuon());
     if (accept) {
       outallch[i].fill(region, pfch[i]);
-      if (fakePuppi_) {  // overwrite Dxy & TkQuality with debug information
-        outallch[i].setHwDxy(dxy_t(pv[0].hwZ0)); ///hack to get this to work
+      if (fakePuppi_) {                           // overwrite Dxy & TkQuality with debug information
+        outallch[i].setHwDxy(dxy_t(pv[0].hwZ0));  ///hack to get this to work
         outallch[i].setHwTkQuality(region.isFiducial(pfch[i]) ? 1 : 0);
       }
       if (debug_ && pfch[i].hwPt > 0)
@@ -240,7 +240,6 @@ void l1ct::LinPuppiEmulator::linpuppi_chs_ref(const PFRegionEmu &region,
     }
   }
 }
-
 
 unsigned int l1ct::LinPuppiEmulator::find_ieta(const PFRegionEmu &region, eta_t eta) const {
   int n = absEtaBins_.size();
@@ -435,11 +434,12 @@ void l1ct::LinPuppiEmulator::linpuppi_ref(const PFRegionEmu &region,
         continue;
 
       int pZMin = 99999;
-      for(unsigned int v = 0; v < nVtx_; ++v) { 
-	if(v < pv.size()) { 
-	  int ppZMin =  std::abs(int(track[it].hwZ0 - pv[v].hwZ0));
-	  if(pZMin > ppZMin) pZMin = ppZMin;
-	}
+      for (unsigned int v = 0; v < nVtx_; ++v) {
+        if (v < pv.size()) {
+          int ppZMin = std::abs(int(track[it].hwZ0 - pv[v].hwZ0));
+          if (pZMin > ppZMin)
+            pZMin = ppZMin;
+        }
       }
       if (std::abs(pZMin) > int(dzCut_))
         continue;
@@ -586,11 +586,12 @@ void l1ct::LinPuppiEmulator::linpuppi_flt(const PFRegionEmu &region,
         continue;
 
       int pZMin = 99999;
-      for(unsigned int v = 0; v < nVtx_; ++v) { 
-	if(v < pv.size()) { 
-	  int ppZMin =  std::abs(int(track[it].hwZ0 - pv[v].hwZ0));
-	  if(pZMin > ppZMin) pZMin = ppZMin;
-	}
+      for (unsigned int v = 0; v < nVtx_; ++v) {
+        if (v < pv.size()) {
+          int ppZMin = std::abs(int(track[it].hwZ0 - pv[v].hwZ0));
+          if (pZMin > ppZMin)
+            pZMin = ppZMin;
+        }
       }
       if (std::abs(pZMin) > int(dzCut_))
         continue;
