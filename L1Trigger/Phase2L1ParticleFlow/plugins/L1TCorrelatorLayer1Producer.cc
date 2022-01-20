@@ -58,7 +58,6 @@ private:
   edm::EDGetTokenT<std::vector<l1t::VertexWord>> tkVtxEmu_;
   float vtxRes_;
   int NVtx_;
-  bool addExtraVtx_;
 
   edm::EDGetTokenT<l1t::SAMuonCollection> muCands_;  // standalone muons
 
@@ -238,8 +237,7 @@ L1TCorrelatorLayer1Producer::L1TCorrelatorLayer1Producer(const edm::ParameterSet
   }
   vtxRes_ = iConfig.getParameter<double>("vtxRes");
   NVtx_ = iConfig.getParameter<int>("nVtx");
-  addExtraVtx_ = iConfig.getParameter<bool>("addExtraVtx");
-
+  
   const char *iprefix[4] = {"totNReg", "maxNReg", "totNSec", "maxNSec"};
   for (int i = 0; i <= l1muType; ++i) {
     for (int ip = 0; ip < 4; ++ip) {
@@ -375,8 +373,6 @@ void L1TCorrelatorLayer1Producer::produce(edm::Event &iEvent, const edm::EventSe
     for (int i0 = 0; i0 < std::min(int(ptsums.size()), int(NVtx_)); i0++) {
       z0s.push_back(ptsums[i0].second);
     }
-    if (addExtraVtx_)
-      doVertexings(z0s);
     for (unsigned int i = 1; i < z0s.size(); ++i) {
       l1ct::PVObjEmu hwpv;
       hwpv.hwZ0 = l1ct::Scales::makeZ0(z0s[i]);
@@ -1023,45 +1019,6 @@ std::pair<unsigned int, unsigned int> L1TCorrelatorLayer1Producer::totAndMax(
   }
   return std::make_pair(ntot, nmax);
 }
-//do a quick histogram vertexing since the current collections only output the leading vertex
-void L1TCorrelatorLayer1Producer::doVertexings(std::vector<float> &pvdz) const {
-  int lNBins = int(40. / vtxRes_);
-  lNBins *= 3;
-  std::unique_ptr<TH1F> h_dz(new TH1F("h_dz", "h_dz", lNBins, -20, 20));
-  for (const auto s : event_.decoded.track) {
-    for (const auto &p : s.obj) {
-      if (p.hwPt == 0)
-        continue;
-      //bool pSkip = false; //Skip the first PV
-      //for(const auto pvz : pvdz) if (fabs(p.floatZ0()-pvz) < vtxRes_) pSkip = true;
-      //if(!pSkip)
-      h_dz->Fill(
-          p.floatZ0(),
-          std::min(p.floatPt(), 50.f));  //Note! this will use tracks from actual PV (its effectively just forcing TP)
-    }
-  }
-  int lBin[NVtx_];
-  for (int vtx = 0; vtx < int(NVtx_) - int(pvdz.size()); vtx++) {
-    float max = 0;
-    for (int b = 1; b <= lNBins; ++b) {
-      bool pPass = false;
-      for (int v = 0; v < vtx; v++) {
-        if (lBin[v] == b)
-          pPass = true;
-      }
-      if (pPass)
-        continue;
-      float sum3 = h_dz->GetBinContent(b) + h_dz->GetBinContent(b + 1) + h_dz->GetBinContent(b - 1);
-      if (lBin[vtx] == -1 || sum3 > max) {
-        max = sum3;
-        lBin[vtx] = b;
-      }
-    }
-    float tmpdz = h_dz->GetXaxis()->GetBinCenter(lBin[vtx]);
-    pvdz.push_back(tmpdz);
-  }
-}
-
 //define this as a plug-in
 #include "FWCore/Framework/interface/MakerMacros.h"
 DEFINE_FWK_MODULE(L1TCorrelatorLayer1Producer);
