@@ -2,15 +2,17 @@
 #include "L1Trigger/L1TNtuples/interface/L1AnalysisPhaseIIStep1.h"
 #include "L1Trigger/L1TMuon/interface/MicroGMTConfiguration.h"
 #include "L1Trigger/Phase2L1GMT/interface/Constants.h"
+#include "L1Trigger/L1TTrackMatch/interface/L1TkHTMissEmulatorProducer.h"
 
 L1Analysis::L1AnalysisPhaseIIStep1::L1AnalysisPhaseIIStep1() {}
 
 L1Analysis::L1AnalysisPhaseIIStep1::~L1AnalysisPhaseIIStep1() {}
 
 void L1Analysis::L1AnalysisPhaseIIStep1::SetVertices(float z0Puppi, const edm::Handle<std::vector<l1t::VertexWord> > TkPrimaryVertex) {
-  l1extra_.z0Puppi = z0Puppi;
+  //l1extra_.z0Puppi = z0Puppi;
+  l1extra_.z0L1TkPV.push_back(TkPrimaryVertex->at(0).z0());
   for (unsigned int i = 0; i < TkPrimaryVertex->size(); i++) {
-    l1extra_.z0L1TkPV.push_back(TkPrimaryVertex->at(i).z0());
+    l1extra_.z0L1TkAll.push_back(TkPrimaryVertex->at(i).z0());
     //l1extra_.sumL1TkPV.push_back(TkPrimaryVertex->at(i).sum());
     l1extra_.nL1TkPVs++;
   }
@@ -153,7 +155,7 @@ void L1Analysis::L1AnalysisPhaseIIStep1::SetEG(const edm::Handle<l1t::EGammaBxCo
       l1extra_.EGHwQual.push_back(it->hwQual());
       l1extra_.EGBx.push_back(0);  //it->bx());
       l1extra_.EGHGC.push_back(1);
-      bool quality = (it->hwQual() == 2);
+      bool quality = (it->hwQual() == 3);
       l1extra_.EGPassesLooseTrackID.push_back(quality);
       l1extra_.EGPassesPhotonID.push_back(quality);
       l1extra_.nEG++;
@@ -213,7 +215,7 @@ void L1Analysis::L1AnalysisPhaseIIStep1::SetTkEG(const edm::Handle<l1t::TkElectr
       l1extra_.tkElectronEGRefPhi.push_back(it->EGRef()->phi());
       l1extra_.tkElectronBx.push_back(0);  //it->bx());
       l1extra_.tkElectronHGC.push_back(1);
-      bool quality = (it->EGRef()->hwQual() == 2);
+      bool quality = (it->EGRef()->hwQual() == 3);
       l1extra_.tkElectronPassesLooseTrackID.push_back(quality);
       l1extra_.tkElectronPassesPhotonID.push_back(quality);
       l1extra_.nTkElectrons++;
@@ -271,7 +273,7 @@ void L1Analysis::L1AnalysisPhaseIIStep1::SetTkEM(const edm::Handle<l1t::TkEmColl
       l1extra_.tkPhotonEGRefEta.push_back(it->EGRef()->eta());
       l1extra_.tkPhotonEGRefPhi.push_back(it->EGRef()->phi());
       l1extra_.tkPhotonHGC.push_back(1);
-      bool quality = (it->EGRef()->hwQual() == 2);
+      bool quality = (it->EGRef()->hwQual() == 3);
       l1extra_.tkPhotonPassesLooseTrackID.push_back(quality);
       l1extra_.tkPhotonPassesPhotonID.push_back(quality);
       l1extra_.nTkPhotons++;
@@ -604,15 +606,18 @@ void L1Analysis::L1AnalysisPhaseIIStep1::SetTkMET(const   edm::Handle< std::vect
   //}
 }
 
-void L1Analysis::L1AnalysisPhaseIIStep1::SetTkMHT(const edm::Handle<l1t::TkHTMissCollection> trackerMHTs) {
+void L1Analysis::L1AnalysisPhaseIIStep1::SetTkMHT(const edm::Handle< std::vector<l1t::EtSum> > trackerMHTs) {
   // Hardcoding it like this, but this needs to be changed to a vector
 
-  for (l1t::TkHTMissCollection::const_iterator it = trackerMHTs->begin(); it != trackerMHTs->end(); it++) {
-    l1extra_.trackerHT.push_back(it->etTotal());
-    l1extra_.trackerMHT.push_back(it->EtMiss());
-    l1extra_.trackerMHTPhi.push_back(it->phi());
-    l1extra_.nTrackerMHT++;
-  }
+  //trkMHTEmu = L1TkMHTEmuHandle->begin()->p4().energy() * l1tmhtemu::kStepMHT;
+  //	trkHTEmu = L1TkMHTEmuHandle->begin()->hwPt() * l1tmhtemu::kStepPt;
+  //      trkMHTEmuPhi = L1TkMHTEmuHandle->begin()->hwPhi() * l1tmhtemu::kStepMHTPhi - M_PI;
+  //for (l1t::TkHTMissCollection::const_iterator it = trackerMHTs->begin(); it != trackerMHTs->end(); it++) {
+  l1extra_.trackerHT.push_back(trackerMHTs->begin()->hwPt() * l1tmhtemu::kStepPt);
+  l1extra_.trackerMHT.push_back(trackerMHTs->begin()->p4().energy() * l1tmhtemu::kStepMHT);
+  l1extra_.trackerMHTPhi.push_back(trackerMHTs->begin()->hwPhi() * l1tmhtemu::kStepMHTPhi - M_PI);
+  l1extra_.nTrackerMHT++;
+  //}
 }
 
 // trackerMetDisplaced
@@ -626,15 +631,15 @@ void L1Analysis::L1AnalysisPhaseIIStep1::SetTkMETDisplaced(const edm::Handle<l1t
   }
 }
 
-void L1Analysis::L1AnalysisPhaseIIStep1::SetTkMHTDisplaced(const edm::Handle<l1t::TkHTMissCollection> trackerMHTs) {
+void L1Analysis::L1AnalysisPhaseIIStep1::SetTkMHTDisplaced(const edm::Handle< std::vector<l1t::EtSum> > trackerMHTs) {
   // Hardcoding it like this, but this needs to be changed to a vector
 
-  for (l1t::TkHTMissCollection::const_iterator it = trackerMHTs->begin(); it != trackerMHTs->end(); it++) {
-    l1extra_.trackerHTDisplaced.push_back(it->etTotal());
-    l1extra_.trackerMHTDisplaced.push_back(it->EtMiss());
-    l1extra_.trackerMHTPhiDisplaced.push_back(it->phi());
-    l1extra_.nTrackerMHTDisplaced++;
-  }
+  //for (l1t::TkHTMissCollection::const_iterator it = trackerMHTs->begin(); it != trackerMHTs->end(); it++) {
+  l1extra_.trackerHTDisplaced.push_back(trackerMHTs->begin()->hwPt() * l1tmhtemu::kStepPt);
+  l1extra_.trackerMHTDisplaced.push_back(trackerMHTs->begin()->p4().energy() * l1tmhtemu::kStepMHT);
+  l1extra_.trackerMHTPhiDisplaced.push_back(trackerMHTs->begin()->hwPhi() * l1tmhtemu::kStepMHTPhi - M_PI);
+  l1extra_.nTrackerMHTDisplaced++;
+  //}
 }
 
 

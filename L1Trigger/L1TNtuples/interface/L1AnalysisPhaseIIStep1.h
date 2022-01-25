@@ -140,9 +140,9 @@ namespace L1Analysis {
     void SetTkJetDisplaced(const edm::Handle<l1t::TkJetWordCollection> tkTrackerJet, unsigned maxL1Extra);
 
     void SetTkMET(const edm::Handle <std::vector<l1t::EtSum>> trackerMets);
-    void SetTkMHT(const edm::Handle<l1t::TkHTMissCollection> trackerMHTs);
+    void SetTkMHT(const edm::Handle <std::vector<l1t::EtSum>> trackerMHTs);
     void SetTkMETDisplaced(const edm::Handle<l1t::TkEtMissCollection> trackerMets);
-    void SetTkMHTDisplaced(const edm::Handle<l1t::TkHTMissCollection> trackerMHTs);
+    void SetTkMHTDisplaced(const edm::Handle <std::vector<l1t::EtSum>> trackerMHTs);
 
 
     L1AnalysisPhaseIIStep1DataFormat* getData() { return &l1extra_; }
