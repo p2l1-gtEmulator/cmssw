@@ -38,6 +38,8 @@
 #include "DataFormats/L1TCorrelator/interface/TkEm.h"
 #include "DataFormats/L1TCorrelator/interface/TkEmFwd.h"
 
+#include <TH1F.h>
+
 //--------------------------------------------------------------------------------------------------
 class L1TCorrelatorLayer1Producer : public edm::stream::EDProducer<> {
 public:
@@ -54,6 +56,8 @@ private:
   bool emuTkVtx_;
   edm::EDGetTokenT<std::vector<l1t::Vertex>> extTkVtx_;
   edm::EDGetTokenT<std::vector<l1t::VertexWord>> tkVtxEmu_;
+  float vtxRes_;
+  int NVtx_;
 
   edm::EDGetTokenT<l1t::SAMuonCollection> muCands_;  // standalone muons
 
@@ -120,6 +124,7 @@ private:
   template <typename T>
   void setRefs_(l1t::PFCandidate &pf, const T &p) const;
 
+  void doVertexings(std::vector<float> &pvdz) const;
   // for multiplicities
   enum InputType { caloType = 0, emcaloType = 1, trackType = 2, l1muType = 3 };
   static constexpr const char *inputTypeName[l1muType + 1] = {"Calo", "EmCalo", "TK", "Mu"};
@@ -230,7 +235,9 @@ L1TCorrelatorLayer1Producer::L1TCorrelatorLayer1Producer(const edm::ParameterSet
   } else {
     extTkVtx_ = consumes<std::vector<l1t::Vertex>>(iConfig.getParameter<edm::InputTag>("vtxCollection"));
   }
-
+  vtxRes_ = iConfig.getParameter<double>("vtxRes");
+  NVtx_ = iConfig.getParameter<int>("nVtx");
+  
   const char *iprefix[4] = {"totNReg", "maxNReg", "totNSec", "maxNSec"};
   for (int i = 0; i <= l1muType; ++i) {
     for (int ip = 0; ip < 4; ++ip) {
@@ -294,7 +301,6 @@ void L1TCorrelatorLayer1Producer::produce(edm::Event &iEvent, const edm::EventSe
       continue;
     addMuon(mu, l1t::PFCandidate::MuonRef(muons, i));
   }
-
   // ------ READ CALOS -----
   edm::Handle<l1t::PFClusterCollection> caloHandle;
   for (const auto &tag : emCands_) {
@@ -328,7 +334,8 @@ void L1TCorrelatorLayer1Producer::produce(edm::Event &iEvent, const edm::EventSe
   iEvent.put(fetchTracks(), "TK");
 
   // Then do the vertexing, and save it out
-
+  std::vector<float> z0s;
+  std::vector<std::pair<float, float>> ptsums;
   float z0 = 0;
   double ptsum = 0;
   l1t::VertexWord pvwd;
@@ -337,6 +344,7 @@ void L1TCorrelatorLayer1Producer::produce(edm::Event &iEvent, const edm::EventSe
     edm::Handle<std::vector<l1t::VertexWord>> vtxEmuHandle;
     iEvent.getByToken(tkVtxEmu_, vtxEmuHandle);
     for (const auto &vtx : *vtxEmuHandle) {
+      ptsums.push_back(std::pair<float, float>(vtx.pt(), vtx.z0()));
       if (ptsum == 0 || vtx.pt() > ptsum) {
         ptsum = vtx.pt();
         z0 = vtx.z0();
@@ -347,6 +355,7 @@ void L1TCorrelatorLayer1Producer::produce(edm::Event &iEvent, const edm::EventSe
     edm::Handle<std::vector<l1t::Vertex>> vtxHandle;
     iEvent.getByToken(extTkVtx_, vtxHandle);
     for (const auto &vtx : *vtxHandle) {
+      ptsums.push_back(std::pair<float, float>(vtx.pt(), vtx.z0()));
       if (ptsum == 0 || vtx.pt() > ptsum) {
         ptsum = vtx.pt();
         z0 = vtx.z0();
@@ -354,12 +363,22 @@ void L1TCorrelatorLayer1Producer::produce(edm::Event &iEvent, const edm::EventSe
     }
     pvwd = l1t::VertexWord(1, z0, 1, ptsum, 1, 1, 1);
   }
-
   l1ct::PVObjEmu hwpv;
   hwpv.hwZ0 = l1ct::Scales::makeZ0(pvwd.z0());
   event_.pvs.push_back(hwpv);
   event_.pvs_emu.push_back(pvwd.vertexWord());
-
+  //Do a quick histogram vertexing to get multiple vertices (Hack for the taus)
+  if (NVtx_ > 1) {
+    std::stable_sort(ptsums.begin(), ptsums.end(), [](const auto &a, const auto &b) { return a.first > b.first; });
+    for (int i0 = 0; i0 < std::min(int(ptsums.size()), int(NVtx_)); i0++) {
+      z0s.push_back(ptsums[i0].second);
+    }
+    for (unsigned int i = 1; i < z0s.size(); ++i) {
+      l1ct::PVObjEmu hwpv;
+      hwpv.hwZ0 = l1ct::Scales::makeZ0(z0s[i]);
+      event_.pvs.push_back(hwpv);  //Skip emu
+    }
+  }
   // Then also save the tracks with a vertex cut
 #if 0
   iEvent.put(l1regions_.fetchTracks(/*ptmin=*/0.0, /*fromPV=*/true), "TKVtx");
@@ -1000,7 +1019,6 @@ std::pair<unsigned int, unsigned int> L1TCorrelatorLayer1Producer::totAndMax(
   }
   return std::make_pair(ntot, nmax);
 }
-
 //define this as a plug-in
 #include "FWCore/Framework/interface/MakerMacros.h"
 DEFINE_FWK_MODULE(L1TCorrelatorLayer1Producer);
