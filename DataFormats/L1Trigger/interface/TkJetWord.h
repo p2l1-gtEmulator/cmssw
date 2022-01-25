@@ -81,19 +81,8 @@ namespace l1t {
       word = word + (phi.to_string().substr(2,phi.to_string().length()-2));
       word.append(TkJetBitWidths::kGlbEtaSize - (eta.to_string().length()-2),'0');
       word = word + (eta.to_string().substr(2,eta.to_string().length()-2));
-      /*cout << "jet word pt: ";
-      cout << pt.to_float();
-      cout << ", not float: ";
-      cout << pt;
-      cout << ", not float str: ";
-      cout << (pt.to_string().substr(2,pt.to_string().length()-2));*/
       ap_ufixed<kPtSize+5, kPtMagSize+5, AP_TRN, AP_SAT> pt_2 = pt;
       ap_uint<kPtSize> pt_temp = pt_2 << 5;
-      /*cout << ", pt_temp: ";
-      cout << pt_temp;
-      cout << ", pt_tmp_str: ";
-      cout << (pt_temp.to_string().substr(2,pt_temp.to_string().length()-2));
-      cout << endl;*/
       word.append(TkJetBitWidths::kPtSize - (pt_temp.to_string().length()-2),'0');
       word = word + (pt_temp.to_string().substr(2,pt_temp.to_string().length()-2));
 
