@@ -1,17 +1,17 @@
 #include <iostream>
-#include "L1Trigger/Phase2L1ParticleFlow/src/newfirmware/jetmet/TauNNIdHW.h"
+#include "L1Trigger/Phase2L1ParticleFlow/src/newfirmware/taus/nn/TauNNIdHW.h"
 #include "L1Trigger/Phase2L1ParticleFlow/src/newfirmware/common/hls4ml/v020/nnet_layer.h"
 #include "L1Trigger/Phase2L1ParticleFlow/src/newfirmware/common/hls4ml/v020/nnet_activation.h"
 
 //hls-fpga-machine-learning insert weights
-#include "L1Trigger/Phase2L1ParticleFlow/src/newfirmware/jetmet/weights/w1.h"
-#include "L1Trigger/Phase2L1ParticleFlow/src/newfirmware/jetmet/weights/b1.h"
-#include "L1Trigger/Phase2L1ParticleFlow/src/newfirmware/jetmet/weights/w2.h"
-#include "L1Trigger/Phase2L1ParticleFlow/src/newfirmware/jetmet/weights/b2.h"
-#include "L1Trigger/Phase2L1ParticleFlow/src/newfirmware/jetmet/weights/w3.h"
-#include "L1Trigger/Phase2L1ParticleFlow/src/newfirmware/jetmet/weights/b3.h"
-#include "L1Trigger/Phase2L1ParticleFlow/src/newfirmware/jetmet/weights/w4.h"
-#include "L1Trigger/Phase2L1ParticleFlow/src/newfirmware/jetmet/weights/b4.h"
+#include "L1Trigger/Phase2L1ParticleFlow/src/newfirmware/taus/nn/weights/w1.h"
+#include "L1Trigger/Phase2L1ParticleFlow/src/newfirmware/taus/nn/weights/b1.h"
+#include "L1Trigger/Phase2L1ParticleFlow/src/newfirmware/taus/nn/weights/w2.h"
+#include "L1Trigger/Phase2L1ParticleFlow/src/newfirmware/taus/nn/weights/b2.h"
+#include "L1Trigger/Phase2L1ParticleFlow/src/newfirmware/taus/nn/weights/w3.h"
+#include "L1Trigger/Phase2L1ParticleFlow/src/newfirmware/taus/nn/weights/b3.h"
+#include "L1Trigger/Phase2L1ParticleFlow/src/newfirmware/taus/nn/weights/w4.h"
+#include "L1Trigger/Phase2L1ParticleFlow/src/newfirmware/taus/nn/weights/b4.h"
 
 TauNNIdHW::TauNNIdHW() { NNvectorVar_.clear(); }
 TauNNIdHW::~TauNNIdHW() {}
