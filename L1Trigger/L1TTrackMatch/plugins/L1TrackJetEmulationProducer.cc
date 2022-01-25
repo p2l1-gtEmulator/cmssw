@@ -146,7 +146,7 @@ L1TrackJetEmulationProducer::L1TrackJetEmulationProducer(const ParameterSet &iCo
   nStubs4DisplacedBendTight_ = (float)iConfig.getParameter<double>("nStubs4Displacedbend_Tight");
   nStubs5DisplacedBendTight_ = (float)iConfig.getParameter<double>("nStubs5Displacedbend_Tight");
 
-  zStep_ = convert::makeZ0(2.0 * trkZMax_ / zBins_);
+  zStep_ = convert::makeZ0(2.0 * trkZMax_ / (zBins_+1));
   etaStep_ = convert::makeGlbEta(2.0 * trkEtaMax_ / etaBins_);  //etaStep is the width of an etabin
   phiStep_ = convert::makeGlbPhi(2.0 * M_PI / phiBins_);        ////phiStep is the width of a phibin
 
@@ -282,7 +282,7 @@ void L1TrackJetEmulationProducer::L2_cluster(vector<Ptr<L1TTTrackType>> L1TrkPtr
     kPhiMagSize = 1,
   };
 
-  const int nz = zBins_;
+  const int nz = zBins_+1;
   MaxZBin all_zBins[nz];
   MaxZBin mzbtemp;
   for (int z = 0; z < nz; ++z)

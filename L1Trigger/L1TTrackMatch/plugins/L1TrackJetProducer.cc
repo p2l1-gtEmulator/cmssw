@@ -124,7 +124,7 @@ L1TrackJetProducer::L1TrackJetProducer(const ParameterSet &iConfig)
   nDisplacedTracks_ = (int)iConfig.getParameter<int>("nDisplacedTracks");
   dzPVTrk_ = (float)iConfig.getParameter<double>("MaxDzTrackPV");
 
-  zStep_ = 2.0 * trkZMax_ / zBins_;
+  zStep_ = 2.0 * trkZMax_ / (zBins_+1);
   etaStep_ = 2.0 * trkEtaMax_ / etaBins_;  //etaStep is the width of an etabin
   phiStep_ = 2 * M_PI / phiBins_;          ////phiStep is the width of a phibin
 
@@ -247,7 +247,7 @@ void L1TrackJetProducer::produce(Event &iEvent, const EventSetup &iSetup) {
 }
 
 void L1TrackJetProducer::L2_cluster(vector<Ptr<L1TTTrackType> > L1TrkPtrs_, vector<int> tdtrk_, MaxZBin &mzb) {
-  const int nz = zBins_;
+  const int nz = zBins_+1;
   MaxZBin all_zBins[nz];
   MaxZBin mzbtemp;
   for (int z = 0; z < nz; ++z)
