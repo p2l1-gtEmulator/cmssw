@@ -602,7 +602,7 @@ void L1Analysis::L1AnalysisPhaseIIStep1::SetTkJet(const edm::Handle<l1t::TkJetWo
     //l1extra_.trackerJetEt.push_back(it->et());
     l1extra_.trackerJetEta.push_back(it->glbeta());
     l1extra_.trackerJetPhi.push_back(it->glbphi());
-    //l1extra_.trackerJetzVtx.push_back(it->jetVtx());
+    l1extra_.trackerJetZ0.push_back(it->z0());
     l1extra_.trackerJetBx.push_back(0);  //it->bx());
     l1extra_.nTrackerJets++;
   }
@@ -616,40 +616,26 @@ void L1Analysis::L1AnalysisPhaseIIStep1::SetTkJetDisplaced(const edm::Handle<l1t
     //l1extra_.trackerJetDisplacedEt.push_back(it->et());
     l1extra_.trackerJetDisplacedEta.push_back(it->glbeta());
     l1extra_.trackerJetDisplacedPhi.push_back(it->glbphi());
-    //l1extra_.trackerJetDisplacedzVtx.push_back(it->jetVtx());
+    l1extra_.trackerJetDisplacedZ0.push_back(it->z0());
     l1extra_.trackerJetDisplacedBx.push_back(0);  //it->bx());
     l1extra_.nTrackerJetsDisplaced++;
   }
 }
 
 
-void L1Analysis::L1AnalysisPhaseIIStep1::SetTkMET(const   edm::Handle< std::vector<l1t::EtSum> > trackerMets) {
-  l1t::EtSum tkmet = trackerMets->at(0);
-  //cout<<met.et()<< " and " <<met.phi()<<endl;
-    l1extra_.trackerMetEt = tkmet.et();
-  l1extra_.trackerMetPhi = tkmet.phi();
+void L1Analysis::L1AnalysisPhaseIIStep1::SetTkMET(const   edm::Handle< std::vector<l1t::EtSum> > trackerMET) {
 
-  //for (l1t::EtSum::const_iterator it = trackerMets->begin(); it != trackerMets->end(); it++) {
-  //  //l1extra_.trackerMetSumEt.push_back(it->etTotal()); what to do?
-  //  l1extra_.trackerMetEt.push_back(it->et());
-  //  l1extra_.trackerMetPhi.push_back(it->phi());
-  //  //l1extra_.trackerMetBx.push_back(it->bx()); what to do?
-  //  l1extra_.nTrackerMet++;
-  //}
+  l1extra_.trackerMET = trackerMET->begin()->hwPt() * l1tmetemu::kStepMET;
+  l1extra_.trackerMETPhi =trackerMET->begin()->hwPhi() * l1tmetemu::kStepMETPhi - M_PI;
+
 }
 
-void L1Analysis::L1AnalysisPhaseIIStep1::SetTkMHT(const edm::Handle< std::vector<l1t::EtSum> > trackerMHTs) {
-  // Hardcoding it like this, but this needs to be changed to a vector
+void L1Analysis::L1AnalysisPhaseIIStep1::SetTkMHT(const edm::Handle< std::vector<l1t::EtSum> > trackerMHT) {
 
-  //trkMHTEmu = L1TkMHTEmuHandle->begin()->p4().energy() * l1tmhtemu::kStepMHT;
-  //	trkHTEmu = L1TkMHTEmuHandle->begin()->hwPt() * l1tmhtemu::kStepPt;
-  //      trkMHTEmuPhi = L1TkMHTEmuHandle->begin()->hwPhi() * l1tmhtemu::kStepMHTPhi - M_PI;
-  //for (l1t::TkHTMissCollection::const_iterator it = trackerMHTs->begin(); it != trackerMHTs->end(); it++) {
-  l1extra_.trackerHT.push_back(trackerMHTs->begin()->hwPt() * l1tmhtemu::kStepPt);
-  l1extra_.trackerMHT.push_back(trackerMHTs->begin()->p4().energy() * l1tmhtemu::kStepMHT);
-  l1extra_.trackerMHTPhi.push_back(trackerMHTs->begin()->hwPhi() * l1tmhtemu::kStepMHTPhi - M_PI);
-  l1extra_.nTrackerMHT++;
-  //}
+   l1extra_.trackerMHT = trackerMHT->begin()->p4().energy() * l1tmhtemu::kStepMHT;
+   l1extra_.trackerHT = trackerMHT->begin()->hwPt() * l1tmhtemu::kStepPt;
+   l1extra_.trackerMHTPhi = trackerMHT->begin()->hwPhi() * l1tmhtemu::kStepMHTPhi - M_PI;
+
 }
 
 // trackerMetDisplaced
@@ -663,15 +649,12 @@ void L1Analysis::L1AnalysisPhaseIIStep1::SetTkMETDisplaced(const edm::Handle<l1t
   }
 }
 
-void L1Analysis::L1AnalysisPhaseIIStep1::SetTkMHTDisplaced(const edm::Handle< std::vector<l1t::EtSum> > trackerMHTs) {
-  // Hardcoding it like this, but this needs to be changed to a vector
+void L1Analysis::L1AnalysisPhaseIIStep1::SetTkMHTDisplaced(const edm::Handle< std::vector<l1t::EtSum> > trackerMHT) {
 
-  //for (l1t::TkHTMissCollection::const_iterator it = trackerMHTs->begin(); it != trackerMHTs->end(); it++) {
-  l1extra_.trackerHTDisplaced.push_back(trackerMHTs->begin()->hwPt() * l1tmhtemu::kStepPt);
-  l1extra_.trackerMHTDisplaced.push_back(trackerMHTs->begin()->p4().energy() * l1tmhtemu::kStepMHT);
-  l1extra_.trackerMHTPhiDisplaced.push_back(trackerMHTs->begin()->hwPhi() * l1tmhtemu::kStepMHTPhi - M_PI);
-  l1extra_.nTrackerMHTDisplaced++;
-  //}
+  l1extra_.trackerHTDisplaced     =trackerMHT->begin()->hwPt() * l1tmhtemu::kStepPt;
+  l1extra_.trackerMHTDisplaced    =trackerMHT->begin()->p4().energy() * l1tmhtemu::kStepMHT;
+  l1extra_.trackerMHTPhiDisplaced =trackerMHT->begin()->hwPhi() * l1tmhtemu::kStepMHTPhi - M_PI;
+
 }
 
 
