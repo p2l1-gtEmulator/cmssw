@@ -26,7 +26,7 @@ L1NNTauProducerPF = cms.EDProducer("L1NNTauProducer",
                                       seedpt          = cms.double(10),
                                       conesize        = cms.double(0.4),
                                       tausize         = cms.double(0.1),
-                                      maxtaus         = cms.uint32(5),
+                                      maxtaus         = cms.int32(5), 
                                       nparticles      = cms.int32(10),
                                       HW              = cms.bool(True),
                                       debug           = cms.bool(False),
@@ -52,7 +52,7 @@ tau2VtxTaskHW = cms.Task(
     l1ctLayer1Barrel2Vtx,
     l1ctLayer1HGCal2Vtx,
     l1ctLayer12Vtx,
-    L1NNTauProducerPuppi
+    L1NNTauProducerPuppi2Vtx # changing this (otherwise the object is not run?)
 )
 
 l1pfProducer2VtxSW         = l1pfProducer.clone()
