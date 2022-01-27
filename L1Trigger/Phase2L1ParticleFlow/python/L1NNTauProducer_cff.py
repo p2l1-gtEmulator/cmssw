@@ -52,7 +52,7 @@ tau2VtxTaskHW = cms.Task(
     l1ctLayer1Barrel2Vtx,
     l1ctLayer1HGCal2Vtx,
     l1ctLayer12Vtx,
-    L1NNTauProducerPuppi
+    L1NNTauProducerPuppi2Vtx
 )
 
 l1pfProducer2VtxSW         = l1pfProducer.clone()
