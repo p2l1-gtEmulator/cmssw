@@ -194,6 +194,10 @@ from L1Trigger.L1TTrackMatch.L1TrackerEtMissEmulatorProducer_cfi import *
 L1TrackerEmuEtMiss.L1VertexInputTag = cms.InputTag("L1VertexFinderEmulator","l1verticesEmulation")
 _phase2_siml1emulator.add(L1TrackerEmuEtMiss)
 
+from L1Trigger.L1TTrackMatch.L1TkHTMissEmulatorProducer_cfi import *
+_phase2_siml1emulator.add(L1TrackerEmuHTMiss)
+_phase2_siml1emulator.add(L1TrackerEmuHTMissExtended)
+
 
 # PF Candidates
 # ########################################################################
