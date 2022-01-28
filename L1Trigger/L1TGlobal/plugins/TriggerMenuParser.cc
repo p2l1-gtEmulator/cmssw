@@ -2118,11 +2118,9 @@ bool l1t::TriggerMenuParser::parseCaloCorr(const tmeventsetup::esObject* corrCal
   /*
     // insert condition into the map
     if ( !insertConditionIntoMap(caloCond, chipNr)) {
-
         edm::LogError("TriggerMenuParser")
                 << "    Error: duplicate condition (" << name << ")"
                 << std::endl;
-
         return false;
     }
     else {
@@ -2524,17 +2522,13 @@ bool l1t::TriggerMenuParser::parseEnergySumCorr(const tmeventsetup::esObject* co
   /*
     // insert condition into the map
     if ( !insertConditionIntoMap(energySumCond, chipNr)) {
-
         edm::LogError("TriggerMenuParser")
                 << "    Error: duplicate condition (" << name << ")"
                 << std::endl;
-
         return false;
     }
     else {
-
        (m_corEnergySumTemplate[chipNr]).push_back(energySumCond);
-
     }
 */
   (m_corEnergySumTemplate[chipNr]).push_back(energySumCond);
@@ -2788,10 +2782,8 @@ bool l1t::TriggerMenuParser::parseCorrelation(tmeventsetup::esCondition corrCond
 	  // conditions every time, so even if we put the condition in the vector once, we would
 	  // still evaluate it multiple times.  This is a place for optimization.
           {
-
               parseMuonCorr(&object,chipNr);
 	      corrIndexVal[jj] = (m_corMuonTemplate[chipNr]).size() - 1;
-
           } else {
 	     LogDebug("TriggerMenuParser") << "Not Adding Correlation Muon Condition to Map...looking for the condition in Muon Cor Vector" << std::endl;
 	     bool found = false;
@@ -2809,7 +2801,6 @@ bool l1t::TriggerMenuParser::parseCorrelation(tmeventsetup::esCondition corrCond
 	     } else {
 	       edm::LogError("TriggerMenuParser") << "FAILURE: Condition " << object.getName() << " is in map but not in cor. vector " << std::endl;
 	     }
-
 	  }
 */
       parseMuonCorr(&object, chipNr);
@@ -3233,10 +3224,8 @@ bool l1t::TriggerMenuParser::parseCorrelationWithOverlapRemoval(const tmeventset
 	  // conditions every time, so even if we put the condition in the vector once, we would
 	  // still evaluate it multiple times.  This is a place for optimization.
           {
-
               parseMuonCorr(&object,chipNr);
 	      corrIndexVal[jj] = (m_corMuonTemplate[chipNr]).size() - 1;
-
           } else {
 	     LogDebug("TriggerMenuParser") << "Not Adding Correlation Muon Condition to Map...looking for the condition in Muon Cor Vector" << std::endl;
 	     bool found = false;
@@ -3254,7 +3243,6 @@ bool l1t::TriggerMenuParser::parseCorrelationWithOverlapRemoval(const tmeventset
 	     } else {
 	       edm::LogError("TriggerMenuParser") << "FAILURE: Condition " << object.getName() << " is in map but not in cor. vector " << std::endl;
 	     }
-
 	  }
 */
       parseMuonCorr(&object, chipNr);

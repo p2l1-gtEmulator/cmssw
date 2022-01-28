@@ -5,7 +5,7 @@ L1Analysis::L1AnalysisL1UpgradeTfMuonShower::L1AnalysisL1UpgradeTfMuonShower() {
 L1Analysis::L1AnalysisL1UpgradeTfMuonShower::~L1AnalysisL1UpgradeTfMuonShower() {}
 
 void L1Analysis::L1AnalysisL1UpgradeTfMuonShower::SetTfMuonShower(const l1t::RegionalMuonShowerBxCollection& muonShower,
-                                                      unsigned maxL1UpgradeTfMuonShower) {
+                                                                  unsigned maxL1UpgradeTfMuonShower) {
   for (int ibx = muonShower.getFirstBX(); ibx <= muonShower.getLastBX(); ++ibx) {
     for (auto it = muonShower.begin(ibx);
          it != muonShower.end(ibx) && l1upgradetfmuonshower_.nTfMuonShowers < maxL1UpgradeTfMuonShower;
