@@ -367,8 +367,6 @@ void L1TrackJetEmulationProducer::L2_cluster(vector<Ptr<L1TTTrackType>> L1TrkPtr
           TTTrack_TrackWord::stepZ0 / convert::Z0_LSB;  //conversion factor from input z format to internal format
       z0_intern trkZ = z0_conv * inputTrkZ0;
 
-      //ap_ufixed<32 + PHI_EXTRABITS, 1 + PHI_EXTRABITS> phi_conv = TTTrack_TrackWord::stepPhi0 / convert::PHI_LSB;
-
       for (int i = 0; i < phiBins_; ++i) {
         for (int j = 0; j < etaBins_; ++j) {
           L2cluster[k] = epbins[i][j];
