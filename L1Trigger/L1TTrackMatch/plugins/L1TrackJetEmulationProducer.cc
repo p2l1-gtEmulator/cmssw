@@ -340,19 +340,34 @@ void L1TrackJetEmulationProducer::L2_cluster(vector<Ptr<L1TTTrackType>> L1TrkPtr
       trketainput.V = L1TrkPtrs_[k]->getTrackWord()(TTTrack_TrackWord::TrackBitLocations::kTanlMSB,
                                                     TTTrack_TrackWord::TrackBitLocations::kTanlLSB);
       ap_ufixed<64 + ETA_EXTRABITS, 32 + ETA_EXTRABITS> eta_conv =
-          1.0 / convert::ETA_LSB;  //conversion factor from input eta format to output format
+          1.0 / convert::ETA_LSB;  //conversion factor from input eta format to internal format
       glbeta_intern trketa = eta_conv * trketainput;
+      
+      int Sector = L1TrkPtrs_[k]->phiSector();
+      glbphi_intern trkphiSector = 0;
+      if (Sector < 5) {
+	trkphiSector = Sector * convert::makeGlbPhi(2.0*M_PI / 9.0);
+      }
+      else {
+        trkphiSector = convert::makeGlbPhi(-1.0*M_PI + M_PI/9.0) + (Sector-5) * convert::makeGlbPhi(2.0*M_PI / 9.0);
+      }
 
-      glbphi_intern trkphi =
-          convert::makeGlbPhi(L1TrkPtrs_[k]->momentum().phi());  //global phi of track in output format
+      ap_fixed<TrackBitWidths::kPhiSize, TrackBitWidths::kPhiMagSize, AP_RND_CONV, AP_SAT> trkphiinput = 0;
+      trkphiinput.V = L1TrkPtrs_[k]->getTrackWord()(TTTrack_TrackWord::TrackBitLocations::kPhiMSB,
+                                                    TTTrack_TrackWord::TrackBitLocations::kPhiLSB);
+      ap_ufixed<64 + PHI_EXTRABITS, 32 + PHI_EXTRABITS> phi_conv = 
+          TTTrack_TrackWord::stepPhi0 / convert::PHI_LSB * (1<< (TrackBitWidths::kPhiSize-TrackBitWidths::kPhiMagSize));
+	  //phi_conv is a conversion factor from input phi format to the internal format
+      glbeta_intern localphi = phi_conv * trkphiinput;
+      glbeta_intern trkphi = localphi+trkphiSector;
 
       ap_int<TTTrack_TrackWord::TrackBitWidths::kZ0Size> inputTrkZ0 = L1TrkPtrs_[k]->getTrackWord()(
           TTTrack_TrackWord::TrackBitLocations::kZ0MSB, TTTrack_TrackWord::TrackBitLocations::kZ0LSB);
       ap_ufixed<32 + Z0_EXTRABITS, 1 + Z0_EXTRABITS> z0_conv =
-          TTTrack_TrackWord::stepZ0 / convert::Z0_LSB;  //conversion factor from input z format to output format
+          TTTrack_TrackWord::stepZ0 / convert::Z0_LSB;  //conversion factor from input z format to internal format
       z0_intern trkZ = z0_conv * inputTrkZ0;
 
-      ap_ufixed<32 + PHI_EXTRABITS, 1 + PHI_EXTRABITS> phi_conv = TTTrack_TrackWord::stepPhi0 / convert::PHI_LSB;
+      //ap_ufixed<32 + PHI_EXTRABITS, 1 + PHI_EXTRABITS> phi_conv = TTTrack_TrackWord::stepPhi0 / convert::PHI_LSB;
 
       for (int i = 0; i < phiBins_; ++i) {
         for (int j = 0; j < etaBins_; ++j) {
