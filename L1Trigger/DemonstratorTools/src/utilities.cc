@@ -289,7 +289,9 @@ namespace l1t::demo {
     // Check that number of frames is same for every channel
     const auto firstChannel = data.begin();
 
-    for (const auto& [i, channelData] : data) {
+    for (const auto& channel : data) {
+      const auto i = channel.first;
+      const auto channelData = channel.second;
       if (channelData.size() != firstChannel->second.size())
         throw std::runtime_error("Cannot write board data to file - channels do not all have the same length (" +
                                  std::to_string(channelData.size()) + " words on channel " + std::to_string(i) +
@@ -331,8 +333,10 @@ namespace l1t::demo {
 
     // Channel header
     file << "#LinkLabel";
-    for (const auto& [i, channelData] : data)
+    for (const auto& channel : data) {
+      const auto i = channel.first;
       file << "                LINK_" << std::setw(2) << i << "    ";
+    }
     file << std::endl;
 
     file << "#BeginData" << std::endl;
@@ -342,7 +346,9 @@ namespace l1t::demo {
     const auto firstChannel = data.begin();
     for (size_t i = 0; i < firstChannel->second.size(); i++) {
       file << "0x" << std::setw(4) << i;
-      for (const auto& [j, channelData] : data) {
+      for (const auto& channel : data) {
+        const auto j = channel.first;
+        const auto channelData = channel.second;
         uint16_t sideband = channelData.at(i).valid;
         sideband |= channelData.at(i).start << 1;
         sideband |= channelData.at(i).end << 3;
@@ -361,21 +367,27 @@ namespace l1t::demo {
 
     // Quad/chan header
     file << " Quad/Chan :";
-    for (const auto& [i, channelData] : data)
+    for (const auto& channel : data) {
+      const auto i = channel.first;
       file << "         q" << std::setw(2) << i / 4 << 'c' << std::setw(1) << i % 4 << "       ";
+    }
     file << std::endl;
 
     // Link header
     file << "      Link :";
-    for (const auto& [i, channelData] : data)
+    for (const auto& channel : data) {
+      const auto i = channel.first;
       file << "          " << std::setw(3) << i << "        ";
+    }
     file << std::endl;
 
     // Frames
     const auto firstChannel = data.begin();
     for (size_t i = 0; i < firstChannel->second.size(); i++) {
       file << "Frame " << std::setw(4) << i << " :";
-      for (const auto& [j, channelData] : data) {
+      for (const auto& channel : data) {
+        const auto j = channel.first;
+        const auto channelData = channel.second;
         file << " ";
         //TODO: Add strobe if zero anywhere on channel
         file << "  ";
