@@ -26,11 +26,11 @@ L1NNTauProducerPF = cms.EDProducer("L1NNTauProducer",
                                       seedpt          = cms.double(10),
                                       conesize        = cms.double(0.4),
                                       tausize         = cms.double(0.1),
-                                      maxtaus         = cms.uint32(5),
+                                      maxtaus         = cms.int32(5),
                                       nparticles      = cms.int32(10),
                                       HW              = cms.bool(True),
                                       debug           = cms.bool(False),
-                                      L1PFObjects     = cms.InputTag("l1pfCandidates"),#l1pfCandidates
+                                      L1PFObjects     = cms.InputTag("l1ctLayer1:PF"),#l1pfCandidates
                                       NNFileName      = cms.string("L1Trigger/Phase2L1ParticleFlow/data/tau_3layer.pb")
 )
 
@@ -52,14 +52,14 @@ tau2VtxTaskHW = cms.Task(
     l1ctLayer1Barrel2Vtx,
     l1ctLayer1HGCal2Vtx,
     l1ctLayer12Vtx,
-    L1NNTauProducerPuppi
+    L1NNTauProducerPuppi2Vtx
 )
 
 l1pfProducer2VtxSW         = l1pfProducer.clone()
 l1pfProducer2VtxSW.nVtx    = 2
 L1NNTauProducerPuppi2VtxSW = L1NNTauProducerPuppi.clone()
 L1NNTauProducerPuppi2VtxSW.HW = False
-L1NNTauProducerPuppi2VtxSW.L1PFObjects =  cms.InputTag("l1pfCandidates:Puppi")
+L1NNTauProducerPuppi2VtxSW.L1PFObjects =  cms.InputTag("l1ctLayer12Vtx:Puppi")
 tau2VtxTaskSW = cms.Task(
     l1pfProducer2VtxSW,
     L1NNTauProducerPuppi2VtxSW

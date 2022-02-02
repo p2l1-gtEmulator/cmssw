@@ -194,6 +194,10 @@ from L1Trigger.L1TTrackMatch.L1TrackerEtMissEmulatorProducer_cfi import *
 L1TrackerEmuEtMiss.L1VertexInputTag = cms.InputTag("L1VertexFinderEmulator","l1verticesEmulation")
 _phase2_siml1emulator.add(L1TrackerEmuEtMiss)
 
+from L1Trigger.L1TTrackMatch.L1TkHTMissEmulatorProducer_cfi import *
+_phase2_siml1emulator.add(L1TrackerEmuHTMiss)
+_phase2_siml1emulator.add(L1TrackerEmuHTMissExtended)
+
 
 # PF Candidates
 # ########################################################################
@@ -238,14 +242,9 @@ _phase2_siml1emulator.add(L1MetPfProducer)
 # NNTaus
 # ########################################################################
 from L1Trigger.Phase2L1ParticleFlow.L1NNTauProducer_cff import *
-l1NNTauProducer = L1NNTauProducer.clone(
-  L1PFObjects = cms.InputTag("l1pfCandidates","PF")
-)
-l1NNTauProducerPuppi = L1NNTauProducerPuppi.clone(
-  L1PFObjects = cms.InputTag("l1pfCandidates","Puppi")
-)
-_phase2_siml1emulator.add(l1NNTauProducer)
-_phase2_siml1emulator.add(l1NNTauProducerPuppi)
+_phase2_siml1emulator.add(L1NNTauProducerPuppi)
+#_phase2_siml1emulator.add(L1NNTauProducerPuppi2Vtx)
+_phase2_siml1emulator.add(tau2VtxTaskHW)
 
 # --> add modules
 #%% # Barrel EGamma
