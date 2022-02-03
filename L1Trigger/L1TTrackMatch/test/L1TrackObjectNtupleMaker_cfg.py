@@ -33,6 +33,9 @@ process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 from Configuration.AlCa.GlobalTag import GlobalTag
 process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase2_realistic', '')
 
+process.load("FWCore.MessageLogger.MessageLogger_cfi")
+process.MessageLogger.cerr.INFO.limit = cms.untracked.int32(0) # default: 0
+
 ############################################################
 # input and output
 ############################################################
@@ -70,6 +73,7 @@ process.TFileService = cms.Service("TFileService", fileName = cms.string('Checki
 #process.TTClusterStubTruth = cms.Path(process.TrackTriggerAssociatorClustersStubs)
 
 process.load("L1Trigger.TrackFindingTracklet.L1HybridEmulationTracks_cff")
+process.load("L1Trigger.L1TTrackMatch.L1TrackSelectionProducer_cfi")
 process.load("L1Trigger.L1TTrackMatch.L1TrackJetProducer_cfi")
 process.load("L1Trigger.L1TTrackMatch.L1GTTInputProducer_cfi")
 process.load("L1Trigger.L1TTrackMatch.L1TrackJetEmulationProducer_cfi")
@@ -106,6 +110,7 @@ process.L1TrackerEmuEtMiss.L1VertexInputTag = cms.InputTag("L1VertexFinderEmulat
 if (L1TRKALGO == 'HYBRID'):
     process.TTTracksEmu = cms.Path(process.L1HybridTracks)
     process.TTTracksEmuWithTruth = cms.Path(process.L1HybridTracksWithAssociators)
+    process.pL1TrackSelection = cms.Path(process.L1TrackSelectionProducer)
     process.pL1TrackJets = cms.Path(process.L1TrackJets)
     process.pL1TrackFastJets=cms.Path(process.L1TrackFastJets)
     process.pL1GTTInput = cms.Path(process.L1GTTInputProducer)
@@ -120,6 +125,7 @@ if (L1TRKALGO == 'HYBRID'):
 elif (L1TRKALGO == 'HYBRID_DISPLACED'):
     process.TTTracksEmu = cms.Path(process.L1ExtendedHybridTracks)
     process.TTTracksEmuWithTruth = cms.Path(process.L1ExtendedHybridTracksWithAssociators)
+    process.pL1TrackSelection = cms.Path(process.L1TrackSelectionProducerExtended)
     process.pL1TrackJets = cms.Path(process.L1TrackJetsExtended)
     process.pL1TrackFastJets = cms.Path(process.L1TrackFastJetsExtended)
     process.pL1GTTInput = cms.Path(process.L1GTTInputProducerExtended)
@@ -134,6 +140,7 @@ elif (L1TRKALGO == 'HYBRID_DISPLACED'):
 elif (L1TRKALGO == 'HYBRID_PROMPTANDDISP'):
     process.TTTracksEmu = cms.Path(process.L1PromptExtendedHybridTracks)
     process.TTTracksEmuWithTruth = cms.Path(process.L1PromptExtendedHybridTracksWithAssociators)
+    process.pL1TrackSelection = cms.Path(process.L1TrackSelectionProducer*process.L1TrackSelectionProducerExtended)
     process.pL1TrackJets = cms.Path(process.L1TrackJets*process.L1TrackJetsExtended)
     process.pL1TrackFastJets = cms.Path(process.L1TrackFastJets*process.L1TrackFastJetsExtended)
     process.pL1GTTInput = cms.Path(process.L1GTTInputProducer*process.L1GTTInputProducerExtended)
@@ -169,10 +176,16 @@ process.L1TrackNtuple = cms.EDAnalyzer('L1TrackObjectNtupleMaker',
         TP_minPt = cms.double(2.0),       # only save TPs with pt > X GeV
         TP_maxEta = cms.double(2.5),      # only save TPs with |eta| < X
         TP_maxZ0 = cms.double(15.0),      # only save TPs with |z0| < X cm
-        L1TrackInputTag = cms.InputTag("TTTracksFromTrackletEmulation", "Level1TTTracks"),                          # TTTracks, prompt
-        L1TrackExtendedInputTag = cms.InputTag("TTTracksFromExtendedTrackletEmulation", "Level1TTTracks"),          # TTTracks, extended
-        MCTruthTrackInputTag = cms.InputTag("TTTrackAssociatorFromPixelDigis", "Level1TTTracks"),                   # MCTruth track, prompt
-        MCTruthTrackExtendedInputTag = cms.InputTag("TTTrackAssociatorFromPixelDigisExtended", "Level1TTTracks"),   # MCTruth track, extended
+        L1TrackInputTag = cms.InputTag("TTTracksFromTrackletEmulation", "Level1TTTracks"),                                                      # TTTracks, prompt
+        L1TrackExtendedInputTag = cms.InputTag("TTTracksFromExtendedTrackletEmulation", "Level1TTTracks"),                                      # TTTracks, extended
+        MCTruthTrackInputTag = cms.InputTag("TTTrackAssociatorFromPixelDigis", "Level1TTTracks"),                                               # MCTruth track, prompt
+        MCTruthTrackExtendedInputTag = cms.InputTag("TTTrackAssociatorFromPixelDigisExtended", "Level1TTTracks"),                               # MCTruth track, extended
+        L1TrackGTTInputTag = cms.InputTag("L1GTTInputProducer","Level1TTTracksConverted"),                                                      # TTTracks, prompt, GTT converted
+        L1TrackExtendedGTTInputTag = cms.InputTag("L1GTTInputProducerExtended","Level1TTTracksExtendedConverted"),                              # TTTracks, extended, GTT converted
+        L1TrackSelectedInputTag = cms.InputTag("L1TrackSelectionProducer", "Level1TTTracksSelected"),                                           # TTTracks, prompt, selected
+        L1TrackSelectedEmulationInputTag = cms.InputTag("L1TrackSelectionProducer", "Level1TTTracksSelectedEmulation"),                         # TTTracks, prompt, emulation, selected
+        L1TrackExtendedSelectedInputTag = cms.InputTag("L1TrackSelectionProducerExtended", "Level1TTTracksExtendedSelected"),                   # TTTracks, extended, selected
+        L1TrackExtendedSelectedEmulationInputTag = cms.InputTag("L1TrackSelectionProducerExtended", "Level1TTTracksExtendedSelectedEmulation"), # TTTracks, extended, emulation, selected
         L1StubInputTag = cms.InputTag("TTStubsFromPhase2TrackerDigis","StubAccepted"),
         MCTruthClusterInputTag = cms.InputTag("TTClusterAssociatorFromPixelDigis", "ClusterAccepted"),
         MCTruthStubInputTag = cms.InputTag("TTStubAssociatorFromPixelDigis", "StubAccepted"),
@@ -216,5 +229,5 @@ process.pOut = cms.EndPath(process.out)
 # use this if cluster/stub associators not available
 # process.schedule = cms.Schedule(process.TTClusterStubTruth,process.TTTracksEmuWithTruth,process.ntuple)
 
-process.schedule = cms.Schedule(process.TTTracksEmuWithTruth, process.pL1GTTInput, process.pPV, process.pPVemu, process.pL1TrackJets, process.pL1TrackJetsEmu,
+process.schedule = cms.Schedule(process.TTTracksEmuWithTruth, process.pL1GTTInput, process.pPV, process.pPVemu, process.pL1TrackSelection, process.pL1TrackJets, process.pL1TrackJetsEmu,
 process.pL1TrackFastJets, process.pTkMET, process.pTkMETEmu, process.pTkMHT, process.pTkMHTEmulator, process.ntuple)
