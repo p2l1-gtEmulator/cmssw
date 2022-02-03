@@ -278,7 +278,7 @@ namespace L1Analysis {
       trackerJetEta.clear();
       trackerJetPhi.clear();
       trackerJetBx.clear();
-      trackerJetzVtx.clear();
+      trackerJetZ0.clear();
 
       nTrackerJetsDisplaced = 0;
       trackerJetDisplacedPt.clear();
@@ -286,21 +286,21 @@ namespace L1Analysis {
       trackerJetDisplacedEta.clear();
       trackerJetDisplacedPhi.clear();
       trackerJetDisplacedBx.clear();
-      trackerJetDisplacedzVtx.clear();
+      trackerJetDisplacedZ0.clear();
 
 
       // TrackerMet
-      nTrackerMet = 0;
-      trackerMetSumEt.clear();
-      trackerMetEt=0;
-      trackerMetPhi=0;
-      trackerMetBx.clear();
+      trackerMET=0;
+      trackerMETPhi=0;
 
       //trackerMHT
-      nTrackerMHT = 0;
-      trackerHT.clear();
-      trackerMHT.clear();
-      trackerMHTPhi.clear();
+      trackerHT=0;
+      trackerMHT=0;
+      trackerMHTPhi=0;
+
+      trackerHTDisplaced=0;
+      trackerMHTDisplaced=0;
+      trackerMHTPhiDisplaced=0;
 
 
       // TrackerMetDisplaced
@@ -310,11 +310,6 @@ namespace L1Analysis {
       trackerMetDisplacedPhi.clear();
       trackerMetDisplacedBx.clear();
 
-      //trackerMHTDisplaced
-      nTrackerMHTDisplaced = 0;
-      trackerHTDisplaced.clear();
-      trackerMHTDisplaced.clear();
-      trackerMHTPhiDisplaced.clear();
 
     }
 
@@ -578,7 +573,7 @@ namespace L1Analysis {
     std::vector<double> trackerJetEta;
     std::vector<double> trackerJetPhi;
     std::vector<int> trackerJetBx;
-    std::vector<double> trackerJetzVtx;
+    std::vector<double> trackerJetZ0;
 
     unsigned int nTrackerJetsDisplaced;
     std::vector<double> trackerJetDisplacedPt;
@@ -586,30 +581,26 @@ namespace L1Analysis {
     std::vector<double> trackerJetDisplacedEta;
     std::vector<double> trackerJetDisplacedPhi;
     std::vector<int> trackerJetDisplacedBx;
-    std::vector<double> trackerJetDisplacedzVtx;
+    std::vector<double> trackerJetDisplacedZ0;
 
 
-    unsigned int nTrackerMet;
-    std::vector<double> trackerMetSumEt;
-    double trackerMetEt;
-    double trackerMetPhi;
-    std::vector<double> trackerMetBx;
+    double trackerMET;
+    double trackerMETPhi;
 
-    unsigned int nTrackerMHT;
-    std::vector<double> trackerHT;
-    std::vector<double> trackerMHT;
-    std::vector<double> trackerMHTPhi;
+    double trackerHT;
+    double trackerMHT;
+    double trackerMHTPhi;
+
+    double trackerHTDisplaced;
+    double trackerMHTDisplaced;
+    double trackerMHTPhiDisplaced;
+
 
     unsigned int nTrackerMetDisplaced;
     std::vector<double> trackerMetDisplacedSumEt;
     std::vector<double> trackerMetDisplacedEt;
     std::vector<double> trackerMetDisplacedPhi;
     std::vector<double> trackerMetDisplacedBx;
-
-    unsigned int nTrackerMHTDisplaced;
-    std::vector<double> trackerHTDisplaced;
-    std::vector<double> trackerMHTDisplaced;
-    std::vector<double> trackerMHTPhiDisplaced;
 
 
   };

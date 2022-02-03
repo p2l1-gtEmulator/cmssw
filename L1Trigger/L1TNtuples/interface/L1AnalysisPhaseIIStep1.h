@@ -75,6 +75,9 @@
 #include "DataFormats/L1TCorrelator/interface/TkBsCandidate.h"
 #include "DataFormats/L1TCorrelator/interface/TkBsCandidateFwd.h"
 
+#include "L1Trigger/L1TTrackMatch/interface/L1TkEtMissEmuAlgo.h"
+#include "L1Trigger/L1TTrackMatch/interface/L1TkHTMissEmulatorProducer.h" 
+
 //#include "DataFormats/L1TMuon/interface/BayesMuCorrelatorTrack.h"
 
 #include "DataFormats/JetReco/interface/CaloJet.h"
