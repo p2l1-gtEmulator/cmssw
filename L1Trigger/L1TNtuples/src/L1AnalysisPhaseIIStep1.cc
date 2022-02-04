@@ -557,7 +557,38 @@ void L1Analysis::L1AnalysisPhaseIIStep1::SetNNTaus(const edm::Handle<vector<l1t:
     l1extra_.nnTauPassLoosePF.push_back(l1nnTaus->at(i).passLoosePF());
     l1extra_.nnTauPassTightPF.push_back(l1nnTaus->at(i).passTightPF());
     l1extra_.nnTauPassTightNN.push_back(l1nnTaus->at(i).passTightNN());
+    l1extra_.nnTauPassLooseNNMass.push_back(l1nnTaus->at(i).passLooseNNMass());
+    l1extra_.nnTauPassTightNNMass.push_back(l1nnTaus->at(i).passTightNNMass());
+    l1extra_.nnTauPassMass.push_back(l1nnTaus->at(i).passMass());
+    l1extra_.nnTauDXY.push_back(l1nnTaus->at(i).dxy());
+    l1extra_.nnTauZ0.push_back(l1nnTaus->at(i).z0());
     l1extra_.nNNTaus++;
+  }
+}
+
+void L1Analysis::L1AnalysisPhaseIIStep1::SetNNTau2vtxs(const edm::Handle<vector<l1t::PFTau> > l1nnTau2vtxs,
+                                                   unsigned maxL1Extra) {
+  for (unsigned int i = 0; i < l1nnTau2vtxs->size() && l1extra_.nNNTau2vtxs < maxL1Extra; i++) {
+    if (l1nnTau2vtxs->at(i).pt() < 1)
+      continue;
+    l1extra_.nnTau2vtxPt.push_back(l1nnTau2vtxs->at(i).pt());
+    l1extra_.nnTau2vtxEt.push_back(l1nnTau2vtxs->at(i).et());
+    l1extra_.nnTau2vtxEta.push_back(l1nnTau2vtxs->at(i).eta());
+    l1extra_.nnTau2vtxPhi.push_back(l1nnTau2vtxs->at(i).phi());
+    l1extra_.nnTau2vtxChg.push_back(l1nnTau2vtxs->at(i).charge());
+    l1extra_.nnTau2vtxChargedIso.push_back(l1nnTau2vtxs->at(i).chargedIso());
+    l1extra_.nnTau2vtxFullIso.push_back(l1nnTau2vtxs->at(i).fullIso());
+    l1extra_.nnTau2vtxID.push_back(l1nnTau2vtxs->at(i).id());
+    l1extra_.nnTau2vtxPassLooseNN.push_back(l1nnTau2vtxs->at(i).passLooseNN());
+    l1extra_.nnTau2vtxPassLoosePF.push_back(l1nnTau2vtxs->at(i).passLoosePF());
+    l1extra_.nnTau2vtxPassTightPF.push_back(l1nnTau2vtxs->at(i).passTightPF());
+    l1extra_.nnTau2vtxPassTightNN.push_back(l1nnTau2vtxs->at(i).passTightNN());
+    l1extra_.nnTau2vtxPassLooseNNMass.push_back(l1nnTau2vtxs->at(i).passLooseNNMass());
+    l1extra_.nnTau2vtxPassTightNNMass.push_back(l1nnTau2vtxs->at(i).passTightNNMass());
+    l1extra_.nnTau2vtxPassMass.push_back(l1nnTau2vtxs->at(i).passMass());
+    l1extra_.nnTau2vtxDXY.push_back(l1nnTau2vtxs->at(i).dxy());
+    l1extra_.nnTau2vtxZ0.push_back(l1nnTau2vtxs->at(i).z0());
+    l1extra_.nNNTau2vtxs++;
   }
 }
 

@@ -270,6 +270,31 @@ namespace L1Analysis {
       nnTauPassLoosePF.clear();
       nnTauPassTightPF.clear();
       nnTauPassTightNN.clear();
+
+      nnTauPassLooseNNMass.clear();
+      nnTauPassTightNNMass.clear();
+      nnTauPassMass.clear();
+      nnTauDXY.clear();
+      nnTauZ0.clear();
+
+      nNNTau2vtxs = 0;
+      nnTau2vtxPt.clear();
+      nnTau2vtxEt.clear();
+      nnTau2vtxEta.clear();
+      nnTau2vtxPhi.clear();
+      nnTau2vtxChg.clear();
+      nnTau2vtxChargedIso.clear();
+      nnTau2vtxFullIso.clear();
+      nnTau2vtxID.clear();
+      nnTau2vtxPassLooseNN.clear();
+      nnTau2vtxPassLoosePF.clear();
+      nnTau2vtxPassTightPF.clear();
+      nnTau2vtxPassTightNN.clear();
+      nnTau2vtxPassLooseNNMass.clear();
+      nnTau2vtxPassTightNNMass.clear();
+      nnTau2vtxPassMass.clear();
+      nnTau2vtxDXY.clear();
+      nnTau2vtxZ0.clear();
    
       // TkJets
       nTrackerJets = 0;
@@ -566,6 +591,32 @@ namespace L1Analysis {
     std::vector<unsigned int> nnTauPassLoosePF;
     std::vector<unsigned int> nnTauPassTightPF;
     std::vector<unsigned int> nnTauPassTightNN;
+
+    std::vector<unsigned int> nnTauPassLooseNNMass;
+    std::vector<unsigned int> nnTauPassTightNNMass;
+    std::vector<unsigned int> nnTauPassMass;
+    std::vector<double> nnTauDXY;
+    std::vector<double> nnTauZ0;
+
+    unsigned int nNNTau2vtxs;
+    std::vector<double> nnTau2vtxPt;
+    std::vector<double> nnTau2vtxEt;
+    std::vector<double> nnTau2vtxEta;
+    std::vector<double> nnTau2vtxPhi;
+    std::vector<int> nnTau2vtxChg;
+    std::vector<double> nnTau2vtxChargedIso;
+    std::vector<double> nnTau2vtxFullIso;
+    std::vector<unsigned int> nnTau2vtxID;
+    std::vector<unsigned int> nnTau2vtxPassLooseNN;
+    std::vector<unsigned int> nnTau2vtxPassLoosePF;
+    std::vector<unsigned int> nnTau2vtxPassTightPF;
+    std::vector<unsigned int> nnTau2vtxPassTightNN;
+    std::vector<unsigned int> nnTau2vtxPassLooseNNMass;
+    std::vector<unsigned int> nnTau2vtxPassTightNNMass;
+    std::vector<unsigned int> nnTau2vtxPassMass;
+    std::vector<double> nnTau2vtxDXY;
+    std::vector<double> nnTau2vtxZ0;
+
 
     unsigned int nTrackerJets;
     std::vector<double> trackerJetPt;

@@ -137,6 +137,7 @@ namespace L1Analysis {
 
     // Add nntaus
     void SetNNTaus(const edm::Handle<std::vector<l1t::PFTau>> l1nnTaus, unsigned maxL1Extra);
+    void SetNNTau2vtxs(const edm::Handle<std::vector<l1t::PFTau>> l1nnTau2vtxs, unsigned maxL1Extra);
 
     //tkjets, tkmet, tkht
     void SetTkJet(const edm::Handle<l1t::TkJetWordCollection> tkTrackerJet, unsigned maxL1Extra);

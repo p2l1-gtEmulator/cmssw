@@ -56,7 +56,6 @@ private:
   bool emuTkVtx_;
   edm::EDGetTokenT<std::vector<l1t::Vertex>> extTkVtx_;
   edm::EDGetTokenT<std::vector<l1t::VertexWord>> tkVtxEmu_;
-  float vtxRes_;
   int NVtx_;
 
   edm::EDGetTokenT<l1t::SAMuonCollection> muCands_;  // standalone muons
@@ -235,7 +234,6 @@ L1TCorrelatorLayer1Producer::L1TCorrelatorLayer1Producer(const edm::ParameterSet
   } else {
     extTkVtx_ = consumes<std::vector<l1t::Vertex>>(iConfig.getParameter<edm::InputTag>("vtxCollection"));
   }
-  vtxRes_ = iConfig.getParameter<double>("vtxRes");
   NVtx_ = iConfig.getParameter<int>("nVtx");
   
   const char *iprefix[4] = {"totNReg", "maxNReg", "totNSec", "maxNSec"};
@@ -1022,3 +1020,4 @@ std::pair<unsigned int, unsigned int> L1TCorrelatorLayer1Producer::totAndMax(
 //define this as a plug-in
 #include "FWCore/Framework/interface/MakerMacros.h"
 DEFINE_FWK_MODULE(L1TCorrelatorLayer1Producer);
+

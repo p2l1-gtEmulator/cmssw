@@ -45,7 +45,8 @@ l1PhaseIITree = cms.EDAnalyzer("L1PhaseIITreeStep1Producer",
    l1TkPrimaryVertex= cms.InputTag("L1VertexFinderEmulator","l1verticesEmulation"), #we need to rename this, but these are now emulated vertices!
 
    L1NNTauToken = cms.InputTag("l1NNTauProducerPuppi","L1PFTausNN"), #These we will to our ntuples as nnpuppi taus
-   L1NNTauPFToken = cms.InputTag("l1NNTauProducer","L1PFTausNN"),
+   #L1NNTauPFToken = cms.InputTag("l1NNTauProducer","L1PFTausNN"),
+   L1NNTau2vtxToken = cms.InputTag("L1NNTauProducerPuppi2Vtx","L1PFTausNN"), 
 
    tkTrackerJetToken = cms.InputTag("L1TrackJetsEmulation", "L1TrackJets"),  #these are emulated
    tkTrackerJetDisplacedToken = cms.InputTag("L1TrackJetsExtendedEmulation", "L1TrackJetsExtended"), #emulated
