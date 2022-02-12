@@ -145,10 +145,10 @@ namespace L1Analysis {
     void SetTkJet(const edm::Handle<l1t::TkJetWordCollection> tkTrackerJet, unsigned maxL1Extra);
     void SetTkJetDisplaced(const edm::Handle<l1t::TkJetWordCollection> tkTrackerJet, unsigned maxL1Extra);
 
-    void SetTkMET(const edm::Handle <std::vector<l1t::EtSum>> trackerMet);
-    void SetTkMHT(const edm::Handle <std::vector<l1t::EtSum>> trackerMHT);
+    void SetTkMET(const edm::Handle <std::vector<l1t::EtSum>> trackerMets);
+    void SetTkMHT(const edm::Handle <std::vector<l1t::EtSum>> trackerMHTs);
     void SetTkMETDisplaced(const edm::Handle<l1t::TkEtMissCollection> trackerMets); // still not emu! 
-    void SetTkMHTDisplaced(const edm::Handle <std::vector<l1t::EtSum>> trackerMHT);
+    void SetTkMHTDisplaced(const edm::Handle <std::vector<l1t::EtSum>> trackerMHTs);
 
 
     L1AnalysisPhaseIIStep1DataFormat* getData() { return &l1extra_; }

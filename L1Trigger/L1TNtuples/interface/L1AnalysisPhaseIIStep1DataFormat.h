@@ -612,32 +612,6 @@ namespace L1Analysis {
     std::vector<double> nnTau2vtxDXY;
     std::vector<double> nnTau2vtxZ0;
 
-    std::vector<unsigned int> nnTauPassLooseNNMass;
-    std::vector<unsigned int> nnTauPassTightNNMass;
-    std::vector<unsigned int> nnTauPassMass;
-    std::vector<double> nnTauDXY;
-    std::vector<double> nnTauZ0;
-
-    unsigned int nNNTau2vtxs;
-    std::vector<double> nnTau2vtxPt;
-    std::vector<double> nnTau2vtxEt;
-    std::vector<double> nnTau2vtxEta;
-    std::vector<double> nnTau2vtxPhi;
-    std::vector<int> nnTau2vtxChg;
-    std::vector<double> nnTau2vtxChargedIso;
-    std::vector<double> nnTau2vtxFullIso;
-    std::vector<unsigned int> nnTau2vtxID;
-    std::vector<unsigned int> nnTau2vtxPassLooseNN;
-    std::vector<unsigned int> nnTau2vtxPassLoosePF;
-    std::vector<unsigned int> nnTau2vtxPassTightPF;
-    std::vector<unsigned int> nnTau2vtxPassTightNN;
-    std::vector<unsigned int> nnTau2vtxPassLooseNNMass;
-    std::vector<unsigned int> nnTau2vtxPassTightNNMass;
-    std::vector<unsigned int> nnTau2vtxPassMass;
-    std::vector<double> nnTau2vtxDXY;
-    std::vector<double> nnTau2vtxZ0;
-
-
     unsigned int nTrackerJets;
     std::vector<double> trackerJetPt;
     std::vector<double> trackerJetEt;
