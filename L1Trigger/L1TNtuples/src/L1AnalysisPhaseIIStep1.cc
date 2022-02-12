@@ -540,6 +540,7 @@ void L1Analysis::L1AnalysisPhaseIIStep1::SetL1METPF(const edm::Handle<std::vecto
 //  l1extra_.puppiMETRecoPhi = met.phi();
 //}
 
+
 void L1Analysis::L1AnalysisPhaseIIStep1::SetNNTaus(const edm::Handle<vector<l1t::PFTau> > l1nnTaus,
                                                    unsigned maxL1Extra) {
   for (unsigned int i = 0; i < l1nnTaus->size() && l1extra_.nNNTaus < maxL1Extra; i++) {

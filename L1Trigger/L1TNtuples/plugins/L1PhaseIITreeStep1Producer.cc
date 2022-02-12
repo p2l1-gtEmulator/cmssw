@@ -173,7 +173,6 @@ private:
   edm::EDGetTokenT<l1t::VertexWordCollection> l1TkPrimaryVertexToken_;
 
   edm::EDGetTokenT<l1t::PFTauCollection> L1NNTauToken_;
-  //edm::EDGetTokenT<l1t::PFTauCollection> L1NNTauPFToken_;
   edm::EDGetTokenT<l1t::PFTauCollection> L1NNTau2vtxToken_;
 
   //adding tkjets, tkmet, tkht
@@ -232,7 +231,6 @@ L1PhaseIITreeStep1Producer::L1PhaseIITreeStep1Producer(const edm::ParameterSet& 
       consumes<l1t::VertexWordCollection>(iConfig.getParameter<edm::InputTag>("l1TkPrimaryVertex"));
 
   L1NNTauToken_ = consumes<l1t::PFTauCollection>(iConfig.getParameter<edm::InputTag>("L1NNTauToken"));
-  //L1NNTauPFToken_ = consumes<l1t::PFTauCollection>(iConfig.getParameter<edm::InputTag>("L1NNTauPFToken"));
   L1NNTau2vtxToken_ = consumes<l1t::PFTauCollection>(iConfig.getParameter<edm::InputTag>("L1NNTau2vtxToken"));
 
   tkTrackerJetToken_ = consumes<l1t::TkJetWordCollection>(iConfig.getParameter<edm::InputTag>("tkTrackerJetToken"));
@@ -307,9 +305,6 @@ void L1PhaseIITreeStep1Producer::analyze(const edm::Event& iEvent, const edm::Ev
 
   edm::Handle<l1t::PFTauCollection> l1NNTau;
   iEvent.getByToken(L1NNTauToken_, l1NNTau);
-
-  //edm::Handle<l1t::PFTauCollection> l1NNTauPF;
-  //iEvent.getByToken(L1NNTauPFToken_, l1NNTauPF);
 
   edm::Handle<l1t::PFTauCollection> l1NNTau2vtx;
   iEvent.getByToken(L1NNTau2vtxToken_, l1NNTau2vtx);
@@ -588,7 +583,13 @@ void L1PhaseIITreeStep1Producer::analyze(const edm::Event& iEvent, const edm::Ev
   if (l1NNTau.isValid()) {
     l1Extra->SetNNTaus(l1NNTau, maxL1Extra_);
   } else {
-    edm::LogWarning("MissingProduct") << "L1NNTaus missing" << std::endl;
+    edm::LogWarning("MissingProduct") << "L1NNTau missing" << std::endl;
+  }
+
+  if (l1NNTau2vtx.isValid()) {
+    l1Extra->SetNNTau2vtxs(l1NNTau2vtx, maxL1Extra_);
+  } else {
+    edm::LogWarning("MissingProduct") << "L1NNTau2vtxs missing" << std::endl;
   }
 
   if (l1NNTau2vtx.isValid()) {
