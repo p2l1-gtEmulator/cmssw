@@ -592,13 +592,6 @@ void L1PhaseIITreeStep1Producer::analyze(const edm::Event& iEvent, const edm::Ev
     edm::LogWarning("MissingProduct") << "L1NNTau2vtxs missing" << std::endl;
   }
 
-  if (l1NNTau2vtx.isValid()) {
-    l1Extra->SetNNTau2vtxs(l1NNTau2vtx, maxL1Extra_);
-  } else {
-    edm::LogWarning("MissingProduct") << "L1NNTau2vtxs missing" << std::endl;
-  }
-
-
 
   tree_->Fill();
 }
