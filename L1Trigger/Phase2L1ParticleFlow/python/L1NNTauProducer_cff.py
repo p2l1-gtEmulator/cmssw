@@ -66,4 +66,3 @@ tau2VtxTaskSW = cms.Task(
     l1pfProducer2VtxSW,
     L1NNTauProducerPuppi2VtxSW
 )
-

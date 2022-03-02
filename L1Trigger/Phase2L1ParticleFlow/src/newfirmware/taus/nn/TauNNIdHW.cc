@@ -117,4 +117,3 @@ result_t TauNNIdHW::compute(const l1t::PFCandidate &iSeed, std::vector<l1t::PFCa
   SetNNVectorVar();
   return EvaluateNN();
 }
-
