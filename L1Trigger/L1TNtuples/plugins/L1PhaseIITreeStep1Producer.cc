@@ -233,7 +233,6 @@ L1PhaseIITreeStep1Producer::L1PhaseIITreeStep1Producer(const edm::ParameterSet& 
   L1NNTauToken_ = consumes<l1t::PFTauCollection>(iConfig.getParameter<edm::InputTag>("L1NNTauToken"));
   L1NNTau2vtxToken_ = consumes<l1t::PFTauCollection>(iConfig.getParameter<edm::InputTag>("L1NNTau2vtxToken"));
 
-
   tkTrackerJetToken_ = consumes<l1t::TkJetWordCollection>(iConfig.getParameter<edm::InputTag>("tkTrackerJetToken"));
   tkTrackerJetDisplacedToken_ = consumes<l1t::TkJetWordCollection>(iConfig.getParameter<edm::InputTag>("tkTrackerJetDisplacedToken"));
 
@@ -309,7 +308,6 @@ void L1PhaseIITreeStep1Producer::analyze(const edm::Event& iEvent, const edm::Ev
 
   edm::Handle<l1t::PFTauCollection> l1NNTau2vtx;
   iEvent.getByToken(L1NNTau2vtxToken_, l1NNTau2vtx);
-
 
   edm::Handle<l1t::TauBxCollection> caloTau;
   iEvent.getByToken(caloTauToken_, caloTau);
@@ -593,6 +591,7 @@ void L1PhaseIITreeStep1Producer::analyze(const edm::Event& iEvent, const edm::Ev
   } else {
     edm::LogWarning("MissingProduct") << "L1NNTau2vtxs missing" << std::endl;
   }
+
 
   tree_->Fill();
 }
