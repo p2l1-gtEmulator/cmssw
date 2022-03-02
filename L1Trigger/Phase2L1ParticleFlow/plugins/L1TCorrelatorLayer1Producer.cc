@@ -1020,4 +1020,3 @@ std::pair<unsigned int, unsigned int> L1TCorrelatorLayer1Producer::totAndMax(
 //define this as a plug-in
 #include "FWCore/Framework/interface/MakerMacros.h"
 DEFINE_FWK_MODULE(L1TCorrelatorLayer1Producer);
-
