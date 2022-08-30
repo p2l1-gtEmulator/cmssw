@@ -48,8 +48,8 @@ namespace l1t {
       result &= minDz_ ? (obj.hwDZ() > minDz_) : true;
       result &= maxDz_ ? (obj.hwDZ() < maxDz_) : true;
 
-      result &= qual_ ? (obj.hwQual() > qual_) : true;
-      result &= iso_ ? (obj.hwIso() > iso_) : true;
+      result &= qual_ ? (obj.hwQual() == qual_) : true;
+      result &= iso_ ? (obj.hwIso() == iso_) : true;
 
       return result;
     }
