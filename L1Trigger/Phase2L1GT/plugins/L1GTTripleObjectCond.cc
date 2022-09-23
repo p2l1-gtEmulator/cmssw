@@ -178,8 +178,8 @@ bool L1GTTripleObjectCond::checkObjects(const P2GTCandidate& obj1,
   res &= collection2_.checkObject(obj2);
   res &= collection3_.checkObject(obj3);
 
-  res &= ss_ ? (obj1.hwCharge() == obj2.hwCharge() && obj1.hwCharge() == obj3.hwCharge()) : true;
-  res &= os_ ? !(obj1.hwCharge() == obj2.hwCharge() && obj1.hwCharge() == obj3.hwCharge()) : true;
+  res &= ss_ ? obj1.hwCharge() == obj2.hwCharge() == obj3.hwCharge() : true;
+  res &= os_ ? !(obj1.hwCharge() == obj2.hwCharge() == obj3.hwCharge()) : true;
 
   return res;
 }
