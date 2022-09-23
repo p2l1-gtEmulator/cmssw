@@ -288,7 +288,9 @@ bool L1GTDoubleObjectCond::checkObjects(const P2GTCandidate& obj1,
   res &= ss_ ? obj1.hwCharge() == obj2.hwCharge() : true;
 
   int32_t lutCoshDEta = dEta < DETA_LUT_SPLIT ? coshEtaLUT_[dEta] : coshEtaLUT2_[dEta - DETA_LUT_SPLIT];
-  int32_t lutCosDPhi = cosPhiLUT_[dPhi];
+
+  // Optimization: (cos(x + pi) = -cos(x), x in [0, pi))
+  int32_t lutCosDPhi = dPhi >= 1 << 12 ? -cosPhiLUT_[dPhi] : cosPhiLUT_[dPhi];
 
   if (enable_sanity_checks_) {
     // Check whether the LUT error is smaller or equal than the expected maximum LUT error
@@ -313,13 +315,17 @@ bool L1GTDoubleObjectCond::checkObjects(const P2GTCandidate& obj1,
   if (dEta < DETA_LUT_SPLIT) {
     // dEta [0, 2pi)
     invMassSqrDiv2 = obj1.hwPT().to_int64() * obj2.hwPT().to_int64() * (lutCoshDEta - lutCosDPhi);
-    res &= minInvMassSqrDiv2_ ? invMassSqrDiv2 > std::round(minInvMassSqrDiv2_.value() * coshEtaLUT_.output_scale()) : true;
-    res &= maxInvMassSqrDiv2_ ? invMassSqrDiv2 < std::round(maxInvMassSqrDiv2_.value() * coshEtaLUT_.output_scale()) : true;
+    res &= minInvMassSqrDiv2_ ? invMassSqrDiv2 > std::round(minInvMassSqrDiv2_.value() * coshEtaLUT_.output_scale())
+                              : true;
+    res &= maxInvMassSqrDiv2_ ? invMassSqrDiv2 < std::round(maxInvMassSqrDiv2_.value() * coshEtaLUT_.output_scale())
+                              : true;
   } else {
     // dEta [2pi, 4pi), ignore cos
     invMassSqrDiv2 = obj1.hwPT().to_int64() * obj2.hwPT().to_int64() * lutCoshDEta;
-    res &= minInvMassSqrDiv2_ ? invMassSqrDiv2 > std::round(minInvMassSqrDiv2_.value() * coshEtaLUT2_.output_scale()) : true;
-    res &= maxInvMassSqrDiv2_ ? invMassSqrDiv2 < std::round(maxInvMassSqrDiv2_.value() * coshEtaLUT2_.output_scale()) : true;
+    res &= minInvMassSqrDiv2_ ? invMassSqrDiv2 > std::round(minInvMassSqrDiv2_.value() * coshEtaLUT2_.output_scale())
+                              : true;
+    res &= maxInvMassSqrDiv2_ ? invMassSqrDiv2 < std::round(maxInvMassSqrDiv2_.value() * coshEtaLUT2_.output_scale())
+                              : true;
   }
 
   if (inv_mass_checks_) {
@@ -337,8 +343,10 @@ bool L1GTDoubleObjectCond::checkObjects(const P2GTCandidate& obj1,
 
   int64_t transMassDiv2 =
       obj1.hwPT().to_int64() * obj2.hwPT().to_int64() * (static_cast<int64_t>(coshEtaLUT_.output_scale()) - lutCosDPhi);
-  res &= minTransMassSqrDiv2_ ? transMassDiv2 > std::round(minTransMassSqrDiv2_.value() * coshEtaLUT_.output_scale()) : true;
-  res &= maxTransMassSqrDiv2_ ? transMassDiv2 < std::round(maxTransMassSqrDiv2_.value() * coshEtaLUT_.output_scale()) : true;
+  res &= minTransMassSqrDiv2_ ? transMassDiv2 > std::round(minTransMassSqrDiv2_.value() * coshEtaLUT_.output_scale())
+                              : true;
+  res &= maxTransMassSqrDiv2_ ? transMassDiv2 < std::round(maxTransMassSqrDiv2_.value() * coshEtaLUT_.output_scale())
+                              : true;
 
   return res;
 }
