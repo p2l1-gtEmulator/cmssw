@@ -29,6 +29,7 @@
 #include <cmath>
 #include <algorithm>
 #include <string>
+#include <optional>
 
 class L1GTBoardWriter : public edm::one::EDAnalyzer<edm::one::SharedResources> {
 public:
@@ -39,15 +40,17 @@ public:
   struct AlgoBit {
     unsigned int bitPos_;
     std::string path;
+    std::optional<std::size_t> idx;
 
-    bool isSet(const edm::TriggerResults& triggerResults, const std::vector<std::string>& paths) const {
-      auto it = std::find(paths.begin(), paths.end(), path);
-      if (it != paths.end()) {
-        return triggerResults[it - paths.begin()].accept();
-      } else {
-        edm::LogError("L1GTBoardWriter") << "path not found: " << path;
+    bool isSet(const edm::TriggerResults& triggerResults, const std::vector<std::string>& paths) {
+      if (!idx) {
+        auto it = std::find(paths.begin(), paths.end(), path);
+        if (it == paths.end()) {
+          edm::LogError("L1GTBoardWriter") << "path not found: " << path;
+        }
+        idx = it - paths.begin();
       }
-      return false;
+      return triggerResults[idx.value()].accept();
     }
   };
 
@@ -93,8 +96,8 @@ L1GTBoardWriter::L1GTBoardWriter(const edm::ParameterSet& config)
   for (const edm::ParameterSet& param : config.getParameterSetVector("channelConfig")) {
     std::vector<AlgoBit> algoBits;
     for (const edm::ParameterSet& algoConfig : param.getParameterSetVector("algoBits")) {
-      algoBits.emplace_back(
-          AlgoBit{algoConfig.getParameter<unsigned int>("bitPos"), algoConfig.getParameter<std::string>("path")});
+      algoBits.emplace_back(AlgoBit{
+          algoConfig.getParameter<unsigned int>("bitPos"), algoConfig.getParameter<std::string>("path"), std::nullopt});
     }
 
     std::sort(algoBits.begin(), algoBits.end(), [](const AlgoBit& lhs, const AlgoBit& rhs) {
@@ -116,10 +119,10 @@ void L1GTBoardWriter::analyze(const edm::Event& event, const edm::EventSetup& iS
   }
 
   l1t::demo::EventData eventData;
-  for (const auto& [channel, algoBits] : algoBitMap_) {
+  for (auto& [channel, algoBits] : algoBitMap_) {
     std::vector<ap_uint<64>> bits(std::ceil(static_cast<float>(algoBits.back().bitPos_ + 1) / 64), 0);
 
-    for (const AlgoBit& algoBit : algoBits) {
+    for (AlgoBit& algoBit : algoBits) {
       bits[algoBit.bitPos_ / 64].set(algoBit.bitPos_ % 64, algoBit.isSet(trigResults, triggerPaths));
     }
 
