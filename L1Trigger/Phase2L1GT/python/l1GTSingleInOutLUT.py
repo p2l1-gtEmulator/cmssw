@@ -80,7 +80,7 @@ class L1TSingleInOutLUT:
         #       mean(mass_errors), stdev(mass_errors), max(mass_errors), sum(mass_errors), median(mass_errors)))
 
 
-COS_PHI_IN_WIDTH = 11  # not using 2 lsb
+COS_PHI_IN_WIDTH = 10   # not using 2 lsb and 1 msb (cos(x + pi) = -cos(x), x in [0, pi))
 COSH_ETA_IN_WIDTH = 11  # not using 2 lsb and 1 msb (splitted LUT)
 
 # Since we calculate cosh(dEta) - cos(dPhi); both must be on the same scale the difference should fit into 17 bits for the DSP
