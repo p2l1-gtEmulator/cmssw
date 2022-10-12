@@ -1,16 +1,14 @@
 import L1Trigger.Phase2L1GT.VHDLWriter.Conversions as conversions
 import L1Trigger.Phase2L1GT.VHDLWriter.Writer as writer
 from cmssw_test_sequence_gt_only import process as gt
+from cmssw_test_sequence_gt_only import channel_conf as algobitmap
 
-module_path_map = { list(mod.moduleNames())[0] : path for path, mod in gt.paths.items() }
-
-knownfilters = []
-condtext = ""
+knownfilters = dict()
+logicalcombinations = dict()
+distributedalgos = dict()
 knownfilters = conversions.getConditionsfromConfig(gt)
-algobits = conversions.assignAlgoBits(gt.BoardData)
-
-for filt in knownfilters:
-    condtext += writer.conditionwriter(filt, module_path_map[filt.Name])
-
-algounittext = writer.algounitWriter(algobits,condtext)
-writer.writeAlgounitToFile("algos.vhdl",algounittext)
+logicalcombinations = conversions.getLogicalFilters(gt,knownfilters)
+algoblocks = conversions.writeAlgoblocks(knownfilters,logicalcombinations)
+distributedalgos = conversions.distributeAlgos(algoblocks,3)
+conversions.writeAlgounits(distributedalgos,algobitmap,knownfilters,logicalcombinations)
+Algobits = conversions.getAlgobits(algobitmap,distributedalgos,[0,28,44])

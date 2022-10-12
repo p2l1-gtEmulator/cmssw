@@ -1,8 +1,8 @@
 
-{{condition_name}} : entity work.p2gt_singleObjCond
+cond_{{condition_name}} : entity work.p2gt_singleObjCond
 generic map(
-    {%- for key, value in dict_item.items() +%}
-    {{key}}        => {{value}},
+    {%- for key, value in cuts.items() +%}
+    {{key}}         => {{value.hwcut}}, -- Physical value: {{value.physcut}}
     {{key}}_enabled => true{% if not loop.last %},{% endif %}
     {%+ endfor +%}
 )

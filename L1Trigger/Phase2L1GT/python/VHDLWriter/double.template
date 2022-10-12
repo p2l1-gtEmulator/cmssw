@@ -1,16 +1,17 @@
 
-{{condition_name}} : entity work.p2gt_doubleObjCond
+cond_{{condition_name}} : entity work.p2gt_doubleObjCond
 generic map(
   {% if objects_first != objects_second %}
   different_objects => true,
   {%- else %}
   different_objects => false,
   {%- endif %}
-  {% for key, value in dict_item.items() +%}
+  {% for key, value in cuts.items() +%}
   {% if value is sameas true or value is sameas false %}
-  {{key}}         => {{value | lower }}{% if not loop.last %},{% endif %}
+  {{key}}         => {{value.hwcut | lower }} --Physical value: {{value.physcut}}
+  {% if not loop.last %},{% endif %}
   {%- else %}
-  {{key}}         => {{value}},
+  {{key}}         => {{value.hwcut}}, -- Physical value: {{value.physcut}}
   {{key}}_enabled => true{% if not loop.last %},{% endif %}
   {%- endif %}
   {%- endfor +%}
@@ -27,6 +28,7 @@ port map(
   {% if objects_first != objects_second %}
   object2       => objects({{objects_second}}),
   {% endif %}
-  algo_bit_out  => {{algo_bit_name}} --this is a temporary solution, name is taken from patternfilewriter in config file
+  algo_bit_out  => {{algo_bit_name}} 
 );
+
 

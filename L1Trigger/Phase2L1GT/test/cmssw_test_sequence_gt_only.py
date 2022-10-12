@@ -644,8 +644,12 @@ process._doubleEG_32_32_er2p5_Mt40 = l1GTDoubleObjectCond.clone(
         minEta=cms.double(-2.5),
         maxEta=cms.double(2.5),
     ),
-    minTransMass=cms.double(40),
 )
+
+process._testOr = cms.EDFilter("PathStatusFilter",
+    logicalExpression =  cms.string("l1t_doubleEG_32_32_er2p5_Mt40 or l1t_doubleTkMuon_4_4_er2p0_massMin7_massMax18_OS_dzMax1p0")
+)
+process.l1t_testOr = cms.Path(process._testOr)
 
 
 channel_conf = {}
@@ -662,6 +666,7 @@ for filt_name in process.filters:
     idx += 1
 
 
+process.testp = cms.Path(process.doubleEG3232er2p5Mt40)
 # Algo bits
 from L1Trigger.Phase2L1GT.l1GTAlgoChannelConfig import generate_channel_config
 
@@ -669,15 +674,16 @@ from L1Trigger.Phase2L1GT.l1GTAlgoChannelConfig import generate_channel_config
 process.BoardData = cms.EDAnalyzer("L1GTBoardWriter",
   outputFilename = cms.string("outputPattern"),
   maxLines = cms.uint32(1024),
-  channelConfig = generate_channel_config({
-        0 : channel_conf
-    })
+  channelConfig = generate_channel_config(
+        {0: {0: 'l1t_singleTkMu_14_er2p3', 1: 'l1t_doubleJet_3_9_dEta_Max1p6_OS', 2: 'l1t_doubleTau_5_9_q2_4_SS', 3: 'l1t_doubleMu_11_9_q2_4', 8: 'l1t_doubleMuTau_2_9_er_1to3_3to3p3', 9: 'l1t_doubleMuEl_2_9_dEtaMin2', 11: 'l1t_doubleMuEl_2_9_dRMin2', 14: 'l1t_doubleMuEl_2_9_dR1to3', 27: 'l1t_tkMuonTkIsoEle_7_20_er2p4_dzMax1p0', 28: 'l1t_tkMuonTkEle_7_23_er2p4_dzMax1p0', 32: 'l1t_tkIsoElePUPPItau_22_29_er2p1_drMin0p3_dzMax1p0', 33: 'l1t_tkIsoElePUPPItau_22_39_er2p1_drMin0p3_dzMax1p0', 38: 'l1t_doubleTkMuon_4_4_er2p0_massMin7_massMax18_OS_dzMax1p0', 39: 'l1t_doubleEG_32_32_er2p5_Mt40', 40: 'l1t_testOr'}, 4: {4: 'l1t_doubleMuEl_11_9_q2_4_OS', 7: 'l1t_doubleJetGamma_11_9_pr_0p2to1p8_1to3', 10: 'l1t_doubleElGamma_2_9_dPhiMin2', 17: 'l1t_doubleTkMu_15_7_er2p4_dzMax1p0', 18: 'l1t_tkIsoEleStaEG_22_12_er2p4', 21: 'l1t_doubleTkIsoPhoton_22_12_er2p4', 22: 'l1t_doubleCaloTau_69_69_er2p1_drMin0p5', 25: 'l1t_doublePUPPITau_52_52_er2p1_drMin0p5', 26: 'l1t_doublePUPPIJet_112_112_er2p4_dEtaMax1p6', 29: 'l1t_tkEleTkMuon_10_20_er2p4_dzMax1p0', 34: 'l1t_tkElePUPPIJet_28_40_er2p1_er2p4_dRmin0p3_dzMax1p0', 35: 'l1t_doublePuppiJet_160_35_er5p0_massMin620', 38: 'l1t_doubleTkMuon_4_4_er2p0_massMin7_massMax18_OS_dzMax1p0', 39: 'l1t_doubleEG_32_32_er2p5_Mt40', 40: 'l1t_testOr'}, 6: {5: 'l1t_doubleMuGamma_11_9_OS', 6: 'l1t_doubleMuEl_11_9_SS', 12: 'l1t_doubleElTau_2_9_dEta0p2to2', 13: 'l1t_doubleMuJet_2_9_dPhi2to4', 15: 'l1t_doubleMuGamma_11_9_massMax10', 16: 'l1t_doubleElMu_11_9_mass10to600', 19: 'l1t_doubleTkEle_25_12_er2p4', 20: 'l1t_doubleStaEG_37_24_er2p4', 23: 'l1t_doubleCaloTau_90_90_er2p1_drMin0p5', 24: 'l1t_doublePUPPITau_36_36_er2p1_drMin0p5', 30: 'l1t_puppiTauTkMuon_27_18_er2p1_dzMax1p0', 31: 'l1t_puppiTauTkMuon_36_18_er2p1_dzMax1p0', 36: 'l1t_doubleTkMuon_2_2_er1p5_drMax1p4_OS_dzMax1p0', 37: 'l1t_doubleTkMuon_4_4_er2p4_drMax1p2_OS_dzMax1p0'}}
+
+    )
 )
 
 process.l1t_BoardData = cms.EndPath(process.BoardData)
 
 process.output = cms.OutputModule("PoolOutputModule",
-    fileName = cms.untracked.string('file:test_output.root'),
+    fileName = cms.untracked.string('file:testout.root'),
     outputCommands = cms.untracked.vstring('keep *'),
     splitLevel = cms.untracked.int32(0)
 )

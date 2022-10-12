@@ -11,7 +11,7 @@ use work.emp_ttc_decl.all;
 
 use work.common_pkg.all;
 
-entity p2gt_algos is
+entity algos_slr{{slrnumber}} is
   generic (
     cut_offset : natural := 0
   );
@@ -30,9 +30,9 @@ entity p2gt_algos is
     algo_bits_out       : out std_logic_vector(NUM_ALGOS_IN_SRL - 1 downto 0)
   );
 
-end p2gt_algos;
+end algos_slr{{slrnumber}};
 
-architecture rtl of p2gt_algos is
+architecture rtl of algos_slr{{slrnumber}} is
   signal algo_bits_int : std_logic_vector(NUM_ALGOS_IN_SRL - 1 downto 0) := (others => '0');
   signal algo_bits_srl1_int : std_logic_vector(NUM_ALGOS_IN_SRL - 1 downto 0);
   signal algo_bits_srl2_int : std_logic_vector(NUM_ALGOS_IN_SRL - 1 downto 0);
@@ -40,8 +40,11 @@ architecture rtl of p2gt_algos is
   signal delayed_valid_to_payload : std_logic_vector(ALGO_REPLICATION_IN_SRL - 1 downto 0);
   signal delayed_valid_buffer : std_logic_vector(BX_ZERO_IN_BUF + 1 + ALGO_LATENCY - 1 downto 0); -- One additional tick used in delay line to register objects & valid bits.
   -------- SIGNALS ---------
-  {% for key,value in algobits.items() %}
+  {% for key,value in filtermodules.items() %}
   signal {{key}} : std_logic := '0';
+  {% for val in value.Paths %}
+  signal {{val}} : std_logic := '0';
+  {% endfor %}
   {% endfor %}
   -------- SIGNALS end ---------
 
@@ -59,15 +62,43 @@ begin
   {{Conditions | indent(2)}}
   -------- ALGORITHMS end ---------- 
 
+
+
+    
+  -------- ASSOCIATE PATHS WITH CONDDITIONS  --------
+  {% for key,value in filtermodules.items() %}
+  {% for val in value.Paths %}
+  {{val}} <= {{key}};
+  {% endfor %}
+  {% endfor %}
+
+
+  -------- ASSOCIATE PATHS WITH Conditions  end --------
+
+
+
+  -------- OUTPUT ALGO BITS --------
   reg_outputs : process (clk_algo) -- Register on algo clk for one BX
   begin
     if rising_edge(clk_algo) then
       {% for key,value in algobits.items() %}
-      algo_bits_int({{value}}) <= {{key}};
+      {% for values in filtermodules.values() %}
+      {% for val in values.Paths %}
+      {%if val == value %}
+      algo_bits_int({{key}}) <= {{value}};
+      {% endif %}
       {% endfor %}
+      {% endfor %}
+      {% if value in logicalcomb.keys() %}
+      algo_bits_int({{key}}) <= {{logicalcomb[value].expression}};
+      {% endif %}
+      {% endfor %}
+
       algo_bits_out <= algo_bits_int;
     end if;
   end process;
+
+  -------- OUTPUT ALGO BITS end--------
   algo_bits_valid_out <= delayed_valid_buffer(delayed_valid_buffer'high);
 
 end rtl;
