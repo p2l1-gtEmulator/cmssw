@@ -208,6 +208,7 @@ class DefineAlgoBits:
     def SetBit(self,Name,Algobit):
         self.Assignment[Name] = Algobit
     
+    
 
 
 class _Cut:
