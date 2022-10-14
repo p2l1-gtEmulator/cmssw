@@ -39,8 +39,8 @@ private:
   const L1GTSingleCollectionCut collection3_;
   const L1GTSingleCollectionCut collection4_;
 
-  const bool os_; // Opposite sign
-  const bool ss_; // Same sign
+  const bool os_;  // Opposite sign
+  const bool ss_;  // Same sign
 };
 
 L1GTQuadObjectCond::L1GTQuadObjectCond(const edm::ParameterSet& config)
@@ -232,8 +232,13 @@ bool L1GTQuadObjectCond::checkObjects(const P2GTCandidate& obj1,
   res &= collection3_.checkObject(obj3);
   res &= collection4_.checkObject(obj4);
 
-  res &= ss_ ? obj1.hwCharge() == obj2.hwCharge() == obj3.hwCharge() == obj4.hwCharge() : true;
-  res &= os_ ? !(obj1.hwCharge() == obj2.hwCharge() == obj3.hwCharge() == obj4.hwCharge()) : true;
+  res &= ss_ ? (obj1.hwCharge() == obj2.hwCharge() && obj1.hwCharge() == obj3.hwCharge() &&
+                obj1.hwCharge() == obj4.hwCharge())
+             : true;
+
+  res &= os_ ? !(obj1.hwCharge() == obj2.hwCharge() && obj1.hwCharge() == obj3.hwCharge() &&
+                 obj1.hwCharge() == obj4.hwCharge())
+             : true;
 
   return res;
 }

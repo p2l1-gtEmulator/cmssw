@@ -24,7 +24,7 @@ process.maxEvents = cms.untracked.PSet(input=cms.untracked.int32(72))
 
 process.GTProducer = cms.EDProducer(
     "L1GTTestProducer",
-    outputFilename=cms.string("inputPattern"),
+    outputFilename=cms.string("testpatterns1"),
     random_seed=cms.uint32(0),
     maxLines=cms.uint32(1024),
     platform=cms.string("VU9P")
@@ -683,7 +683,7 @@ process.BoardData = cms.EDAnalyzer("L1GTBoardWriter",
 process.l1t_BoardData = cms.EndPath(process.BoardData)
 
 process.output = cms.OutputModule("PoolOutputModule",
-    fileName = cms.untracked.string('file:testout.root'),
+    fileName = cms.untracked.string('file:new_output.root'),
     outputCommands = cms.untracked.vstring('keep *'),
     splitLevel = cms.untracked.int32(0)
 )

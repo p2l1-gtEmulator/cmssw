@@ -2,17 +2,18 @@
 cond_{{condition_name}} : entity work.p2gt_doubleObjCond
 generic map(
   {% if objects_first != objects_second %}
-  different_objects => true,
+  coll_correl     => DIFFERENT,
   {%- else %}
-  different_objects => false,
+  coll_correl     => SAME12,
   {%- endif %}
   {% for key, value in cuts.items() +%}
-  {% if value is sameas true or value is sameas false %}
-  {{key}}         => {{value.hwcut | lower }} --Physical value: {{value.physcut}}
-  {% if not loop.last %},{% endif %}
+  {% if value.hwcut[0] is sameas true or value is sameas false %}
+  {{key}}         => {{value.hwcut | replace("[","(") | replace("]",")")| lower }}   {% if not loop.last %},{% endif %} --Physical value: {{value.physcut}}
+
   {%- else %}
-  {{key}}         => {{value.hwcut}}, -- Physical value: {{value.physcut}}
-  {{key}}_enabled => true{% if not loop.last %},{% endif %}
+  {{key}}         => {{value.hwcut | replace("[","(") | replace("]",")")}}, -- Physical value: {{value.physcut}}
+  {{key}}_enabled => {{value.enablecut | replace("[","(") | replace("]",")")| lower }}  {% if not loop.last %},{% endif %}
+
   {%- endif %}
   {%- endfor +%}
 )

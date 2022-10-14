@@ -10,6 +10,7 @@ use work.emp_device_decl.all;
 use work.emp_ttc_decl.all;
 
 use work.common_pkg.all;
+use work.object_defs.all;
 
 entity algos_slr{{slrnumber}} is
   generic (
@@ -25,7 +26,7 @@ entity algos_slr{{slrnumber}} is
     clk40               : in  std_logic;
     rst40               : in  std_logic;
     objects_valid       : in  std_logic;
-    objects             : in  t_obj_array(NUM_OBJ_TYPES - 1 downto 0);
+    objects             : in  t_obj_vector(NUM_OBJ_TYPES - 1 downto 0);
     algo_bits_valid_out : out std_logic;
     algo_bits_out       : out std_logic_vector(NUM_ALGOS_IN_SRL - 1 downto 0)
   );
@@ -38,7 +39,7 @@ architecture rtl of algos_slr{{slrnumber}} is
   signal algo_bits_srl2_int : std_logic_vector(NUM_ALGOS_IN_SRL - 1 downto 0);
 
   signal delayed_valid_to_payload : std_logic_vector(ALGO_REPLICATION_IN_SRL - 1 downto 0);
-  signal delayed_valid_buffer : std_logic_vector(BX_ZERO_IN_BUF + 1 + ALGO_LATENCY - 1 downto 0); -- One additional tick used in delay line to register objects & valid bits.
+  signal delayed_valid_buffer : std_logic_vector(ALGO_LATENCY downto 0); -- One additional tick used in delay line to register objects & valid bits.
   -------- SIGNALS ---------
   {% for key,value in filtermodules.items() %}
   signal {{key}} : std_logic := '0';

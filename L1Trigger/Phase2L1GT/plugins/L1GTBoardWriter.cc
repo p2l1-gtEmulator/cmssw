@@ -70,13 +70,7 @@ static l1t::demo::BoardDataWriter::ChannelMap_t generateChannelMap(const edm::Pa
 
     const edm::VParameterSet& algoBits = param.getParameterSetVector("algoBits");
 
-    unsigned int maxBit = 0;
-
-    for (const auto& algoBit : algoBits) {
-      maxBit = std::max(algoBit.getParameter<unsigned int>("bitPos"), maxBit);
-    }
-
-    l1t::demo::ChannelSpec spec{1, static_cast<size_t>(9 - std::ceil(static_cast<float>(maxBit + 1) / 64)), 0};
+    l1t::demo::ChannelSpec spec{1, 0, 0};
 
     channelMap.insert({id, {spec, {id.channel}}});
   }
@@ -120,8 +114,7 @@ void L1GTBoardWriter::analyze(const edm::Event& event, const edm::EventSetup& iS
 
   l1t::demo::EventData eventData;
   for (auto& [channel, algoBits] : algoBitMap_) {
-    std::vector<ap_uint<64>> bits(std::ceil(static_cast<float>(algoBits.back().bitPos_ + 1) / 64), 0);
-
+    std::vector<ap_uint<64>> bits(9, 0);
     for (AlgoBit& algoBit : algoBits) {
       bits[algoBit.bitPos_ / 64].set(algoBit.bitPos_ % 64, algoBit.isSet(trigResults, triggerPaths));
     }

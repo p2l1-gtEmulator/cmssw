@@ -23,8 +23,7 @@ def checkFilter(filt):
 
     if Condit == None:
         return 0
-    collectionlength = Condit.getCollections(filt)
-    print(len(collectionlength))
+    collectionlength = len(Condit.getCollections(filt)) 
     for idx, col in Condit.getCollections(filt).items():
         print(idx)
         knowncuts = Condit._cut_aliases.keys()

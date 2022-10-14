@@ -1,5 +1,4 @@
 from ast import Mod
-from asyncio.windows_events import NULL
 from modulefinder import Module
 from queue import Empty
 from turtle import update
@@ -57,24 +56,16 @@ class Condition:
         }
         self._HWConversionFunctions = {
             'minPt': l1GTScales.to_hw_pT,
-            'minEta': l1GTScales.to_hw_eta,
-            'maxEta': l1GTScales.to_hw_eta,
-            'minPhi': l1GTScales.to_hw_phi,
-            'maxPhi': l1GTScales.to_hw_phi,
+             'minEta': l1GTScales.to_hw_eta,
+             'maxEta': l1GTScales.to_hw_eta,
+             'minPhi': l1GTScales.to_hw_phi,
+             'maxPhi': l1GTScales.to_hw_phi,
             'minDz': l1GTScales.to_hw_dZ,
             'maxDz': l1GTScales.to_hw_dZ,
         }
 
         self._cut_aliases = {
-            'minPt' : 'pT{}_cut',
-            'minEta' : 'minEta{}_cut',
-            'maxEta' : 'maxEta{}_cut',
-            'minPhi' : 'minPhi{}_cut',
-            'maxPhi' : 'maxPhi{}_cut',
-            'minDz' : 'minDz{}_cut',
-            'maxDz' : 'maxDz{}_cut',
-            'qual' : 'qual{}_cut',
-            'iso' : 'iso{}_cut'
+
         }
 
     def addResources(self,knowncut):
@@ -90,15 +81,31 @@ class Condition:
         self.InputObjects[condition] = self._ObjectNameConversions.get(value)
 
     def setCut(self,key,physvalue, collection = "",collectionlength = 0):
+
         if collection != "":
-            if self.getHWCut(key, collection) not in self.Cuts.keys():
-                self.Cuts[self.getHWCut(key, collection)] = [0] * (collectionlength - 1)
-                self.Cuts[self.getHWCut(key, collection)][collection] = 
- 
-        if key in self._HWConversionFunctions:
-            self.Cuts[self.getHWCut(key, collection)] =  _Cut(self._HWConversionFunctions[key](physvalue),physvalue)
+            if self.getHWCut(key) not in self.Cuts.keys():
+                cut = _Cut()
+                cut.setNumberofvalues(collectionlength)
+                print(key)
+                if key in self._HWConversionFunctions:
+                    cut.setCutat(self._HWConversionFunctions[key](physvalue),physvalue,collection)
+                    self.Cuts[self.getHWCut(key)] = cut
+                else:
+                    cut.setCutat(physvalue,physvalue,collection)
+                    self.Cuts[self.getHWCut(key)] = cut
+            else:
+                if key in self._HWConversionFunctions:
+                    self.Cuts[self.getHWCut(key)].setCutat(self._HWConversionFunctions[key](physvalue),physvalue,collection)
+                else:
+                    self.Cuts[self.getHWCut(key)].setCutat(physvalue,physvalue,collection)       
         else:
-            self.Cuts[self.getHWCut(key, collection)] = _Cut(physvalue,physvalue)
+            cut = _Cut()
+            if key in self._HWConversionFunctions:
+                cut.setCut(self._HWConversionFunctions[key](physvalue),physvalue)
+                self.Cuts[self.getHWCut(key)] = cut
+            else:
+                cut.setCut(physvalue,physvalue)
+                self.Cuts[self.getHWCut(key)] = cut
 
     def setName(self,name):
         self.Name = name
@@ -144,6 +151,15 @@ class DoubleObjCond(Condition):
         })
 
         self._cut_aliases.update({ 
+            'minPt' : 'pT_cuts',
+            'minEta' : 'minEta_cuts',
+            'maxEta' : 'maxEta_cuts',
+            'minPhi' : 'minPhi_cuts',
+            'maxPhi' : 'maxPhi_cuts',
+            'minDz' : 'minDz_cuts',
+            'maxDz' : 'maxDz_cuts',
+            'qual' : 'qual_cuts',
+            'iso' : 'iso_cuts',
             'minDEta' : 'dEtaMin_cut',
             'maxDEta' : 'dEtaMax_cut',
             'minDPhi' : 'dPhiMin_cut',
@@ -175,10 +191,23 @@ class DoubleObjCond(Condition):
 
 
 class SingleObjCond(Condition):
-
     """
     Class for to the L1GTSingleObjectCond 
     """
+    def __init__(self):
+        Condition.__init__(self)
+
+        self._cut_aliases.update({ 
+            'minPt' : 'pT_cut',
+            'minEta' : 'minEta_cut',
+            'maxEta' : 'maxEta_cut',
+            'minPhi' : 'minPhi_cut',
+            'maxPhi' : 'maxPhi_cut',
+            'minDz' : 'minDz_cut',
+            'maxDz' : 'maxDz_cut',
+            'qual' : 'qual_cut',
+            'iso' : 'iso_cut'})
+
     Label = "L1GTSingleObjectCond"
     Template = "single.template"
 
@@ -208,13 +237,27 @@ class DefineAlgoBits:
     def SetBit(self,Name,Algobit):
         self.Assignment[Name] = Algobit
     
-    
+
 
 
 class _Cut:
-    def __init__(self,hwcut,physcut):
-        self.hwcut = hwcut
-        self.physcut = physcut 
+    def __init__(self):
+        self.hwcut = []
+        self.physcut = []
+        self.enablecut = []
+    def setCut(self,hwcut,physcut):
+        self.hwcut.append(hwcut)
+        self.physcut.append(physcut)
+        self.enablecut.append(True)        
+    def setNumberofvalues(self,value):
+        print("LENGTH = {}".format(value))
+        self.hwcut = [0] * (value )
+        self.physcut = [0] * (value)
+        self.enablecut = [False] * (value)
+    def setCutat(self,hwcut,physcut,position):
+        self.hwcut[position -1] = hwcut
+        self.physcut[position -1] = physcut
+        self.enablecut[position -1] = True
 
 
 class LogicalFilter:
