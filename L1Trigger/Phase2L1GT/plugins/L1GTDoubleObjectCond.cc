@@ -275,8 +275,8 @@ bool L1GTDoubleObjectCond::checkObjects(const P2GTCandidate& obj1,
   res &= minDEta_ ? dEta > minDEta_ : true;
   res &= maxDEta_ ? dEta < maxDEta_ : true;
 
-  int64_t dPhi = (obj1.hwPhi() > obj2.hwPhi()) ? obj1.hwPhi().to_int() - obj2.hwPhi().to_int()
-                                               : obj2.hwPhi().to_int() - obj1.hwPhi().to_int();
+  int64_t dPhi = (obj1.hwPhi() > obj2.hwPhi()) ? obj1.hwPhi().to_int64() - obj2.hwPhi().to_int64()
+                                               : obj2.hwPhi().to_int64() - obj1.hwPhi().to_int64();
   res &= minDPhi_ ? dPhi > minDPhi_ : true;
   res &= maxDPhi_ ? dPhi < maxDPhi_ : true;
 
