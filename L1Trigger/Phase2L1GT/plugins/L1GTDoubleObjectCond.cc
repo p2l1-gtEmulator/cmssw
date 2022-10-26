@@ -35,7 +35,7 @@ public:
         // I guess ceil is required due to small differences in C++ and python's cos/cosh implementation.
         hwMax_error_(std::ceil(max_error * output_scale)) {}
 
-  int32_t operator[](int32_t i) const { return data_[(i >> unused_lsbs_) % data_.size()]; }
+  int32_t operator[](uint32_t i) const { return data_[(i >> unused_lsbs_) % data_.size()]; }
   double hwMax_error() const { return hwMax_error_; }
   double output_scale() const { return output_scale_; }
 
@@ -270,17 +270,20 @@ bool L1GTDoubleObjectCond::checkObjects(const P2GTCandidate& obj1,
   res &= collection1_.checkObject(obj1);
   res &= collection2_.checkObject(obj2);
 
-  int64_t dEta = (obj1.hwEta() > obj2.hwEta()) ? obj1.hwEta().to_int64() - obj2.hwEta().to_int64()
-                                               : obj2.hwEta().to_int64() - obj1.hwEta().to_int64();
+  uint32_t dEta = (obj1.hwEta() > obj2.hwEta()) ? obj1.hwEta().to_int() - obj2.hwEta().to_int()
+                                                : obj2.hwEta().to_int() - obj1.hwEta().to_int();
   res &= minDEta_ ? dEta > minDEta_ : true;
   res &= maxDEta_ ? dEta < maxDEta_ : true;
 
-  int64_t dPhi = (obj1.hwPhi() > obj2.hwPhi()) ? obj1.hwPhi().to_int64() - obj2.hwPhi().to_int64()
-                                               : obj2.hwPhi().to_int64() - obj1.hwPhi().to_int64();
+  constexpr int HW_PI = 1 << (P2GTCandidate::hwPhi_t::width - 1);  // assumes phi in [-pi, pi)
+
+  // Ensure dPhi is always the smaller angle, i.e. always between [0, pi]
+  uint32_t dPhi = HW_PI - abs(abs(obj1.hwPhi().to_int() - obj2.hwPhi().to_int()) - HW_PI);
+
   res &= minDPhi_ ? dPhi > minDPhi_ : true;
   res &= maxDPhi_ ? dPhi < maxDPhi_ : true;
 
-  int64_t dRSquared = dEta * dEta + dPhi * dPhi;
+  uint32_t dRSquared = dEta * dEta + dPhi * dPhi;
   res &= minDRSquared_ ? dRSquared > minDRSquared_ : true;
   res &= maxDRSquared_ ? dRSquared < maxDRSquared_ : true;
 
@@ -290,7 +293,7 @@ bool L1GTDoubleObjectCond::checkObjects(const P2GTCandidate& obj1,
   int32_t lutCoshDEta = dEta < DETA_LUT_SPLIT ? coshEtaLUT_[dEta] : coshEtaLUT2_[dEta - DETA_LUT_SPLIT];
 
   // Optimization: (cos(x + pi) = -cos(x), x in [0, pi))
-  int32_t lutCosDPhi = dPhi >= 1 << 12 ? -cosPhiLUT_[dPhi] : cosPhiLUT_[dPhi];
+  int32_t lutCosDPhi = dPhi >= HW_PI ? -cosPhiLUT_[dPhi] : cosPhiLUT_[dPhi];
 
   if (enable_sanity_checks_) {
     // Check whether the LUT error is smaller or equal than the expected maximum LUT error
