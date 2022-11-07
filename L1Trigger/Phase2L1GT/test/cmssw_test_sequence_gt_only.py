@@ -638,6 +638,119 @@ process._doubleEG_32_32_er2p5_Mt40 = l1GTDoubleObjectCond.clone(
 )
 
 
+process._triplePuppiJet_70_50_35 = l1GTTripleObjectCond.clone(
+    collection1=cms.PSet(
+        tag=cms.InputTag("GTProducer", "CL2 Jets"),
+        minPt=cms.double(70)
+    ),
+    collection2=cms.PSet(
+        tag=cms.InputTag("GTProducer", "CL2 Jets"),
+        minPt=cms.double(50)
+    ),
+    collection3=cms.PSet(
+        tag=cms.InputTag("GTProducer", "CL2 Jets"),
+        minPt=cms.double(35)
+    )
+)
+
+process._tripleTkEleTkMuPUPPIJet_30_40_25_er2p4 = l1GTTripleObjectCond.clone(
+    collection1=cms.PSet(
+        tag=cms.InputTag("GTProducer", "CL2 Electrons"),
+        minPt=cms.double(30),
+        minEta=cms.double(-2.4),
+        maxEta=cms.double(2.4)
+    ),
+    collection2=cms.PSet(
+        tag=cms.InputTag("GTProducer", "GMT TkMuons"),
+        minPt=cms.double(40),
+        minEta=cms.double(-2.4),
+        maxEta=cms.double(2.4)
+    ),
+    collection3=cms.PSet(
+        tag=cms.InputTag("GTProducer", "CL2 Jets"),
+        minPt=cms.double(25),
+        minEta=cms.double(-2.4),
+        maxEta=cms.double(2.4)
+    )
+)
+
+process._tripleTkMuTkEle_7_5_5_er3p4_SS = l1GTTripleObjectCond.clone(
+    collection1=cms.PSet(
+        tag=cms.InputTag("GTProducer", "GMT TkMuons"),
+        minPt=cms.double(7),
+        minEta=cms.double(-3.4),
+        maxEta=cms.double(3.4)
+    ),
+    collection2=cms.PSet(
+        tag=cms.InputTag("GTProducer", "GMT TkMuons"),
+        minPt=cms.double(5),
+        minEta=cms.double(-3.4),
+        maxEta=cms.double(3.4)
+    ),
+    collection3=cms.PSet(
+        tag=cms.InputTag("GTProducer", "CL2 Electrons"),
+        minPt=cms.double(5),
+        minEta=cms.double(-3.4),
+        maxEta=cms.double(3.4)
+    ),
+    ss=cms.bool(True)
+)
+
+process._quadTkMuTkEle_5_5_5_7_er3p4_SS = l1GTQuadObjectCond.clone(
+    collection1=cms.PSet(
+        tag=cms.InputTag("GTProducer", "GMT TkMuons"),
+        minPt=cms.double(5),
+        minEta=cms.double(-3.4),
+        maxEta=cms.double(3.4)
+    ),
+    collection2=cms.PSet(
+        tag=cms.InputTag("GTProducer", "GMT TkMuons"),
+        minPt=cms.double(5),
+        minEta=cms.double(-3.4),
+        maxEta=cms.double(3.4)
+    ),
+    collection3=cms.PSet(
+        tag=cms.InputTag("GTProducer", "GMT TkMuons"),
+        minPt=cms.double(5),
+        minEta=cms.double(-3.4),
+        maxEta=cms.double(3.4)
+    ),
+    collection4=cms.PSet(
+        tag=cms.InputTag("GTProducer", "CL2 Electrons"),
+        minPt=cms.double(7),
+        minEta=cms.double(-3.4),
+        maxEta=cms.double(3.4)
+    ),
+    ss=cms.bool(True)
+)
+
+process._quadTkEleTkMuPUPPIJet_30_40_25_25_er2p4 = l1GTQuadObjectCond.clone(
+    collection1=cms.PSet(
+        tag=cms.InputTag("GTProducer", "CL2 Electrons"),
+        minPt=cms.double(30),
+        minEta=cms.double(-2.4),
+        maxEta=cms.double(2.4)
+    ),
+    collection2=cms.PSet(
+        tag=cms.InputTag("GTProducer", "GMT TkMuons"),
+        minPt=cms.double(40),
+        minEta=cms.double(-2.4),
+        maxEta=cms.double(2.4)
+    ),
+    collection3=cms.PSet(
+        tag=cms.InputTag("GTProducer", "CL2 Jets"),
+        minPt=cms.double(25),
+        minEta=cms.double(-2.4),
+        maxEta=cms.double(2.4)
+    ),
+    collection4=cms.PSet(
+        tag=cms.InputTag("GTProducer", "CL2 Taus"),
+        minPt=cms.double(25),
+        minEta=cms.double(-2.4),
+        maxEta=cms.double(2.4)
+    )
+)
+
 channel_conf = {}
 idx = 0
 # remove '_', since it are not allowed for module names
