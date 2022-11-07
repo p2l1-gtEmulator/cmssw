@@ -1,3 +1,6 @@
+#ifndef L1Trigger_Phase2L1GT_InvariantMassError_h
+#define L1Trigger_Phase2L1GT_InvariantMassError_h
+
 #include <vector>
 
 namespace l1t {
@@ -9,3 +12,5 @@ namespace l1t {
 
   typedef std::vector<InvariantMassError> InvariantMassErrorCollection;
 }  // namespace l1t
+
+#endif  // L1Trigger_Phase2L1GT_InvariantMassError_h

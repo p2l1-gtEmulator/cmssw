@@ -1,5 +1,5 @@
-#ifndef L1GTScales_h
-#define L1GTScales_h
+#ifndef L1Trigger_Phase2L1GT_L1GTScales_h
+#define L1Trigger_Phase2L1GT_L1GTScales_h
 
 #include "FWCore/ParameterSet/interface/ParameterSetDescription.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
@@ -82,4 +82,4 @@ namespace l1t {
   };
 }  // namespace l1t
 
-#endif  // L1GTScales.h
+#endif  // L1Trigger_Phase2L1GT_L1GTScales_h
