@@ -97,15 +97,16 @@ process._doubleMuEl_11_9_q2_4_OS = l1GTDoubleObjectCond.clone(
     os=cms.bool(True),
 )
 
-process._doubleMuGamma_11_9_OS = l1GTDoubleObjectCond.clone(
+process._doubleMu_11_9_combPt_19 = l1GTDoubleObjectCond.clone(
     collection1=cms.PSet(
-        tag=cms.InputTag("GTProducer", "GMT SaPromptMuons"),
+        tag=cms.InputTag("GTProducer", "GMT TkMuons"),
         minPt=cms.double(11),
     ),
     collection2=cms.PSet(
-        tag=cms.InputTag("GTProducer", "CL2 Photons"),
+        tag=cms.InputTag("GTProducer", "GMT TkMuons"),
         minPt=cms.double(9),
-    )
+    ),
+    minPt=cms.double(19)
 )
 
 process._doubleMuEl_11_9_SS = l1GTDoubleObjectCond.clone(

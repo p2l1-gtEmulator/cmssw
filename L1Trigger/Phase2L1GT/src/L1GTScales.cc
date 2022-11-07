@@ -97,6 +97,7 @@ namespace l1t {
         .def("to_hw_dRSquared", &L1GTScales::to_hw_dRSquared)
         .def("to_hw_InvMassSqrDiv2", &L1GTScales::to_hw_InvMassSqrDiv2)
         .def("to_hw_TransMassSqrDiv2", &L1GTScales::to_hw_TransMassSqrDiv2)
+        .def("to_hw_PtSquared", &L1GTScales::to_hw_PtSquared)
         .def("neg_chg", &L1GTScales::neg_chg)
         .def("pos_chg", &L1GTScales::pos_chg);
   }

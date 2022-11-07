@@ -81,6 +81,8 @@ private:
   const std::optional<double> minTransMassSqrDiv2_;
   const std::optional<double> maxTransMassSqrDiv2_;
 
+  const std::optional<double> minPTSquared_;
+
   const bool os_;  // Opposite sign
   const bool ss_;  // Same sign
 
@@ -116,14 +118,16 @@ L1GTDoubleObjectCond::L1GTDoubleObjectCond(const edm::ParameterSet& config)
           "minDR", config, std::bind(&L1GTScales::to_hw_dRSquared, scales_, std::placeholders::_1))),
       maxDRSquared_(getOptionalParam<int, double>(
           "maxDR", config, std::bind(&L1GTScales::to_hw_dRSquared, scales_, std::placeholders::_1))),
-      minInvMassSqrDiv2_(getOptionalParam<int, double>(
+      minInvMassSqrDiv2_(getOptionalParam<double, double>(
           "minInvMass", config, std::bind(&L1GTScales::to_hw_InvMassSqrDiv2, scales_, std::placeholders::_1))),
-      maxInvMassSqrDiv2_(getOptionalParam<int, double>(
+      maxInvMassSqrDiv2_(getOptionalParam<double, double>(
           "maxInvMass", config, std::bind(&L1GTScales::to_hw_InvMassSqrDiv2, scales_, std::placeholders::_1))),
-      minTransMassSqrDiv2_(getOptionalParam<int, double>(
+      minTransMassSqrDiv2_(getOptionalParam<double, double>(
           "minTransMass", config, std::bind(&L1GTScales::to_hw_TransMassSqrDiv2, scales_, std::placeholders::_1))),
-      maxTransMassSqrDiv2_(getOptionalParam<int, double>(
+      maxTransMassSqrDiv2_(getOptionalParam<double, double>(
           "maxTransMass", config, std::bind(&L1GTScales::to_hw_TransMassSqrDiv2, scales_, std::placeholders::_1))),
+      minPTSquared_(getOptionalParam<double, double>(
+          "minPt", config, std::bind(&L1GTScales::to_hw_PtSquared, scales_, std::placeholders::_1))),
       os_(config.exists("os") ? config.getParameter<bool>("os") : false),
       ss_(config.exists("ss") ? config.getParameter<bool>("ss") : false),
       enable_sanity_checks_(config.getUntrackedParameter<bool>("sanity_checks")),
@@ -162,6 +166,7 @@ void L1GTDoubleObjectCond::fillDescriptions(edm::ConfigurationDescriptions& desc
   desc.addOptional<double>("maxInvMass");
   desc.addOptional<double>("minTransMass");
   desc.addOptional<double>("maxTransMass");
+  desc.addOptional<double>("minPt");
   desc.addOptional<bool>("os", false);
   desc.addOptional<bool>("ss", false);
 
@@ -343,6 +348,12 @@ bool L1GTDoubleObjectCond::checkObjects(const P2GTCandidate& obj1,
     double error = std::abs(precInvMass - lutInvMass);
     massErrors.emplace_back(InvariantMassError{error, error / precInvMass, precInvMass});
   }
+
+  int64_t pTSquared =
+      obj1.hwPT().to_int64() * obj1.hwPT().to_int64() * static_cast<int64_t>(std::round(cosPhiLUT_.output_scale())) +
+      obj2.hwPT().to_int64() * obj2.hwPT().to_int64() * static_cast<int64_t>(std::round(cosPhiLUT_.output_scale())) +
+      2 * obj1.hwPT().to_int64() * obj2.hwPT().to_int64() * lutCosDPhi;
+  res &= minPTSquared_ ? pTSquared > std::round(minPTSquared_.value() * cosPhiLUT_.output_scale()) : true;
 
   int64_t transMassDiv2 =
       obj1.hwPT().to_int64() * obj2.hwPT().to_int64() * (static_cast<int64_t>(coshEtaLUT_.output_scale()) - lutCosDPhi);
