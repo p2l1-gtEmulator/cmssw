@@ -1,0 +1,20 @@
+
+{{condition_name}} : entity work.p2gt_singleObjCond
+generic map(
+    {%- for key, value in dict_item.items() +%}
+    {{key}}        => {{value}},
+    {{key}}_enabled => true{% if not loop.last %},{% endif %}
+    {%+ endfor +%}
+)
+port map(
+  clk          => clk, -- ipbus signals
+  rst          => rst,
+  ipb_in       => ipb_in,
+  ipb_out      => open,
+  clk_algo     => clk_algo,
+  rst_algo     => rst_algo,
+  object_valid => objects_valid,
+  object       => objects({{object}}),
+  algo_bit_out => {{algo_bit_name}} --this is a temporary solution, name is taken from patternfilewriter in config file
+);
+

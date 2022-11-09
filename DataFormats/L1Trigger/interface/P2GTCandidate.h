@@ -1,0 +1,263 @@
+#ifndef P2GTCandidate_h
+#define P2GTCandidate_h
+
+#include <vector>
+#include <ap_int.h>
+#include <stdexcept>
+
+#include "DataFormats/Common/interface/Ref.h"
+#include "DataFormats/Common/interface/RefVector.h"
+
+#include "DataFormats/L1TCorrelator/interface/TkElectron.h"
+#include "DataFormats/L1TCorrelator/interface/TkEm.h"
+
+namespace l1t {
+
+  class P2GTCandidate;
+  typedef std::vector<P2GTCandidate> P2GTCandidateCollection;
+  typedef edm::Ref<P2GTCandidateCollection> P2GTCandidateRef;
+  typedef edm::RefVector<P2GTCandidateCollection> P2GTCandidateRefVector;
+  typedef std::vector<P2GTCandidateRef> P2GTCandidateVectorRef;
+
+  class P2GTCandidate {
+  public:
+    typedef ap_uint<16> hwPT_t;
+    typedef ap_int<13> hwPhi_t;
+    typedef ap_int<14> hwEta_t;
+    typedef ap_int<10> hwDZ_t;
+    typedef ap_uint<11> hwIso_t;
+    typedef ap_uint<8> hwQual_t;
+    typedef ap_uint<1> hwCharge_t;
+    typedef ap_int<12> hwDD_t;
+    typedef ap_uint<4> hwBeta_t;
+    typedef ap_uint<10> hwMass_t;
+    typedef ap_uint<16> hwIndex_t;
+    typedef ap_uint<10> hwSeed_pT_t;
+    typedef ap_int<10> hwSeed_dZ_t;
+    typedef ap_uint<16> hwSca_sum_t;
+    typedef ap_int<16> hwPrimvertdz_t;
+    typedef ap_uint<5> hwNumber_of_tracks_t;
+    typedef ap_uint<12> hwSum_pT_pv_t;
+    typedef ap_uint<2> hwType_t;
+    typedef ap_uint<8> hwNumber_of_tracks_in_pv_t;
+    typedef ap_uint<10> hwNumber_of_tracks_not_in_pv_t;
+
+    // Similar to std::optional<int> but avoids inheritance for ROOT file embedding
+    struct OptionalInt {
+      OptionalInt() : value_(0), set_(false) {}
+      OptionalInt(int value) : value_(value), set_(true) {}
+
+      operator int() const { return value_; }
+      operator bool() const { return set_; }
+
+      bool operator==(bool rhs) const { return set_ == rhs; }
+      bool operator!=(bool rhs) const { return set_ != rhs; }
+      
+    private:
+      int value_;
+      bool set_;
+    };
+
+    P2GTCandidate();
+    P2GTCandidate(const TkElectron&);
+    P2GTCandidate(const TkEm&);
+
+    void setHwPT(hwPT_t hwPT) { hwPT_ = hwPT.to_int(); }
+    void setHwPhi(hwPhi_t hwPhi) { hwPhi_ = hwPhi.to_int(); }
+    void setHwEta(hwEta_t hwEta) { hwEta_ = hwEta.to_int(); }
+    void setHwDZ(hwDZ_t hwDZ) { hwDZ_ = hwDZ.to_int(); }
+    void setHwIso(hwIso_t hwIso) { hwIso_ = hwIso.to_int(); }
+    void setHwQual(hwQual_t hwQual) { hwQual_ = hwQual.to_int(); }
+    void setHwCharge(hwCharge_t hwCharge) { hwCharge_ = hwCharge.to_int(); }
+    void setHwDD(hwDD_t hwDD) { hwDD_ = hwDD.to_int(); }
+    void setHwBeta(hwBeta_t hwBeta) { hwBeta_ = hwBeta.to_int(); }
+    void setHwMass(hwMass_t hwMass) { hwMass_ = hwMass.to_int(); }
+    void setHwIndex(hwIndex_t hwIndex) { hwIndex_ = hwIndex.to_int(); }
+    void setHwSeed_pT(hwSeed_pT_t hwSeed_pT) { hwSeed_pT_ = hwSeed_pT.to_int(); }
+    void setHwSeed_dZ(hwSeed_dZ_t hwSeed_dZ) { hwSeed_dZ_ = hwSeed_dZ.to_int(); }
+    void setHwSca_sum(hwSca_sum_t hwSca_sum) { hwSca_sum_ = hwSca_sum.to_int(); }
+    void setHwPrimvertdz(hwPrimvertdz_t hwPrimvertdz) { hwPrimvertdz_ = hwPrimvertdz.to_int(); }
+    void setHwNumber_of_tracks(hwNumber_of_tracks_t hwNumber_of_tracks) {
+      hwNumber_of_tracks_ = hwNumber_of_tracks.to_int();
+    }
+
+    void setHwSum_pT_pv(hwSum_pT_pv_t hwSum_pT_pv) { hwSum_pT_pv_ = hwSum_pT_pv.to_int(); }
+    void setHwType(hwType_t hwType) { hwType_ = hwType.to_int(); }
+    void setHwNumber_of_tracks_in_pv(hwNumber_of_tracks_in_pv_t hwNumber_of_tracks_in_pv) {
+      hwNumber_of_tracks_in_pv_ = hwNumber_of_tracks_in_pv.to_int();
+    }
+    void setHwNumber_of_tracks_not_in_pv(hwNumber_of_tracks_not_in_pv_t hwNumber_of_tracks_not_in_pv) {
+      hwNumber_of_tracks_not_in_pv_ = hwNumber_of_tracks_not_in_pv.to_int();
+    }
+
+    hwPT_t hwPT() const {
+      if (!hwPT_) {
+        throw std::invalid_argument("Object doesn't have pT");
+      }
+      return static_cast<int>(hwPT_);
+    }
+
+    hwPhi_t hwPhi() const {
+      if (!hwPhi_) {
+        throw std::invalid_argument("Object doesn't have phi");
+      }
+      return static_cast<int>(hwPhi_);
+    }
+
+    hwEta_t hwEta() const {
+      if (!hwEta_) {
+        throw std::invalid_argument("Object doesn't have eta");
+      }
+      return static_cast<int>(hwEta_);
+    }
+
+    hwDZ_t hwDZ() const {
+      if (!hwDZ_) {
+        throw std::invalid_argument("Object doesn't have dZ");
+      }
+      return static_cast<int>(hwDZ_);
+    }
+
+    hwIso_t hwIso() const {
+      if (!hwIso_) {
+        throw std::invalid_argument("Object doesn't have iso");
+      }
+      return static_cast<int>(hwIso_);
+    }
+
+    hwQual_t hwQual() const {
+      if (!hwQual_) {
+        throw std::invalid_argument("Object doesn't have qual");
+      }
+      return static_cast<int>(hwQual_);
+    }
+
+    hwCharge_t hwCharge() const {
+      if (!hwCharge_) {
+        throw std::invalid_argument("Object doesn't have charge");
+      }
+      return static_cast<int>(hwCharge_);
+    }
+
+    hwDD_t hwDD() const {
+      if (!hwDD_) {
+        throw std::invalid_argument("Object doesn't have dD");
+      }
+      return static_cast<int>(hwDD_);
+    }
+
+    hwBeta_t hwBeta() const {
+      if (!hwBeta_) {
+        throw std::invalid_argument("Object doesn't have beta");
+      }
+      return static_cast<int>(hwBeta_);
+    }
+
+    hwMass_t hwMass() const {
+      if (!hwMass_) {
+        throw std::invalid_argument("Object doesn't have mass");
+      }
+      return static_cast<int>(hwMass_);
+    }
+
+    hwIndex_t hwIndex() const {
+      if (!hwIndex_) {
+        throw std::invalid_argument("Object doesn't have index");
+      }
+      return static_cast<int>(hwIndex_);
+    }
+
+    hwSeed_pT_t hwSeed_pT() const {
+      if (!hwSeed_pT_) {
+        throw std::invalid_argument("Object doesn't have seed_pT");
+      }
+      return static_cast<int>(hwSeed_pT_);
+    }
+
+    hwSeed_dZ_t hwSeed_dZ() const {
+      if (!hwSeed_dZ_) {
+        throw std::invalid_argument("Object doesn't have seed_dZ");
+      }
+      return static_cast<int>(hwSeed_dZ_);
+    }
+
+    hwSca_sum_t hwSca_sum() const {
+      if (!hwSca_sum_) {
+        throw std::invalid_argument("Object doesn't have sca_sum");
+      }
+      return static_cast<int>(hwSca_sum_);
+    }
+
+    hwPrimvertdz_t hwPrimvertdz() const {
+      if (!hwPrimvertdz_) {
+        throw std::invalid_argument("Object doesn't have primvertdz");
+      }
+      return static_cast<int>(hwPrimvertdz_);
+    }
+
+    hwNumber_of_tracks_t hwNumber_of_tracks() const {
+      if (!hwNumber_of_tracks_) {
+        throw std::invalid_argument("Object doesn't have number_of_tracks");
+      }
+      return static_cast<int>(hwNumber_of_tracks_);
+    }
+
+    hwSum_pT_pv_t hwSum_pT_pv() const {
+      if (!hwSum_pT_pv_) {
+        throw std::invalid_argument("Object doesn't have sum_pT_pv");
+      }
+      return static_cast<int>(hwSum_pT_pv_);
+    }
+
+    hwType_t hwType() const {
+      if (!hwType_) {
+        throw std::invalid_argument("Object doesn't have type");
+      }
+      return static_cast<int>(hwType_);
+    }
+
+    hwNumber_of_tracks_in_pv_t hwNumber_of_tracks_in_pv() const {
+      if (!hwNumber_of_tracks_in_pv_) {
+        throw std::invalid_argument("Object doesn't have number_of_tracks_in_pv");
+      }
+      return static_cast<int>(hwNumber_of_tracks_in_pv_);
+    }
+
+    hwNumber_of_tracks_not_in_pv_t hwNumber_of_tracks_not_in_pv() const {
+      if (!hwNumber_of_tracks_not_in_pv_) {
+        throw std::invalid_argument("Object doesn't have hwNumber_of_tracks_not_in_pv");
+      }
+      return static_cast<int>(hwNumber_of_tracks_not_in_pv_);
+    }
+
+    bool operator==(const l1t::P2GTCandidate& rhs) const;
+    bool operator!=(const l1t::P2GTCandidate& rhs) const;
+
+  private:
+    OptionalInt hwPT_;
+    OptionalInt hwPhi_;
+    OptionalInt hwEta_;
+    OptionalInt hwDZ_;
+    OptionalInt hwIso_;
+    OptionalInt hwQual_;
+    OptionalInt hwCharge_;
+    OptionalInt hwDD_;
+    OptionalInt hwBeta_;
+    OptionalInt hwMass_;
+    OptionalInt hwIndex_;
+    OptionalInt hwSeed_pT_;
+    OptionalInt hwSeed_dZ_;
+    OptionalInt hwSca_sum_;
+    OptionalInt hwPrimvertdz_;
+    OptionalInt hwNumber_of_tracks_;
+
+    // TODO ?
+    OptionalInt hwSum_pT_pv_;
+    OptionalInt hwType_;
+    OptionalInt hwNumber_of_tracks_in_pv_;
+    OptionalInt hwNumber_of_tracks_not_in_pv_;
+  };
+
+};  // namespace l1t
+
+#endif

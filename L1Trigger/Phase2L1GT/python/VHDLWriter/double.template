@@ -1,0 +1,32 @@
+
+{{condition_name}} : entity work.p2gt_doubleObjCond
+generic map(
+  {% if objects_first != objects_second %}
+  different_objects => true,
+  {%- else %}
+  different_objects => false,
+  {%- endif %}
+  {% for key, value in dict_item.items() +%}
+  {% if value is sameas true or value is sameas false %}
+  {{key}}         => {{value | lower }}{% if not loop.last %},{% endif %}
+  {%- else %}
+  {{key}}         => {{value}},
+  {{key}}_enabled => true{% if not loop.last %},{% endif %}
+  {%- endif %}
+  {%- endfor +%}
+)
+port map(
+  clk           => clk, -- ipbus signals
+  rst           => rst,
+  ipb_in        => ipb_in,
+  ipb_out       => open,
+  clk_algo      => clk_algo,
+  rst_algo      => rst_algo,
+  objects_valid => objects_valid,
+  object1       => objects({{objects_first}}),
+  {% if objects_first != objects_second %}
+  object2       => objects({{objects_second}}),
+  {% endif %}
+  algo_bit_out  => {{algo_bit_name}} --this is a temporary solution, name is taken from patternfilewriter in config file
+);
+
