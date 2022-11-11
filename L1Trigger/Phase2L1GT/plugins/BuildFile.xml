@@ -5,4 +5,5 @@
 <use name="DataFormats/L1Trigger"/>
 <use name="L1Trigger/DemonstratorTools"/>
 <use name="L1Trigger/Phase2L1GT"/>
+<use name="L1Trigger/L1TTrackMatch"/>
 <flags EDM_PLUGIN="1"/>

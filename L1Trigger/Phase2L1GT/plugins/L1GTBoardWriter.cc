@@ -67,16 +67,7 @@ static l1t::demo::BoardDataWriter::ChannelMap_t generateChannelMap(const edm::Pa
   l1t::demo::BoardDataWriter::ChannelMap_t channelMap;
   for (auto& param : config.getParameterSetVector("channelConfig")) {
     l1t::demo::LinkId id{"Algos", param.getParameter<unsigned int>("channel")};
-
-    const edm::VParameterSet& algoBits = param.getParameterSetVector("algoBits");
-
-    unsigned int maxBit = 0;
-
-    for (const auto& algoBit : algoBits) {
-      maxBit = std::max(algoBit.getParameter<unsigned int>("bitPos"), maxBit);
-    }
-
-    l1t::demo::ChannelSpec spec{1, static_cast<size_t>(9 - std::ceil(static_cast<float>(maxBit + 1) / 64)), 0};
+    l1t::demo::ChannelSpec spec{1, 0, 0};
 
     channelMap.insert({id, {spec, {id.channel}}});
   }

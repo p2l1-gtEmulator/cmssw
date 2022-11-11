@@ -10,12 +10,10 @@ from statistics import mean, median, stdev
 import math
 
 
-print_info = True
-
-
 class L1TSingleInOutLUT:
 
     def __init__(self, width_in, unused_lsbs, lsb, output_scale_factor, operation, start_value=0, label=""):
+        self.debug_txt = ""
         input_scale_factor = 2**unused_lsbs * lsb
         self.unused_lsbs = unused_lsbs
         self.lsb = lsb
@@ -28,10 +26,10 @@ class L1TSingleInOutLUT:
         if signed_output:
             self.width_out += 1
 
-        if print_info:
-            print("***************************** {} LUT {} *****************************".format(operation.__name__, label))
-            print("Depth: {} x {} (addr x data)".format(width_in, self.width_out))
-            print("Scale: {}".format(output_scale_factor))
+        
+        self.debug_info("***************************** {} LUT {} *****************************".format(operation.__name__, label))
+        self.debug_info("Depth: {} x {} (addr x data)".format(width_in, self.width_out))
+        self.debug_info("Scale: {}".format(output_scale_factor))
 
         self.width_in = width_in
         self.output_scale_factor = output_scale_factor
@@ -44,6 +42,9 @@ class L1TSingleInOutLUT:
 
         self.print_error()
 
+    def debug_info(self, msg):
+        self.debug_txt += msg + "\n"
+
     def config(self):
         return cms.PSet(
             output_scale_factor=cms.double(self.output_scale_factor),
@@ -53,6 +54,7 @@ class L1TSingleInOutLUT:
         )
 
     def export(self, filename: str):
+        print(self.debug_txt)
         with open(filename, "w") as file:
             for value in self.lut:
                 file.write("{:X}".format(int(value) & ((1 << self.width_out) - 1)
@@ -71,12 +73,12 @@ class L1TSingleInOutLUT:
 
         self.max_error = max(errors)
 
-        if print_info:
-            print("Error: {:.5f} +/- {:.5f}, max: {:.5f}, total: {:.5f}, median: {:.5f}".format(
+        
+        self.debug_info("Error: {:.5f} +/- {:.5f}, max: {:.5f}, total: {:.5f}, median: {:.5f}".format(
                 mean(errors), stdev(errors), self.max_error, sum(errors), median(errors)))
 
         # mass_errors = [errors[i]/(2*self.operation(i * self.lsb + self.start_value)) for i in range(2**(self.width_in + self.unused_lsbs)) ]
-        # print("inv mass error: {:.5f} +/- {:.5f}, max: {:.5f}, total: {:.5f}, median: {:.5f}".format(
+        # self.debug_info("inv mass error: {:.5f} +/- {:.5f}, max: {:.5f}, total: {:.5f}, median: {:.5f}".format(
         #       mean(mass_errors), stdev(mass_errors), max(mass_errors), sum(mass_errors), median(mass_errors)))
 
 

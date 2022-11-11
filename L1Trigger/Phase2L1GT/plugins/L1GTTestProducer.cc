@@ -112,32 +112,32 @@ L1GTTestProducer::L1GTTestProducer(const edm::ParameterSet &config)
                        1,
                        config.exists("maxLines") ? config.getParameter<unsigned int>("maxLines") : 1024,
                        config.getParameter<std::string>("platform") == "VU13P" ? CHANNEL_MAP_VU13P : CHANNEL_MAP_VU9P) {
-  produces<P2GTCandidateCollection>("GCT NonIsoEg");
-  produces<P2GTCandidateCollection>("GCT IsoEg");
-  produces<P2GTCandidateCollection>("GCT Jets");
-  produces<P2GTCandidateCollection>("GCT Taus");
-  produces<P2GTCandidateCollection>("GCT HtSum");
-  produces<P2GTCandidateCollection>("GCT EtSum");
-  produces<P2GTCandidateCollection>("GMT SaPromptMuons");
-  produces<P2GTCandidateCollection>("GMT SaDisplacedMuons");
-  produces<P2GTCandidateCollection>("GMT TkMuons");
-  produces<P2GTCandidateCollection>("GMT Topo");
-  produces<P2GTCandidateCollection>("GTT PromptJets");
-  produces<P2GTCandidateCollection>("GTT DisplacedJets");
-  produces<P2GTCandidateCollection>("GTT PhiCandidates");
-  produces<P2GTCandidateCollection>("GTT RhoCandidates");
-  produces<P2GTCandidateCollection>("GTT BsCandidates");
-  produces<P2GTCandidateCollection>("GTT HadronicTaus");
-  produces<P2GTCandidateCollection>("GTT PrimaryVert");
-  produces<P2GTCandidateCollection>("GTT PromptHtSum");
-  produces<P2GTCandidateCollection>("GTT DisplacedHtSum");
-  produces<P2GTCandidateCollection>("GTT EtSum");
-  produces<P2GTCandidateCollection>("CL2 Jets");
-  produces<P2GTCandidateCollection>("CL2 Taus");
-  produces<P2GTCandidateCollection>("CL2 Electrons");
-  produces<P2GTCandidateCollection>("CL2 Photons");
-  produces<P2GTCandidateCollection>("CL2 HtSum");
-  produces<P2GTCandidateCollection>("CL2 EtSum");
+  produces<P2GTCandidateCollection>("GCTNonIsoEg");
+  produces<P2GTCandidateCollection>("GCTIsoEg");
+  produces<P2GTCandidateCollection>("GCTJets");
+  produces<P2GTCandidateCollection>("GCTTaus");
+  produces<P2GTCandidateCollection>("GCTHtSum");
+  produces<P2GTCandidateCollection>("GCTEtSum");
+  produces<P2GTCandidateCollection>("GMTSaPromptMuons");
+  produces<P2GTCandidateCollection>("GMTSaDisplacedMuons");
+  produces<P2GTCandidateCollection>("GMTTkMuons");
+  produces<P2GTCandidateCollection>("GMTTopo");
+  produces<P2GTCandidateCollection>("GTTPromptJets");
+  produces<P2GTCandidateCollection>("GTTDisplacedJets");
+  produces<P2GTCandidateCollection>("GTTPhiCandidates");
+  produces<P2GTCandidateCollection>("GTTRhoCandidates");
+  produces<P2GTCandidateCollection>("GTTBsCandidates");
+  produces<P2GTCandidateCollection>("GTTHadronicTaus");
+  produces<P2GTCandidateCollection>("GTTPrimaryVert");
+  produces<P2GTCandidateCollection>("GTTPromptHtSum");
+  produces<P2GTCandidateCollection>("GTTDisplacedHtSum");
+  produces<P2GTCandidateCollection>("GTTEtSum");
+  produces<P2GTCandidateCollection>("CL2Jets");
+  produces<P2GTCandidateCollection>("CL2Taus");
+  produces<P2GTCandidateCollection>("CL2Electrons");
+  produces<P2GTCandidateCollection>("CL2Photons");
+  produces<P2GTCandidateCollection>("CL2HtSum");
+  produces<P2GTCandidateCollection>("CL2EtSum");
 }
 
 void L1GTTestProducer::fillDescriptions(edm::ConfigurationDescriptions &description) {
@@ -201,32 +201,32 @@ void L1GTTestProducer::writeInputPatterns(
     const std::unordered_map<std::string, std::vector<std::unique_ptr<l1t::L1TGT_BaseInterface>>> &inputObjects) {
   boardDataWriter_.addEvent(l1t::demo::EventData{
       {{{"GTT", 0},
-        vpack(inputObjects.at("GTT PromptJets"),
-              inputObjects.at("GTT DisplacedJets"),
-              inputObjects.at("GTT PromptHtSum"),
-              inputObjects.at("GTT DisplacedHtSum"),
-              inputObjects.at("GTT EtSum"))},
-       {{"GTT", 1}, vpack(inputObjects.at("GTT HadronicTaus"))},
-       {{"CL2", 0}, vpack(inputObjects.at("CL2 Jets"), inputObjects.at("CL2 HtSum"), inputObjects.at("CL2 EtSum"))},
-       {{"CL2", 1}, vpack(inputObjects.at("CL2 Taus"))},
+        vpack(inputObjects.at("GTTPromptJets"),
+              inputObjects.at("GTTDisplacedJets"),
+              inputObjects.at("GTTPromptHtSum"),
+              inputObjects.at("GTTDisplacedHtSum"),
+              inputObjects.at("GTTEtSum"))},
+       {{"GTT", 1}, vpack(inputObjects.at("GTTHadronicTaus"))},
+       {{"CL2", 0}, vpack(inputObjects.at("CL2Jets"), inputObjects.at("CL2HtSum"), inputObjects.at("CL2EtSum"))},
+       {{"CL2", 1}, vpack(inputObjects.at("CL2Taus"))},
        {{"GCT", 0},
-        vpack(inputObjects.at("GCT NonIsoEg"),
-              inputObjects.at("GCT IsoEg"),
-              inputObjects.at("GCT Jets"),
-              inputObjects.at("GCT Taus"),
-              inputObjects.at("GCT HtSum"),
-              inputObjects.at("GCT EtSum"))},
+        vpack(inputObjects.at("GCTNonIsoEg"),
+              inputObjects.at("GCTIsoEg"),
+              inputObjects.at("GCTJets"),
+              inputObjects.at("GCTTaus"),
+              inputObjects.at("GCTHtSum"),
+              inputObjects.at("GCTEtSum"))},
        {{"GMT", 0},
-        vpack(inputObjects.at("GMT SaPromptMuons"),
-              inputObjects.at("GMT SaDisplacedMuons"),
-              inputObjects.at("GMT TkMuons"),
-              inputObjects.at("GMT Topo"))},
-       {{"CL2", 2}, vpack(inputObjects.at("CL2 Electrons"), inputObjects.at("CL2 Photons"))},
+        vpack(inputObjects.at("GMTSaPromptMuons"),
+              inputObjects.at("GMTSaDisplacedMuons"),
+              inputObjects.at("GMTTkMuons"),
+              inputObjects.at("GMTTopo"))},
+       {{"CL2", 2}, vpack(inputObjects.at("CL2Electrons"), inputObjects.at("CL2Photons"))},
        {{"GTT", 2},
-        vpack(inputObjects.at("GTT PhiCandidates"),
-              inputObjects.at("GTT RhoCandidates"),
-              inputObjects.at("GTT BsCandidates"))},
-       {{"GTT", 3}, vpack(inputObjects.at("GTT PrimaryVert"))}}});
+        vpack(inputObjects.at("GTTPhiCandidates"),
+              inputObjects.at("GTTRhoCandidates"),
+              inputObjects.at("GTTBsCandidates"))},
+       {{"GTT", 3}, vpack(inputObjects.at("GTTPrimaryVert"))}}});
 }
 
 void L1GTTestProducer::produce(edm::Event &event, const edm::EventSetup &setup) {
@@ -234,12 +234,12 @@ void L1GTTestProducer::produce(edm::Event &event, const edm::EventSetup &setup) 
   std::unordered_map<std::string, std::vector<std::unique_ptr<l1t::L1TGT_BaseInterface>>> inputObjects;
   for (std::size_t i = 0; i < 12; ++i) {
     // Global Muon Trigger
-    inputObjects["GMT SaPromptMuons"].emplace_back(std::make_unique<l1t::L1TGT_GMT_PromptDisplacedMuon>(
+    inputObjects["GMTSaPromptMuons"].emplace_back(std::make_unique<l1t::L1TGT_GMT_PromptDisplacedMuon>(
         true, nextPt(), nextEta(), nextPhi(), nextValue(), nextValue(), nextValue(), nextValue()));
 
-    inputObjects["GMT SaDisplacedMuons"].emplace_back(std::make_unique<l1t::L1TGT_GMT_PromptDisplacedMuon>(
+    inputObjects["GMTSaDisplacedMuons"].emplace_back(std::make_unique<l1t::L1TGT_GMT_PromptDisplacedMuon>(
         true, nextPt(), nextEta(), nextPhi(), nextValue(), nextValue(), nextValue(), nextValue()));
-    inputObjects["GMT TkMuons"].emplace_back(std::make_unique<l1t::L1TGT_GMT_TrackMatchedmuon>(true,
+    inputObjects["GMTTkMuons"].emplace_back(std::make_unique<l1t::L1TGT_GMT_TrackMatchedmuon>(true,
                                                                                                nextPt(),
                                                                                                nextEta(),
                                                                                                nextPhi(),
@@ -249,60 +249,60 @@ void L1GTTestProducer::produce(edm::Event &event, const edm::EventSetup &setup) 
                                                                                                nextValue(),
                                                                                                nextValue(),
                                                                                                nextValue()));
-    inputObjects["GMT Topo"].emplace_back(
+    inputObjects["GMTTopo"].emplace_back(
         std::make_unique<l1t::L1TGT_GMT_TopoObject>(true, nextPt(), nextEta(), nextPhi(), nextValue(), nextValue()));
 
     // Global Calorimeter Trigger
-    inputObjects["GCT NonIsoEg"].emplace_back(
+    inputObjects["GCTNonIsoEg"].emplace_back(
         std::make_unique<l1t::L1TGT_GCT_EgammaNonIsolated6p6>(true, nextPt(), nextEta(), nextPhi()));
-    inputObjects["GCT IsoEg"].emplace_back(
+    inputObjects["GCTIsoEg"].emplace_back(
         std::make_unique<l1t::L1TGT_GCT_EgammaIsolated6p6>(true, nextPt(), nextEta(), nextPhi()));
-    inputObjects["GCT Jets"].emplace_back(
+    inputObjects["GCTJets"].emplace_back(
         std::make_unique<l1t::L1TGT_GCT_jet6p6>(true, nextPt(), nextEta(), nextPhi()));
-    inputObjects["GCT Taus"].emplace_back(
+    inputObjects["GCTTaus"].emplace_back(
         std::make_unique<l1t::L1TGT_GCT_tau6p6>(true, nextPt(), nextEta(), nextPhi(), nextValue()));
 
     // Global Track Trigger
-    inputObjects["GTT PrimaryVert"].emplace_back(
+    inputObjects["GTTPrimaryVert"].emplace_back(
         std::make_unique<l1t::L1TGT_GTT_PrimaryVert>(true, nextPt(), nextEta(), nextPhi(), nextValue(), nextValue()));
-    inputObjects["GTT PromptJets"].emplace_back(
+    inputObjects["GTTPromptJets"].emplace_back(
         std::make_unique<l1t::L1TGT_GTT_PromptJet>(true, nextPt(), nextEta(), nextPhi(), nextValue(), nextValue()));
-    inputObjects["GTT DisplacedJets"].emplace_back(std::make_unique<l1t::L1TGT_GTT_DisplacedJet>(
+    inputObjects["GTTDisplacedJets"].emplace_back(std::make_unique<l1t::L1TGT_GTT_DisplacedJet>(
         true, nextPt(), nextEta(), nextPhi(), nextValue(), nextValue(), nextValue()));
-    inputObjects["GTT HadronicTaus"].emplace_back(std::make_unique<l1t::L1TGT_GTT_HadronicTau>(
+    inputObjects["GTTHadronicTaus"].emplace_back(std::make_unique<l1t::L1TGT_GTT_HadronicTau>(
         true, nextPt(), nextEta(), nextPhi(), nextValue(), nextValue(), nextValue(), nextValue()));
-    inputObjects["GTT PhiCandidates"].emplace_back(
+    inputObjects["GTTPhiCandidates"].emplace_back(
         std::make_unique<l1t::L1TGT_GTT_LightMeson>(true, nextPt(), nextEta(), nextPhi(), nextValue()));
-    inputObjects["GTT RhoCandidates"].emplace_back(
+    inputObjects["GTTRhoCandidates"].emplace_back(
         std::make_unique<l1t::L1TGT_GTT_LightMeson>(true, nextPt(), nextEta(), nextPhi(), nextValue()));
-    inputObjects["GTT BsCandidates"].emplace_back(
+    inputObjects["GTTBsCandidates"].emplace_back(
         std::make_unique<l1t::L1TGT_GTT_LightMeson>(true, nextPt(), nextEta(), nextPhi(), nextValue()));
 
     // Correlator Layer-2
-    inputObjects["CL2 Jets"].emplace_back(
+    inputObjects["CL2Jets"].emplace_back(
         std::make_unique<l1t::L1TGT_CL2_Jet>(true, nextPt(), nextEta(), nextPhi(), nextValue()));
-    inputObjects["CL2 Electrons"].emplace_back(std::make_unique<l1t::L1TGT_CL2_Electron>(
+    inputObjects["CL2Electrons"].emplace_back(std::make_unique<l1t::L1TGT_CL2_Electron>(
         true, nextPt(), nextEta(), nextPhi(), nextValue(), nextValue(), nextValue(), nextValue()));
-    inputObjects["CL2 Photons"].emplace_back(
+    inputObjects["CL2Photons"].emplace_back(
         std::make_unique<l1t::L1TGT_CL2_Photon>(true, nextPt(), nextEta(), nextPhi(), nextValue(), nextValue()));
-    inputObjects["CL2 Taus"].emplace_back(std::make_unique<l1t::L1TGT_CL2_Tau>(
+    inputObjects["CL2Taus"].emplace_back(std::make_unique<l1t::L1TGT_CL2_Tau>(
         true, nextPt(), nextEta(), nextPhi(), nextValue(), nextValue(), nextValue(), nextValue()));
   }
 
-  inputObjects["CL2 HtSum"].emplace_back(
+  inputObjects["CL2HtSum"].emplace_back(
       std::make_unique<l1t::L1TGT_CL2_Sum>(true, nextValue(), nextValue(), nextValue()));
-  inputObjects["CL2 EtSum"].emplace_back(
+  inputObjects["CL2EtSum"].emplace_back(
       std::make_unique<l1t::L1TGT_CL2_Sum>(true, nextValue(), nextValue(), nextValue()));
-  inputObjects["GCT HtSum"].emplace_back(
+  inputObjects["GCTHtSum"].emplace_back(
       std::make_unique<l1t::L1TGT_GCT_Sum2>(true, nextValue(), nextValue(), nextValue()));
-  inputObjects["GCT EtSum"].emplace_back(
+  inputObjects["GCTEtSum"].emplace_back(
       std::make_unique<l1t::L1TGT_GCT_Sum2>(true, nextValue(), nextValue(), nextValue()));
 
-  inputObjects["GTT PromptHtSum"].emplace_back(
+  inputObjects["GTTPromptHtSum"].emplace_back(
       std::make_unique<l1t::L1TGT_GTT_Sum>(true, nextValue(), nextValue(), nextValue()));
-  inputObjects["GTT DisplacedHtSum"].emplace_back(
+  inputObjects["GTTDisplacedHtSum"].emplace_back(
       std::make_unique<l1t::L1TGT_GTT_Sum>(true, nextValue(), nextValue(), nextValue()));
-  inputObjects["GTT EtSum"].emplace_back(
+  inputObjects["GTTEtSum"].emplace_back(
       std::make_unique<l1t::L1TGT_GTT_Sum>(true, nextValue(), nextValue(), nextValue()));
 
   // Write them to a pattern file

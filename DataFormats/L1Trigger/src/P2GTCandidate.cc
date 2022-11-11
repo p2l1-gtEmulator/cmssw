@@ -1,15 +1,26 @@
 #include "DataFormats/L1Trigger/interface/P2GTCandidate.h"
 
+#include "DataFormats/L1Trigger/interface/TkJetWord.h"
+#include "DataFormats/L1Trigger/interface/VertexWord.h"
+
 #include <cmath>
 
 namespace l1t {
   P2GTCandidate::P2GTCandidate() {}
 
-  P2GTCandidate::P2GTCandidate(const TkElectron& obj)
-      : hwPT_(std::round(obj.pt() / 0.03125) /* TEMPORARY */), hwPhi_(obj.hwPhi()), hwEta_(obj.hwEta()) /* TODO */ {}
+  P2GTCandidate::P2GTCandidate(const VertexWord& obj)
+      : hwDZ_(obj.z0Word().V.to_int()),
+        hwQual_(obj.qualityWord().V.to_int()),
+        hwSum_pT_pv_(obj.multiplicityWord().V.to_int()),
+        hwNumber_of_tracks_in_pv_(obj.multiplicityWord().V.to_int()),
+        hwNumber_of_tracks_not_in_pv_(obj.inverseMultiplicityWord().V.to_int()) {}
 
-  P2GTCandidate::P2GTCandidate(const TkEm& obj)
-      : hwPT_(std::round(obj.pt() / 0.03125) /* TEMPORARY */), hwPhi_(obj.hwPhi()), hwEta_(obj.hwEta()) /* TODO */ {}
+  P2GTCandidate::P2GTCandidate(const TkJetWord& obj)
+      : hwPT_(obj.ptWord().V.to_int()),
+        hwPhi_(obj.glbPhiWord().V.to_int()),
+        hwEta_(obj.glbEtaWord().V.to_int()),
+        hwDZ_(obj.z0Word().V.to_int()),
+        hwNumber_of_tracks_(obj.ntWord().V.to_int()) {}
 
   bool P2GTCandidate::operator==(const P2GTCandidate& rhs) const {
     return hwPT_ == rhs.hwPT_ && hwPhi_ == rhs.hwPhi_ && hwEta_ == rhs.hwEta_ && hwDZ_ == rhs.hwDZ_ &&

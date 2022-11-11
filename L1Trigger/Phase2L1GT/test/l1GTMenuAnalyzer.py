@@ -34,15 +34,52 @@ std::vector<std::string> getFiltModules(edm::ParameterSet& pset,const std::strin
         if(pset.exists(mod.front()!=std::string("-") ? mod : mod.substr(1))){
            const auto& modPSet = pset.getParameterSet(mod.front()!=std::string("-") ? mod : mod.substr(1));
            if(modPSet.getParameter<std::string>("@module_edm_type")=="EDFilter") {
-             if (modPSet.getParameter<std::string>("@module_type") == "L1GTDoubleObjectCond") {
+             if (modPSet.getParameter<std::string>("@module_type") == "L1GTSingleObjectCond") {
+               filtMods.push_back(mod + "::" + modPSet.getParameter<edm::InputTag>("tag").instance());
+             }
+             else if (modPSet.getParameter<std::string>("@module_type") == "L1GTDoubleObjectCond") {
                filtMods.push_back(mod + "::" + modPSet.getParameterSet("collection1").getParameter<edm::InputTag>("tag").instance());
                if (modPSet.getParameterSet("collection1").getParameter<edm::InputTag>("tag").instance() != 
                    modPSet.getParameterSet("collection2").getParameter<edm::InputTag>("tag").instance()) {
                  filtMods.push_back(mod + "::" + modPSet.getParameterSet("collection2").getParameter<edm::InputTag>("tag").instance());
                }
              }
-             else if (modPSet.getParameter<std::string>("@module_type") == "L1GTSingleObjectCond"){
-               filtMods.push_back(mod + "::" + modPSet.getParameter<edm::InputTag>("tag").instance());
+             else if (modPSet.getParameter<std::string>("@module_type") == "L1GTTripleObjectCond") {
+                filtMods.push_back(mod + "::" + modPSet.getParameterSet("collection1").getParameter<edm::InputTag>("tag").instance());
+                if (modPSet.getParameterSet("collection1").getParameter<edm::InputTag>("tag").instance() != 
+                    modPSet.getParameterSet("collection2").getParameter<edm::InputTag>("tag").instance()) {
+                 filtMods.push_back(mod + "::" + modPSet.getParameterSet("collection2").getParameter<edm::InputTag>("tag").instance());
+                }
+
+                if (modPSet.getParameterSet("collection1").getParameter<edm::InputTag>("tag").instance() != 
+                    modPSet.getParameterSet("collection3").getParameter<edm::InputTag>("tag").instance() && 
+                    modPSet.getParameterSet("collection2").getParameter<edm::InputTag>("tag").instance() != 
+                    modPSet.getParameterSet("collection3").getParameter<edm::InputTag>("tag").instance()) {
+                 filtMods.push_back(mod + "::" + modPSet.getParameterSet("collection3").getParameter<edm::InputTag>("tag").instance());
+                }
+             }
+             else if (modPSet.getParameter<std::string>("@module_type") == "L1GTQuadObjectCond") {
+                filtMods.push_back(mod + "::" + modPSet.getParameterSet("collection1").getParameter<edm::InputTag>("tag").instance());
+                if (modPSet.getParameterSet("collection1").getParameter<edm::InputTag>("tag").instance() != 
+                    modPSet.getParameterSet("collection2").getParameter<edm::InputTag>("tag").instance()) {
+                 filtMods.push_back(mod + "::" + modPSet.getParameterSet("collection2").getParameter<edm::InputTag>("tag").instance());
+                }
+
+                if (modPSet.getParameterSet("collection1").getParameter<edm::InputTag>("tag").instance() != 
+                    modPSet.getParameterSet("collection3").getParameter<edm::InputTag>("tag").instance() && 
+                    modPSet.getParameterSet("collection2").getParameter<edm::InputTag>("tag").instance() != 
+                    modPSet.getParameterSet("collection3").getParameter<edm::InputTag>("tag").instance()) {
+                 filtMods.push_back(mod + "::" + modPSet.getParameterSet("collection3").getParameter<edm::InputTag>("tag").instance());
+                }
+
+                if (modPSet.getParameterSet("collection1").getParameter<edm::InputTag>("tag").instance() != 
+                    modPSet.getParameterSet("collection4").getParameter<edm::InputTag>("tag").instance() && 
+                    modPSet.getParameterSet("collection2").getParameter<edm::InputTag>("tag").instance() != 
+                    modPSet.getParameterSet("collection4").getParameter<edm::InputTag>("tag").instance() &&
+                    modPSet.getParameterSet("collection3").getParameter<edm::InputTag>("tag").instance() != 
+                    modPSet.getParameterSet("collection4").getParameter<edm::InputTag>("tag").instance()) {
+                 filtMods.push_back(mod + "::" + modPSet.getParameterSet("collection4").getParameter<edm::InputTag>("tag").instance());
+                }
              }
            }
         }
@@ -146,7 +183,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='L1GT analyzer')
     parser.add_argument('in_filename', nargs="+", help='input filename')
     parser.add_argument('--prefix', '-p', default='file:', help='file prefix')
-    parser.add_argument('--process', '-P', default='L1', help='Process to analyze')
+    parser.add_argument('--process', '-P', default='L1TEmulation', help='Process to analyze')
 
     args = parser.parse_args()
 

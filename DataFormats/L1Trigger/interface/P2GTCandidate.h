@@ -8,10 +8,12 @@
 #include "DataFormats/Common/interface/Ref.h"
 #include "DataFormats/Common/interface/RefVector.h"
 
-#include "DataFormats/L1TCorrelator/interface/TkElectron.h"
-#include "DataFormats/L1TCorrelator/interface/TkEm.h"
-
 namespace l1t {
+
+  // Upstream objects
+  class VertexWord;
+  class TkJetWord;
+  class EtSum;
 
   class P2GTCandidate;
   typedef std::vector<P2GTCandidate> P2GTCandidateCollection;
@@ -52,15 +54,15 @@ namespace l1t {
 
       bool operator==(bool rhs) const { return set_ == rhs; }
       bool operator!=(bool rhs) const { return set_ != rhs; }
-      
+
     private:
       int value_;
       bool set_;
     };
 
     P2GTCandidate();
-    P2GTCandidate(const TkElectron&);
-    P2GTCandidate(const TkEm&);
+    P2GTCandidate(const VertexWord&);
+    P2GTCandidate(const TkJetWord&);
 
     void setHwPT(hwPT_t hwPT) { hwPT_ = hwPT.to_int(); }
     void setHwPhi(hwPhi_t hwPhi) { hwPhi_ = hwPhi.to_int(); }
