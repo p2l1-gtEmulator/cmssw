@@ -12,7 +12,7 @@ process.maxEvents = cms.untracked.PSet(input=cms.untracked.int32(72))
 
 
 process.GTProducer = cms.EDProducer(
-    "L1GTTestProducer",
+    "L1GTEvaluationProducer",
     outputFilename=cms.string("inputPattern"),
     random_seed=cms.uint32(0),
     maxLines=cms.uint32(1024),

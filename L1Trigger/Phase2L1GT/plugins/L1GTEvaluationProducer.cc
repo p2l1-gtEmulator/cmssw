@@ -16,7 +16,7 @@
 #include "L1Trigger/DemonstratorTools/interface/BoardDataWriter.h"
 #include "L1Trigger/DemonstratorTools/interface/utilities.h"
 
-#include "L1GTTestInterface.h"
+#include "L1GTEvaluationInterface.h"
 
 #include <vector>
 #include <array>
@@ -30,10 +30,10 @@
 
 using namespace l1t;
 
-class L1GTTestProducer : public edm::one::EDProducer<> {
+class L1GTEvaluationProducer : public edm::one::EDProducer<> {
 public:
-  explicit L1GTTestProducer(const edm::ParameterSet &);
-  ~L1GTTestProducer() override = default;
+  explicit L1GTEvaluationProducer(const edm::ParameterSet &);
+  ~L1GTEvaluationProducer() override = default;
 
   static void fillDescriptions(edm::ConfigurationDescriptions &);
 
@@ -103,7 +103,7 @@ static const l1t::demo::BoardDataWriter::ChannelMap_t CHANNEL_MAP_VU13P{
     {{"GTT", 2}, {{6, 0}, vrange<std::size_t, 112, 118>()}},
     {{"GTT", 3}, {{6, 0}, vrange<std::size_t, 118, 124>()}}};
 
-L1GTTestProducer::L1GTTestProducer(const edm::ParameterSet &config)
+L1GTEvaluationProducer::L1GTEvaluationProducer(const edm::ParameterSet &config)
     : randomGenerator_(config.exists("random_seed") ? config.getParameter<unsigned int>("random_seed")
                                                     : std::random_device()()),
       boardDataWriter_(l1t::demo::FileFormat::EMP,
@@ -140,7 +140,7 @@ L1GTTestProducer::L1GTTestProducer(const edm::ParameterSet &config)
   produces<P2GTCandidateCollection>("CL2EtSum");
 }
 
-void L1GTTestProducer::fillDescriptions(edm::ConfigurationDescriptions &description) {
+void L1GTEvaluationProducer::fillDescriptions(edm::ConfigurationDescriptions &description) {
   edm::ParameterSetDescription desc;
   desc.addOptional<unsigned int>("random_seed");
   desc.addOptional<unsigned int>("maxLines", 1024);
@@ -150,7 +150,7 @@ void L1GTTestProducer::fillDescriptions(edm::ConfigurationDescriptions &descript
   description.addWithDefaultLabel(desc);
 }
 
-int L1GTTestProducer::nextValue(int mean, bool sign, int max) {
+int L1GTEvaluationProducer::nextValue(int mean, bool sign, int max) {
   bool positive = sign ? std::bernoulli_distribution(0.5)(randomGenerator_) : true;
 
   int result;
@@ -197,7 +197,7 @@ static std::vector<ap_uint<64>> vpack(const Args &...vobjects) {
   return vpacked;
 }
 
-void L1GTTestProducer::writeInputPatterns(
+void L1GTEvaluationProducer::writeInputPatterns(
     const std::unordered_map<std::string, std::vector<std::unique_ptr<l1t::L1TGT_BaseInterface>>> &inputObjects) {
   boardDataWriter_.addEvent(l1t::demo::EventData{
       {{{"GTT", 0},
@@ -229,7 +229,7 @@ void L1GTTestProducer::writeInputPatterns(
        {{"GTT", 3}, vpack(inputObjects.at("GTTPrimaryVert"))}}});
 }
 
-void L1GTTestProducer::produce(edm::Event &event, const edm::EventSetup &setup) {
+void L1GTEvaluationProducer::produce(edm::Event &event, const edm::EventSetup &setup) {
   // Generate random input objects
   std::unordered_map<std::string, std::vector<std::unique_ptr<l1t::L1TGT_BaseInterface>>> inputObjects;
   for (std::size_t i = 0; i < 12; ++i) {
@@ -318,6 +318,6 @@ void L1GTTestProducer::produce(edm::Event &event, const edm::EventSetup &setup) 
   }
 }
 
-void L1GTTestProducer::endJob() { boardDataWriter_.flush(); }
+void L1GTEvaluationProducer::endJob() { boardDataWriter_.flush(); }
 
-DEFINE_FWK_MODULE(L1GTTestProducer);
+DEFINE_FWK_MODULE(L1GTEvaluationProducer);
