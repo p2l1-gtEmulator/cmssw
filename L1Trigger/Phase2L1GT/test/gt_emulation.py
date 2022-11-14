@@ -1,6 +1,8 @@
 import FWCore.ParameterSet.Config as cms
 
-process = cms.Process('L1TEmulation')
+from Configuration.Eras.Era_Phase2_cff import Phase2
+
+process = cms.Process('L1TEmulation', Phase2)
 
 ############################################################
 # import standard configurations
@@ -20,6 +22,10 @@ process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase2_realistic', '')
 
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.cerr.INFO.limit = cms.untracked.int32(0)  # default: 0
+
+process.options = cms.untracked.PSet(
+    wantSummary = cms.untracked.bool(True)
+)
 
 ############################################################
 # Source
@@ -42,47 +48,16 @@ process.source = cms.Source("PoolSource",
                                 "keep *", "drop l1tTkPrimaryVertexs_L1TkPrimaryVertex__*")
                             )
 
-process.maxEvents = cms.untracked.PSet(input=cms.untracked.int32(30))
+process.maxEvents = cms.untracked.PSet(input=cms.untracked.int32(100))
 
 ############################################################
-# L1 Global Track Trigger Emulation
+# Upstream Emulators
 ############################################################
 
-from SimTracker.TrackTriggerAssociation.TTClusterAssociation_cfi import *
-from L1Trigger.TrackTrigger.TTStubAlgorithmRegister_cfi import *
+process.load('SimGeneral.MixingModule.mixNoPU_cfi')
+process.load('Configuration.StandardSequences.SimL1Emulator_cff')
 
-process.load('L1Trigger.TrackTrigger.TrackTrigger_cff')
-
-# DTC emulation
-process.load('L1Trigger.TrackerDTC.ProducerES_cff')
-process.load('L1Trigger.TrackerDTC.ProducerED_cff')
-process.dtc = cms.Path(process.TrackerDTCProducer)  # *process.TrackerDTCAnalyzer)
-
-process.load("L1Trigger.TrackFindingTracklet.L1HybridEmulationTracks_cff")
-process.load("L1Trigger.L1TTrackMatch.L1TrackSelectionProducer_cfi")
-process.load("L1Trigger.L1TTrackMatch.L1GTTInputProducer_cfi")
-process.load("L1Trigger.L1TTrackMatch.L1TrackJetEmulationProducer_cfi")
-process.load("L1Trigger.L1TTrackMatch.L1TrackerEtMissEmulatorProducer_cfi")
-process.load("L1Trigger.L1TTrackMatch.L1TkHTMissEmulatorProducer_cfi")
-process.load('L1Trigger.VertexFinder.VertexProducer_cff')
-
-process.L1VertexFinder = process.VertexProducer.clone()
-process.pPV = cms.Path(process.L1VertexFinder)
-process.L1VertexFinderEmulator = process.VertexProducer.clone()
-process.L1VertexFinderEmulator.VertexReconstruction.Algorithm = "fastHistoEmulation"
-process.L1VertexFinderEmulator.l1TracksInputTag = cms.InputTag("L1GTTInputProducer", "Level1TTTracksConverted")
-process.L1VertexFinderEmulator.VertexReconstruction.VxMinTrackPt = cms.double(0.0)
-process.pPVemu = cms.Path(process.L1VertexFinderEmulator)
-
-process.L1TrackerEmuEtMiss.L1VertexInputTag = cms.InputTag("L1VertexFinderEmulator", "l1verticesEmulation")
-
-process.TTTracksEmu = cms.Path(process.L1PromptExtendedHybridTracks)
-process.TTTracksEmuWithTruth = cms.Path(process.L1PromptExtendedHybridTracksWithAssociators)
-process.pL1TrackSelection = cms.Path(process.L1TrackSelectionProducer*process.L1TrackSelectionProducerExtended)
-process.pL1GTTInput = cms.Path(process.L1GTTInputProducer*process.L1GTTInputProducerExtended)
-process.pL1TrackJetsEmu = cms.Path(process.L1TrackJetsEmulation*process.L1TrackJetsExtendedEmulation)
-process.pTkMETEmu = cms.Path(process.L1TrackerEmuEtMiss)
-process.pTkMHTEmulator = cms.Path(process.L1TrackerEmuHTMiss*process.L1TrackerEmuHTMissExtended)
+process.pUpstreamEmulators = cms.Path(process.SimL1Emulator)
 
 ############################################################
 # L1 Global Trigger Emulation
@@ -102,7 +77,7 @@ from L1Trigger.Phase2L1GT.l1GTDoubleObjectCond_cfi import l1GTDoubleObjectCond
 from L1Trigger.Phase2L1GT.l1GTTripleObjectCond_cfi import l1GTTripleObjectCond
 from L1Trigger.Phase2L1GT.l1GTQuadObjectCond_cfi import l1GTQuadObjectCond
 
-
+# The menu
 process.DoubleJetCondition = l1GTDoubleObjectCond.clone(
     collection1 = cms.PSet(
         tag = cms.InputTag("L1GTProducer", "GTTPromptJets"),
@@ -138,7 +113,9 @@ process.pTripleJetCondition = cms.Path(process.TripleJetCondition)
 
 process.out = cms.OutputModule("PoolOutputModule",
 outputCommands = cms.untracked.vstring('drop *',
-        'keep *_*_*_L1TEmulation'
+        'keep *_L1GTProducer_*_L1TEmulation',
+        'keep l1tP2GTCandidatesl1tP2GTCandidatel1tP2GTCandidatesl1tP2GTCandidateedmrefhelperFindUsingAdvanceedmRefs_*_*_L1TEmulation',
+        'keep *_TriggerResults_*_L1TEmulation'
     ),
     fileName=cms.untracked.string("l1t_emulation.root")
 )
