@@ -28,16 +28,16 @@ namespace l1t {
     typedef ap_uint<16> hwPT_t;
     typedef ap_int<13> hwPhi_t;
     typedef ap_int<14> hwEta_t;
-    typedef ap_int<10> hwDZ_t;
+    typedef ap_int<10> hwZ0_t;
     typedef ap_uint<11> hwIso_t;
     typedef ap_uint<8> hwQual_t;
     typedef ap_uint<1> hwCharge_t;
-    typedef ap_int<12> hwDD_t;
+    typedef ap_int<12> hwD0_t;
     typedef ap_uint<4> hwBeta_t;
     typedef ap_uint<10> hwMass_t;
     typedef ap_uint<16> hwIndex_t;
     typedef ap_uint<10> hwSeed_pT_t;
-    typedef ap_int<10> hwSeed_dZ_t;
+    typedef ap_int<10> hwSeed_z0_t;
     typedef ap_uint<16> hwSca_sum_t;
     typedef ap_int<16> hwPrimvertdz_t;
     typedef ap_uint<5> hwNumber_of_tracks_t;
@@ -75,16 +75,16 @@ namespace l1t {
     void setHwPT(hwPT_t hwPT) { hwPT_ = hwPT.to_int(); }
     void setHwPhi(hwPhi_t hwPhi) { hwPhi_ = hwPhi.to_int(); }
     void setHwEta(hwEta_t hwEta) { hwEta_ = hwEta.to_int(); }
-    void setHwDZ(hwDZ_t hwDZ) { hwDZ_ = hwDZ.to_int(); }
+    void setHwZ0(hwZ0_t hwZ0) { hwZ0_ = hwZ0.to_int(); }
     void setHwIso(hwIso_t hwIso) { hwIso_ = hwIso.to_int(); }
     void setHwQual(hwQual_t hwQual) { hwQual_ = hwQual.to_int(); }
     void setHwCharge(hwCharge_t hwCharge) { hwCharge_ = hwCharge.to_int(); }
-    void setHwDD(hwDD_t hwDD) { hwDD_ = hwDD.to_int(); }
+    void setHwD0(hwD0_t hwD0) { hwD0_ = hwD0.to_int(); }
     void setHwBeta(hwBeta_t hwBeta) { hwBeta_ = hwBeta.to_int(); }
     void setHwMass(hwMass_t hwMass) { hwMass_ = hwMass.to_int(); }
     void setHwIndex(hwIndex_t hwIndex) { hwIndex_ = hwIndex.to_int(); }
     void setHwSeed_pT(hwSeed_pT_t hwSeed_pT) { hwSeed_pT_ = hwSeed_pT.to_int(); }
-    void setHwSeed_dZ(hwSeed_dZ_t hwSeed_dZ) { hwSeed_dZ_ = hwSeed_dZ.to_int(); }
+    void setHwSeed_z0(hwSeed_z0_t hwSeed_z0) { hwSeed_z0_ = hwSeed_z0.to_int(); }
     void setHwSca_sum(hwSca_sum_t hwSca_sum) { hwSca_sum_ = hwSca_sum.to_int(); }
     void setHwPrimvertdz(hwPrimvertdz_t hwPrimvertdz) { hwPrimvertdz_ = hwPrimvertdz.to_int(); }
     void setHwNumber_of_tracks(hwNumber_of_tracks_t hwNumber_of_tracks) {
@@ -121,11 +121,11 @@ namespace l1t {
       return static_cast<int>(hwEta_);
     }
 
-    hwDZ_t hwDZ() const {
-      if (!hwDZ_) {
-        throw std::invalid_argument("Object doesn't have dZ");
+    hwZ0_t hwZ0() const {
+      if (!hwZ0_) {
+        throw std::invalid_argument("Object doesn't have z0");
       }
-      return static_cast<int>(hwDZ_);
+      return static_cast<int>(hwZ0_);
     }
 
     hwIso_t hwIso() const {
@@ -149,11 +149,11 @@ namespace l1t {
       return static_cast<int>(hwCharge_);
     }
 
-    hwDD_t hwDD() const {
-      if (!hwDD_) {
-        throw std::invalid_argument("Object doesn't have dD");
+    hwD0_t hwD0() const {
+      if (!hwD0_) {
+        throw std::invalid_argument("Object doesn't have d0");
       }
-      return static_cast<int>(hwDD_);
+      return static_cast<int>(hwD0_);
     }
 
     hwBeta_t hwBeta() const {
@@ -184,11 +184,11 @@ namespace l1t {
       return static_cast<int>(hwSeed_pT_);
     }
 
-    hwSeed_dZ_t hwSeed_dZ() const {
-      if (!hwSeed_dZ_) {
-        throw std::invalid_argument("Object doesn't have seed_dZ");
+    hwSeed_z0_t hwSeed_z0() const {
+      if (!hwSeed_z0_) {
+        throw std::invalid_argument("Object doesn't have seed_z0");
       }
-      return static_cast<int>(hwSeed_dZ_);
+      return static_cast<int>(hwSeed_z0_);
     }
 
     hwSca_sum_t hwSca_sum() const {
@@ -247,16 +247,16 @@ namespace l1t {
     OptionalInt hwPT_;
     OptionalInt hwPhi_;
     OptionalInt hwEta_;
-    OptionalInt hwDZ_;
+    OptionalInt hwZ0_;
     OptionalInt hwIso_;
     OptionalInt hwQual_;
     OptionalInt hwCharge_;
-    OptionalInt hwDD_;
+    OptionalInt hwD0_;
     OptionalInt hwBeta_;
     OptionalInt hwMass_;
     OptionalInt hwIndex_;
     OptionalInt hwSeed_pT_;
-    OptionalInt hwSeed_dZ_;
+    OptionalInt hwSeed_z0_;
     OptionalInt hwSca_sum_;
     OptionalInt hwPrimvertdz_;
     OptionalInt hwNumber_of_tracks_;

@@ -32,12 +32,12 @@ namespace l1t {
     int to_hw_pT(double value) const { return std::round(value / pT_lsb_); };
     int to_hw_phi(double value) const { return std::round(value / phi_lsb_); };
     int to_hw_eta(double value) const { return std::round(value / eta_lsb_); };
-    int to_hw_dZ(double value) const { return std::round(value / dZ_lsb_); };
-    // int to_hw_dD(double value) const { return std::round(value / dD_lsb_); };
+    int to_hw_z0(double value) const { return std::round(value / z0_lsb_); };
+    // int to_hw_d0(double value) const { return std::round(value / d0_lsb_); };
     int to_hw_beta(double value) const { return std::round(value / beta_lsb_); };
     int to_hw_mass(double value) const { return std::round(value / mass_lsb_); };
     int to_hw_seed_pT(double value) const { return std::round(value / seed_pT_lsb_); };
-    int to_hw_seed_dZ(double value) const { return std::round(value / seed_dZ_lsb_); };
+    int to_hw_seed_z0(double value) const { return std::round(value / seed_z0_lsb_); };
     int to_hw_sca_sum(double value) const { return std::round(value / sca_sum_lsb_); };
     int to_hw_primvertdz(double value) const { return std::round(value / primvertdz_lsb_); };
     int to_hw_sum_pT_pv(double value) const { return std::round(value / sum_pT_pv_lsb_); };
@@ -52,12 +52,12 @@ namespace l1t {
     double pT_lsb() const { return pT_lsb_; }
     double phi_lsb() const { return phi_lsb_; }
     double eta_lsb() const { return eta_lsb_; }
-    double dZ_lsb() const { return dZ_lsb_; }
+    double z0_lsb() const { return z0_lsb_; }
     //const double dD_lsb_;
     double beta_lsb() const { return beta_lsb_; }
     double mass_lsb() const { return mass_lsb_; }
     double seed_pT_lsb() const { return seed_pT_lsb_; }
-    double seed_dZ_lsb() const { return seed_dZ_lsb_; }
+    double seed_z0_lsb() const { return seed_z0_lsb_; }
     double sca_sum_lsb() const { return sca_sum_lsb_; }
     double primvertdz_lsb() const { return primvertdz_lsb_; }
     double sum_pT_pv_lsb() const { return sum_pT_pv_lsb_; }
@@ -68,12 +68,12 @@ namespace l1t {
     const double pT_lsb_;
     const double phi_lsb_;
     const double eta_lsb_;
-    const double dZ_lsb_;
+    const double z0_lsb_;
     //const double dD_lsb_;
     const double beta_lsb_;
     const double mass_lsb_;
     const double seed_pT_lsb_;
-    const double seed_dZ_lsb_;
+    const double seed_z0_lsb_;
     const double sca_sum_lsb_;
     const double primvertdz_lsb_;
     const double sum_pT_pv_lsb_;

@@ -8,12 +8,12 @@ namespace l1t {
   L1GTScales::L1GTScales(double pT_lsb,
                          double phi_lsb,
                          double eta_lsb,
-                         double dZ_lsb,
-                         //double dD_lsb,
+                         double z0_lsb,
+                         //double d0_lsb,
                          double beta_lsb,
                          double mass_lsb,
                          double seed_pT_lsb,
-                         double seed_dZ_lsb,
+                         double seed_z0_lsb,
                          double sca_sum_lsb,
                          double primvertdz_lsb,
                          double sum_pT_pv_lsb,
@@ -22,12 +22,12 @@ namespace l1t {
       : pT_lsb_(pT_lsb),
         phi_lsb_(phi_lsb),
         eta_lsb_(eta_lsb),
-        dZ_lsb_(dZ_lsb),
-        //dD_lsb_(dD_lsb),
+        z0_lsb_(z0_lsb),
+        //d0_lsb_(d0_lsb),
         beta_lsb_(beta_lsb),
         mass_lsb_(mass_lsb),
         seed_pT_lsb_(seed_pT_lsb),
-        seed_dZ_lsb_(seed_dZ_lsb),
+        seed_z0_lsb_(seed_z0_lsb),
         sca_sum_lsb_(sca_sum_lsb),
         primvertdz_lsb_(primvertdz_lsb),
         sum_pT_pv_lsb_(sum_pT_pv_lsb),
@@ -38,12 +38,12 @@ namespace l1t {
       : pT_lsb_(config.getParameter<double>("pT_lsb")),
         phi_lsb_(config.getParameter<double>("phi_lsb")),
         eta_lsb_(config.getParameter<double>("eta_lsb")),
-        dZ_lsb_(config.getParameter<double>("dZ_lsb")),
-        //dD_lsb_(config.getParameter<double>("dD_lsb")),
+        z0_lsb_(config.getParameter<double>("z0_lsb")),
+        //d0_lsb_(config.getParameter<double>("d0_lsb")),
         beta_lsb_(config.getParameter<double>("beta_lsb")),
         mass_lsb_(config.getParameter<double>("mass_lsb")),
         seed_pT_lsb_(config.getParameter<double>("seed_pT_lsb")),
-        seed_dZ_lsb_(config.getParameter<double>("seed_dZ_lsb")),
+        seed_z0_lsb_(config.getParameter<double>("seed_z0_lsb")),
         sca_sum_lsb_(config.getParameter<double>("sca_sum_lsb")),
         primvertdz_lsb_(config.getParameter<double>("primvertdz_lsb")),
         sum_pT_pv_lsb_(config.getParameter<double>("sum_pT_pv_lsb")),
@@ -54,12 +54,12 @@ namespace l1t {
     desc.add<double>("pT_lsb");
     desc.add<double>("phi_lsb");
     desc.add<double>("eta_lsb");
-    desc.add<double>("dZ_lsb");
-    //desc.add<double>("dD_lsb");
+    desc.add<double>("z0_lsb");
+    //desc.add<double>("d0_lsb");
     desc.add<double>("beta_lsb");
     desc.add<double>("mass_lsb");
     desc.add<double>("seed_pT_lsb");
-    desc.add<double>("seed_dZ_lsb");
+    desc.add<double>("seed_z0_lsb");
     desc.add<double>("sca_sum_lsb");
     desc.add<double>("primvertdz_lsb");
     desc.add<double>("sum_pT_pv_lsb");
@@ -86,11 +86,11 @@ namespace l1t {
         .def("to_hw_pT", &L1GTScales::to_hw_pT)
         .def("to_hw_phi", &L1GTScales::to_hw_phi)
         .def("to_hw_eta", &L1GTScales::to_hw_eta)
-        .def("to_hw_dZ", &L1GTScales::to_hw_dZ)
+        .def("to_hw_z0", &L1GTScales::to_hw_z0)
         .def("to_hw_beta", &L1GTScales::to_hw_beta)
         .def("to_hw_mass", &L1GTScales::to_hw_mass)
         .def("to_hw_seed_pT", &L1GTScales::to_hw_seed_pT)
-        .def("to_hw_seed_dZ", &L1GTScales::to_hw_seed_dZ)
+        .def("to_hw_seed_z0", &L1GTScales::to_hw_seed_z0)
         .def("to_hw_sca_sum", &L1GTScales::to_hw_sca_sum)
         .def("to_hw_primvertdz", &L1GTScales::to_hw_primvertdz)
         .def("to_hw_sum_pT_pv", &L1GTScales::to_hw_sum_pT_pv)

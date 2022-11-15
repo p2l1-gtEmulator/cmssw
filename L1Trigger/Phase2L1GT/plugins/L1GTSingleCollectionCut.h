@@ -27,10 +27,10 @@ namespace l1t {
               "minPhi", config, std::bind(&L1GTScales::to_hw_phi, scales, std::placeholders::_1))),
           maxPhi_(getOptionalParam<int, double>(
               "maxPhi", config, std::bind(&L1GTScales::to_hw_phi, scales, std::placeholders::_1))),
-          minDz_(getOptionalParam<int, double>(
-              "minDz", config, std::bind(&L1GTScales::to_hw_dZ, scales, std::placeholders::_1))),
-          maxDz_(getOptionalParam<int, double>(
-              "maxDz", config, std::bind(&L1GTScales::to_hw_dZ, scales, std::placeholders::_1))),
+          minZ0_(getOptionalParam<int, double>(
+              "minZ0", config, std::bind(&L1GTScales::to_hw_z0, scales, std::placeholders::_1))),
+          maxZ0_(getOptionalParam<int, double>(
+              "maxZ0", config, std::bind(&L1GTScales::to_hw_z0, scales, std::placeholders::_1))),
           qual_(getOptionalParam<unsigned int>("qual", config)),
           iso_(getOptionalParam<unsigned int>("iso", config)) {}
 
@@ -45,8 +45,8 @@ namespace l1t {
       result &= minPhi_ ? (obj.hwPhi() > minPhi_) : true;
       result &= maxPhi_ ? (obj.hwPhi() < maxPhi_) : true;
 
-      result &= minDz_ ? (obj.hwDZ() > minDz_) : true;
-      result &= maxDz_ ? (obj.hwDZ() < maxDz_) : true;
+      result &= minZ0_ ? (obj.hwZ0() > minZ0_) : true;
+      result &= maxZ0_ ? (obj.hwZ0() < maxZ0_) : true;
 
       result &= qual_ ? (obj.hwQual() == qual_) : true;
       result &= iso_ ? (obj.hwIso() == iso_) : true;
@@ -61,8 +61,8 @@ namespace l1t {
       desc.addOptional<double>("maxEta");
       desc.addOptional<double>("minPhi");
       desc.addOptional<double>("maxPhi");
-      desc.addOptional<double>("minDz");
-      desc.addOptional<double>("maxDz");
+      desc.addOptional<double>("minZ0");
+      desc.addOptional<double>("maxZ0");
       desc.addOptional<unsigned int>("qual");
       desc.addOptional<unsigned int>("iso");
     }
@@ -76,8 +76,8 @@ namespace l1t {
     const std::optional<int> maxEta_;
     const std::optional<int> minPhi_;
     const std::optional<int> maxPhi_;
-    const std::optional<int> minDz_;
-    const std::optional<int> maxDz_;
+    const std::optional<int> minZ0_;
+    const std::optional<int> maxZ0_;
     const std::optional<int> qual_;
     const std::optional<int> iso_;
   };
