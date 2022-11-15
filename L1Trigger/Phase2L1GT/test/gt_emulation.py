@@ -11,8 +11,7 @@ process = cms.Process('L1TEmulation', Phase2)
 process.load('Configuration.StandardSequences.Services_cff')
 process.load('Configuration.EventContent.EventContent_cff')
 process.load('Configuration.StandardSequences.MagneticField_cff')
-process.load('Configuration.Geometry.GeometryExtended2026D77Reco_cff')
-process.load('Configuration.Geometry.GeometryExtended2026D77_cff')
+process.load('Configuration.Geometry.GeometryExtended2026D49Reco_cff')
 process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
@@ -24,7 +23,8 @@ process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.cerr.INFO.limit = cms.untracked.int32(0)  # default: 0
 
 process.options = cms.untracked.PSet(
-    wantSummary = cms.untracked.bool(True)
+    wantSummary = cms.untracked.bool(True),
+    
 )
 
 ############################################################
@@ -33,31 +33,45 @@ process.options = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
                             fileNames=cms.untracked.vstring(
-                                '/store/relval/CMSSW_12_3_0_pre4/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v3_2026D77PU200-v1/2580000/c6df2819-ed05-4b98-8f92-81b7d1b1092e.root',
-                                '/store/relval/CMSSW_12_3_0_pre4/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v3_2026D77PU200-v1/2580000/3f476d95-1ef7-4be6-977b-6bcd1a7c5678.root',
-                                '/store/relval/CMSSW_12_3_0_pre4/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v3_2026D77PU200-v1/2580000/68d651da-4cb7-4bf4-b002-66aecc57a2bc.root',
-                                '/store/relval/CMSSW_12_3_0_pre4/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v3_2026D77PU200-v1/2580000/db0e0ce2-4c5a-4988-9dbd-52066e40b9d2.root',
-                                '/store/relval/CMSSW_12_3_0_pre4/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v3_2026D77PU200-v1/2580000/257a9712-0a96-47b7-897e-f5d980605e46.root',
-                                '/store/relval/CMSSW_12_3_0_pre4/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v3_2026D77PU200-v1/2580000/bee31399-8559-4243-b539-cae1ea897def.root',
-                                '/store/relval/CMSSW_12_3_0_pre4/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v3_2026D77PU200-v1/2580000/24629540-2377-4168-9ae5-518ddd4c43a9.root',
-                                '/store/relval/CMSSW_12_3_0_pre4/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v3_2026D77PU200-v1/2580000/e31ba8f0-332a-4a1a-8bc0-91a12a5fe3db.root',
-                                '/store/relval/CMSSW_12_3_0_pre4/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/PU_123X_mcRun4_realistic_v3_2026D77PU200-v1/2580000/17902198-4db6-4fcc-9e8c-787991b4db32.root',
-                            ),
-                            duplicateCheckMode=cms.untracked.string('noDuplicateCheck'),
-                            inputCommands=cms.untracked.vstring(
-                                "keep *", "drop l1tTkPrimaryVertexs_L1TkPrimaryVertex__*")
+                                '/store/mc/Phase2HLTTDRWinter20DIGI/TT_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW/PU200_110X_mcRun4_realistic_v3-v2/110000/005E74D6-B50E-674E-89E6-EAA9A617B476.root',
                             )
+)
 
-process.maxEvents = cms.untracked.PSet(input=cms.untracked.int32(100))
+process.maxEvents = cms.untracked.PSet(input=cms.untracked.int32(20))
+
+############################################################
+# Raw to Digi
+############################################################
+
+process.load('Configuration.StandardSequences.RawToDigi_cff')
+
+process.pRawToDigi = cms.Path(process.RawToDigi)
 
 ############################################################
 # Upstream Emulators
 ############################################################
 
+process.load('SimCalorimetry.HcalTrigPrimProducers.hcaltpdigi_cff') # needed to read HCal TPs
+
+process.load('L1Trigger.TrackTrigger.TrackTrigger_cff')
+process.load("L1Trigger.TrackFindingTracklet.L1HybridEmulationTracks_cff") 
+process.load("L1Trigger.TrackerDTC.ProducerES_cff") 
+process.load("L1Trigger.TrackerDTC.ProducerED_cff")
+
 process.load('SimGeneral.MixingModule.mixNoPU_cfi')
 process.load('Configuration.StandardSequences.SimL1Emulator_cff')
 
-process.pUpstreamEmulators = cms.Path(process.SimL1Emulator)
+process.UpstreamEmulators = cms.Task(
+    process.TrackerDTCProducer,
+    process.TTClustersFromPhase2TrackerDigis,
+    process.TTStubsFromPhase2TrackerDigis,
+    process.offlineBeamSpot,
+    process.TTTracksFromTrackletEmulation,
+    process.TTTracksFromExtendedTrackletEmulation,
+    process.SimL1EmulatorTask
+)
+ 
+process.pUpstreamEmulators = cms.Path(process.UpstreamEmulators)
 
 ############################################################
 # L1 Global Trigger Emulation
@@ -67,7 +81,10 @@ process.L1GTProducer = cms.EDProducer(
     "L1GTProducer",
     GTTPromptJets = cms.InputTag("L1TrackJetsEmulation", "L1TrackJets"),
     GTTDisplacedJets = cms.InputTag("L1TrackJetsExtendedEmulation", "L1TrackJetsExtended"),
-    GTTPrimaryVert = cms.InputTag("L1VertexFinderEmulator", "l1verticesEmulation")
+    GTTPrimaryVert = cms.InputTag("L1VertexFinderEmulator", "l1verticesEmulation"),
+    GMTSaPromptMuons = cms.InputTag("L1SAMuonsGmt", "promptSAMuons"),
+    GMTSaDisplacedMuons = cms.InputTag("L1SAMuonsGmt", "displacedSAMuons"),
+    GMTTkMuons = cms.InputTag("L1TkMuonsGmt")
 )
 process.pL1GTProducer = cms.Path(process.L1GTProducer)
 
@@ -77,7 +94,7 @@ from L1Trigger.Phase2L1GT.l1GTDoubleObjectCond_cfi import l1GTDoubleObjectCond
 from L1Trigger.Phase2L1GT.l1GTTripleObjectCond_cfi import l1GTTripleObjectCond
 from L1Trigger.Phase2L1GT.l1GTQuadObjectCond_cfi import l1GTQuadObjectCond
 
-# The menu
+# Some dummy seed to test tracker interface
 process.DoubleJetCondition = l1GTDoubleObjectCond.clone(
     collection1 = cms.PSet(
         tag = cms.InputTag("L1GTProducer", "GTTPromptJets"),
@@ -104,8 +121,123 @@ process.TripleJetCondition = l1GTTripleObjectCond.clone(
     )
 )
 
+process.TripleJetCondition = l1GTTripleObjectCond.clone(
+    collection1 = cms.PSet(
+        tag = cms.InputTag("L1GTProducer", "GTTPromptJets"),
+        minPt = cms.double(50)
+    ),
+    collection2 = cms.PSet(
+        tag = cms.InputTag("L1GTProducer", "GTTPromptJets"),
+        minPt = cms.double(40)
+    ),
+    collection3 = cms.PSet(
+        tag = cms.InputTag("L1GTProducer", "GTTPromptJets"),
+        minPt = cms.double(25)
+    )
+)
+
 process.pDoubleJetCondition = cms.Path(process.DoubleJetCondition)
 process.pTripleJetCondition = cms.Path(process.TripleJetCondition)
+
+
+# B-physics seeds from https://twiki.cern.ch/twiki/pub/CMS/PhaseIIL1TriggerMenuTools/L1Menu_L1TDR_270121.pdf
+process.doubleTkMuon1 = l1GTDoubleObjectCond.clone(
+    collection1 = cms.PSet(
+        tag = cms.InputTag("L1GTProducer", "GMTTkMuons"),
+        minPt = cms.double(2),
+        minEta = cms.double(-1.5),
+        maxEta = cms.double(1.5)
+    ),
+    collection2 = cms.PSet(
+        tag = cms.InputTag("L1GTProducer", "GMTTkMuons"),
+        minPt = cms.double(2),
+        minEta = cms.double(-1.5),
+        maxEta = cms.double(1.5)
+    ),
+    maxDR = cms.double(1.4),
+    os = cms.bool(True)
+)
+process.pDoubleTkMuon1 = cms.Path(process.doubleTkMuon1)
+
+process.doubleTkMuon2 = l1GTDoubleObjectCond.clone(
+    collection1 = cms.PSet(
+        tag = cms.InputTag("L1GTProducer", "GMTTkMuons"),
+        minPt = cms.double(4),
+        minEta = cms.double(-2.4),
+        maxEta = cms.double(2.4)
+    ),
+    collection2 = cms.PSet(
+        tag = cms.InputTag("L1GTProducer", "GMTTkMuons"),
+        minPt = cms.double(4),
+        minEta = cms.double(-2.4),
+        maxEta = cms.double(2.4)
+    ),
+    maxDR = cms.double(1.2),
+    os = cms.bool(True)
+)
+process.pDoubleTkMuon2 = cms.Path(process.doubleTkMuon2)
+
+process.doubleTkMuon3 = l1GTDoubleObjectCond.clone(
+    collection1 = cms.PSet(
+        tag = cms.InputTag("L1GTProducer", "GMTTkMuons"),
+        minPt = cms.double(4.5),
+        minEta = cms.double(-2.0),
+        maxEta = cms.double(2.0)
+    ),
+    collection2 = cms.PSet(
+        tag = cms.InputTag("L1GTProducer", "GMTTkMuons"),
+        minPt = cms.double(4.5),
+        minEta = cms.double(-2.0),
+        maxEta = cms.double(2.0)
+    ),
+    minInvMass = cms.double(7),
+    maxInvMass = cms.double(18),
+    os = cms.bool(True)
+)
+process.pDoubleTkMuon3 = cms.Path(process.doubleTkMuon3)
+
+
+process.tripleTkMuon1 = l1GTTripleObjectCond.clone(
+    collection1 = cms.PSet(
+        tag = cms.InputTag("L1GTProducer", "GMTTkMuons"),
+        minPt = cms.double(5),
+        minEta = cms.double(-2.4),
+        maxEta = cms.double(2.4)
+    ),
+    collection2 = cms.PSet(
+        tag = cms.InputTag("L1GTProducer", "GMTTkMuons"),
+        minPt = cms.double(3),
+        minEta = cms.double(-2.4),
+        maxEta = cms.double(2.4)
+    ),
+    collection3 = cms.PSet(
+        tag = cms.InputTag("L1GTProducer", "GMTTkMuons"),
+        minPt = cms.double(2),
+        minEta = cms.double(-2.4),
+        maxEta = cms.double(2.4)
+    ),
+)
+
+# Additional restriction on Muon 5 and Muon 3
+process.doubleTkMuon3 = l1GTDoubleObjectCond.clone(
+    collection1 = cms.PSet(
+        tag = cms.InputTag("L1GTProducer", "GMTTkMuons"),
+        minPt = cms.double(5),
+        minEta = cms.double(-2.4),
+        maxEta = cms.double(2.4)
+    ),
+    collection2 = cms.PSet(
+        tag = cms.InputTag("L1GTProducer", "GMTTkMuons"),
+        minPt = cms.double(3),
+        minEta = cms.double(-2.4),
+        maxEta = cms.double(2.4)
+    ),
+    maxInvMass = cms.double(9),
+    os = cms.bool(True)
+)
+
+process.pTripleTkMuon = cms.Path(process.tripleTkMuon1 + process.doubleTkMuon3)
+
 
 ############################################################
 # Analyzable output

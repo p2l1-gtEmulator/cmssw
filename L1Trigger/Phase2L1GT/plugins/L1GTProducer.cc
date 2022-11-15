@@ -15,6 +15,9 @@
 #include "DataFormats/L1Trigger/interface/TkJetWord.h"
 #include "DataFormats/L1Trigger/interface/VertexWord.h"
 
+#include "DataFormats/L1TMuonPhase2/interface/SAMuon.h"
+#include "DataFormats/L1TMuonPhase2/interface/TrackerMuon.h"
+
 #include <vector>
 #include <array>
 #include <string>
@@ -34,6 +37,10 @@ private:
   const edm::InputTag gttPromptJetTag_;
   const edm::InputTag gttDisplacedJetTag_;
   const edm::InputTag gttPrimaryVertexTag_;
+
+  const edm::InputTag gmtSaPromptMuonTag_;
+  const edm::InputTag gmtSaDisplacedMuonTag_;
+  const edm::InputTag gmtTkMuonTag_;
 };
 
 template <typename T>
@@ -47,14 +54,25 @@ static inline T getOptionalParam(const char *name, const edm::ParameterSet &conf
 L1GTProducer::L1GTProducer(const edm::ParameterSet &config)
     : gttPromptJetTag_(getOptionalParam<edm::InputTag>("GTTPromptJets", config)),
       gttDisplacedJetTag_(getOptionalParam<edm::InputTag>("GTTDisplacedJets", config)),
-      gttPrimaryVertexTag_(getOptionalParam<edm::InputTag>("GTTPrimaryVert", config)) {
+      gttPrimaryVertexTag_(getOptionalParam<edm::InputTag>("GTTPrimaryVert", config)),
+      gmtSaPromptMuonTag_(getOptionalParam<edm::InputTag>("GMTSaPromptMuons", config)),
+      gmtSaDisplacedMuonTag_(getOptionalParam<edm::InputTag>("GMTSaDisplacedMuons", config)),
+      gmtTkMuonTag_(getOptionalParam<edm::InputTag>("GMTTkMuons", config)) {
   consumes<TkJetWordCollection>(gttPromptJetTag_);
   consumes<TkJetWordCollection>(gttDisplacedJetTag_);
   consumes<VertexWordCollection>(gttPrimaryVertexTag_);
 
+  consumes<SAMuonCollection>(gmtSaPromptMuonTag_);
+  consumes<SAMuonCollection>(gmtSaDisplacedMuonTag_);
+  consumes<TrackerMuonCollection>(gmtTkMuonTag_);
+
   produces<P2GTCandidateCollection>("GTTPromptJets");
   produces<P2GTCandidateCollection>("GTTDisplacedJets");
   produces<P2GTCandidateCollection>("GTTPrimaryVert");
+
+  produces<P2GTCandidateCollection>("GMTSaPromptMuons");
+  produces<P2GTCandidateCollection>("GMTSaDisplacedMuons");
+  produces<P2GTCandidateCollection>("GMTTkMuons");
 }
 
 void L1GTProducer::fillDescriptions(edm::ConfigurationDescriptions &description) {
@@ -62,6 +80,10 @@ void L1GTProducer::fillDescriptions(edm::ConfigurationDescriptions &description)
   desc.addOptional<edm::InputTag>("GTTPromptJets");
   desc.addOptional<edm::InputTag>("GTTDisplacedJets");
   desc.addOptional<edm::InputTag>("GTTPrimaryVert");
+
+  desc.addOptional<edm::InputTag>("GMTSaPromptMuons");
+  desc.addOptional<edm::InputTag>("GMTSaDisplacedMuons");
+  desc.addOptional<edm::InputTag>("GMTTkMuons");
 
   description.addWithDefaultLabel(desc);
 }
@@ -89,6 +111,10 @@ void L1GTProducer::produce(edm::Event &event, const edm::EventSetup &setup) {
   produceByTag<TkJetWordCollection>("GTTPromptJets", gttPromptJetTag_, event);
   produceByTag<TkJetWordCollection>("GTTDisplacedJets", gttDisplacedJetTag_, event);
   produceByTag<VertexWordCollection, 10>("GTTPrimaryVert", gttPrimaryVertexTag_, event);
+
+  produceByTag<SAMuonCollection>("GMTSaPromptMuons", gmtSaPromptMuonTag_, event);
+  produceByTag<SAMuonCollection>("GMTSaDisplacedMuons", gmtSaDisplacedMuonTag_, event);
+  produceByTag<TrackerMuonCollection>("GMTTkMuons", gmtTkMuonTag_, event);
 }
 
 DEFINE_FWK_MODULE(L1GTProducer);

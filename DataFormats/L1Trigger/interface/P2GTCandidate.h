@@ -14,6 +14,8 @@ namespace l1t {
   class VertexWord;
   class TkJetWord;
   class EtSum;
+  class SAMuon;
+  class TrackerMuon;
 
   class P2GTCandidate;
   typedef std::vector<P2GTCandidate> P2GTCandidateCollection;
@@ -61,8 +63,14 @@ namespace l1t {
     };
 
     P2GTCandidate();
+    
+    // GTT
     P2GTCandidate(const VertexWord&);
     P2GTCandidate(const TkJetWord&);
+
+    // GMT
+    P2GTCandidate(const SAMuon&);
+    P2GTCandidate(const TrackerMuon&);
 
     void setHwPT(hwPT_t hwPT) { hwPT_ = hwPT.to_int(); }
     void setHwPhi(hwPhi_t hwPhi) { hwPhi_ = hwPhi.to_int(); }

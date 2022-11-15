@@ -3,7 +3,8 @@
 #include "DataFormats/L1Trigger/interface/TkJetWord.h"
 #include "DataFormats/L1Trigger/interface/VertexWord.h"
 
-#include <cmath>
+#include "DataFormats/L1TMuonPhase2/interface/SAMuon.h"
+#include "DataFormats/L1TMuonPhase2/interface/TrackerMuon.h"
 
 namespace l1t {
   P2GTCandidate::P2GTCandidate() {}
@@ -21,6 +22,26 @@ namespace l1t {
         hwEta_(obj.glbEtaWord().V.to_int()),
         hwDZ_(obj.z0Word().V.to_int()),
         hwNumber_of_tracks_(obj.ntWord().V.to_int()) {}
+
+  P2GTCandidate::P2GTCandidate(const SAMuon& obj)
+      : hwPT_(obj.hwPt()),
+        hwPhi_(obj.hwPhi()),
+        hwEta_(obj.hwEta()),
+        hwDZ_(obj.hwZ0()),
+        hwQual_(obj.hwQual()),
+        hwCharge_(obj.hwCharge()),
+        hwDD_(obj.hwD0()) {}
+
+  P2GTCandidate::P2GTCandidate(const TrackerMuon& obj)
+      : hwPT_(obj.hwPt()),
+        hwPhi_(obj.hwPhi()),
+        hwEta_(obj.hwEta()),
+        hwDZ_(obj.hwZ0()),
+        hwIso_(obj.hwIso()),
+        hwQual_(obj.hwQual()),
+        hwCharge_(obj.hwCharge()),
+        hwDD_(obj.hwD0()),
+        hwBeta_(obj.hwBeta()) {}
 
   bool P2GTCandidate::operator==(const P2GTCandidate& rhs) const {
     return hwPT_ == rhs.hwPT_ && hwPhi_ == rhs.hwPhi_ && hwEta_ == rhs.hwEta_ && hwDZ_ == rhs.hwDZ_ &&
