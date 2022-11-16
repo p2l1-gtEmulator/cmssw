@@ -109,21 +109,6 @@ process.TripleJetCondition = L1GTTripleObjectCond.clone(
     )
 )
 
-process.TripleJetCondition = L1GTTripleObjectCond.clone(
-    collection1 = cms.PSet(
-        tag = cms.InputTag("L1GTProducer", "GTTPromptJets"),
-        minPt = cms.double(50)
-    ),
-    collection2 = cms.PSet(
-        tag = cms.InputTag("L1GTProducer", "GTTPromptJets"),
-        minPt = cms.double(40)
-    ),
-    collection3 = cms.PSet(
-        tag = cms.InputTag("L1GTProducer", "GTTPromptJets"),
-        minPt = cms.double(25)
-    )
-)
-
 process.pDoubleJetCondition = cms.Path(process.DoubleJetCondition)
 process.pTripleJetCondition = cms.Path(process.TripleJetCondition)
 
