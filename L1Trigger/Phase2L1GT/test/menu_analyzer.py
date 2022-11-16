@@ -1,7 +1,7 @@
 import argparse
 
 import ROOT
-from L1Trigger.Phase2L1GT.l1GTScales import scale_parameter
+from L1Trigger.Phase2L1GT.L1GTScales import scale_parameter
 
 from DataFormats.FWLite import Events, Handle
 

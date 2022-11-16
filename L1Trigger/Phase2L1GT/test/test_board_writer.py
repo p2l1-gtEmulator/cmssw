@@ -7,7 +7,7 @@ process.source = cms.Source("PoolSource", fileNames=cms.untracked.vstring(("file
 
 
 # Algo bits
-from L1Trigger.Phase2L1GT.l1GTAlgoChannelConfig import generate_channel_config
+from L1Trigger.Phase2L1GT.L1GTAlgoChannelConfig import generate_channel_config
 
 process.BoardData = cms.EDAnalyzer("L1GTBoardWriter",
   outputFilename = cms.string("outputPattern"),

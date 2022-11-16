@@ -5,7 +5,7 @@ generated LUT.
 """
 
 import FWCore.ParameterSet.Config as cms
-from L1Trigger.Phase2L1GT.l1GTScales import scale_parameter
+from L1Trigger.Phase2L1GT.L1GTScales import scale_parameter
 from statistics import mean, median, stdev
 import math
 

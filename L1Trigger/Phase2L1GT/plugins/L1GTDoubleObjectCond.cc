@@ -84,6 +84,7 @@ private:
   const std::optional<double> maxTransMassSqrDiv2_;
 
   const std::optional<double> minPTSquared_;
+  const std::optional<double> maxPTSquared_;
 
   const bool os_;  // Opposite sign
   const bool ss_;  // Same sign
@@ -134,6 +135,8 @@ L1GTDoubleObjectCond::L1GTDoubleObjectCond(const edm::ParameterSet& config)
           "maxTransMass", config, std::bind(&L1GTScales::to_hw_TransMassSqrDiv2, scales_, std::placeholders::_1))),
       minPTSquared_(getOptionalParam<double, double>(
           "minPt", config, std::bind(&L1GTScales::to_hw_PtSquared, scales_, std::placeholders::_1))),
+      maxPTSquared_(getOptionalParam<double, double>(
+          "maxPt", config, std::bind(&L1GTScales::to_hw_PtSquared, scales_, std::placeholders::_1))),
       os_(config.exists("os") ? config.getParameter<bool>("os") : false),
       ss_(config.exists("ss") ? config.getParameter<bool>("ss") : false),
       enable_sanity_checks_(config.getUntrackedParameter<bool>("sanity_checks")),
@@ -175,6 +178,7 @@ void L1GTDoubleObjectCond::fillDescriptions(edm::ConfigurationDescriptions& desc
   desc.addOptional<double>("minTransMass");
   desc.addOptional<double>("maxTransMass");
   desc.addOptional<double>("minPt");
+  desc.addOptional<double>("maxPt");
   desc.addOptional<bool>("os", false);
   desc.addOptional<bool>("ss", false);
 
@@ -296,13 +300,17 @@ bool L1GTDoubleObjectCond::checkObjects(const P2GTCandidate& obj1,
   res &= minDPhi_ ? dPhi > minDPhi_ : true;
   res &= maxDPhi_ ? dPhi < maxDPhi_ : true;
 
-  uint32_t dZ = abs(obj1.hwZ0() - obj2.hwZ0());
-  res &= minDz_ ? dZ > minDz_ : true;
-  res &= maxDz_ ? dZ < maxDz_ : true;
+  if (minDz_ || maxDz_) {
+    uint32_t dZ = abs(obj1.hwZ0() - obj2.hwZ0());
+    res &= minDz_ ? dZ > minDz_ : true;
+    res &= maxDz_ ? dZ < maxDz_ : true;
+  }
 
-  uint32_t dRSquared = dEta * dEta + dPhi * dPhi;
-  res &= minDRSquared_ ? dRSquared > minDRSquared_ : true;
-  res &= maxDRSquared_ ? dRSquared < maxDRSquared_ : true;
+  if (minDRSquared_ || maxDRSquared_) {
+    uint32_t dRSquared = dEta * dEta + dPhi * dPhi;
+    res &= minDRSquared_ ? dRSquared > minDRSquared_ : true;
+    res &= maxDRSquared_ ? dRSquared < maxDRSquared_ : true;
+  }
 
   res &= os_ ? obj1.hwCharge() != obj2.hwCharge() : true;
   res &= ss_ ? obj1.hwCharge() == obj2.hwCharge() : true;
@@ -331,48 +339,55 @@ bool L1GTDoubleObjectCond::checkObjects(const P2GTCandidate& obj1,
     }
   }
 
-  int64_t invMassSqrDiv2;
-  if (dEta < DETA_LUT_SPLIT) {
-    // dEta [0, 2pi)
-    invMassSqrDiv2 = obj1.hwPT().to_int64() * obj2.hwPT().to_int64() * (lutCoshDEta - lutCosDPhi);
-    res &= minInvMassSqrDiv2_ ? invMassSqrDiv2 > std::round(minInvMassSqrDiv2_.value() * coshEtaLUT_.output_scale())
-                              : true;
-    res &= maxInvMassSqrDiv2_ ? invMassSqrDiv2 < std::round(maxInvMassSqrDiv2_.value() * coshEtaLUT_.output_scale())
-                              : true;
-  } else {
-    // dEta [2pi, 4pi), ignore cos
-    invMassSqrDiv2 = obj1.hwPT().to_int64() * obj2.hwPT().to_int64() * lutCoshDEta;
-    res &= minInvMassSqrDiv2_ ? invMassSqrDiv2 > std::round(minInvMassSqrDiv2_.value() * coshEtaLUT2_.output_scale())
-                              : true;
-    res &= maxInvMassSqrDiv2_ ? invMassSqrDiv2 < std::round(maxInvMassSqrDiv2_.value() * coshEtaLUT2_.output_scale())
-                              : true;
+  if (minInvMassSqrDiv2_ || maxInvMassSqrDiv2_) {
+    int64_t invMassSqrDiv2;
+    if (dEta < DETA_LUT_SPLIT) {
+      // dEta [0, 2pi)
+      invMassSqrDiv2 = obj1.hwPT().to_int64() * obj2.hwPT().to_int64() * (lutCoshDEta - lutCosDPhi);
+      res &= minInvMassSqrDiv2_ ? invMassSqrDiv2 > std::round(minInvMassSqrDiv2_.value() * coshEtaLUT_.output_scale())
+                                : true;
+      res &= maxInvMassSqrDiv2_ ? invMassSqrDiv2 < std::round(maxInvMassSqrDiv2_.value() * coshEtaLUT_.output_scale())
+                                : true;
+    } else {
+      // dEta [2pi, 4pi), ignore cos
+      invMassSqrDiv2 = obj1.hwPT().to_int64() * obj2.hwPT().to_int64() * lutCoshDEta;
+      res &= minInvMassSqrDiv2_ ? invMassSqrDiv2 > std::round(minInvMassSqrDiv2_.value() * coshEtaLUT2_.output_scale())
+                                : true;
+      res &= maxInvMassSqrDiv2_ ? invMassSqrDiv2 < std::round(maxInvMassSqrDiv2_.value() * coshEtaLUT2_.output_scale())
+                                : true;
+    }
+
+    if (inv_mass_checks_) {
+      double precInvMass =
+          scales_.pT_lsb() * std::sqrt(2 * obj1.hwPT().to_double() * obj2.hwPT().to_double() *
+                                       (std::cosh(dEta * scales_.eta_lsb()) - std::cos(dPhi * scales_.phi_lsb())));
+
+      double lutInvMass = scales_.pT_lsb() *
+                          std::sqrt(2 * static_cast<double>(invMassSqrDiv2) /
+                                    (dEta < DETA_LUT_SPLIT ? coshEtaLUT_.output_scale() : coshEtaLUT2_.output_scale()));
+
+      double error = std::abs(precInvMass - lutInvMass);
+      massErrors.emplace_back(InvariantMassError{error, error / precInvMass, precInvMass});
+    }
   }
 
-  if (inv_mass_checks_) {
-    double precInvMass =
-        scales_.pT_lsb() * std::sqrt(2 * obj1.hwPT().to_double() * obj2.hwPT().to_double() *
-                                     (std::cosh(dEta * scales_.eta_lsb()) - std::cos(dPhi * scales_.phi_lsb())));
-
-    double lutInvMass = scales_.pT_lsb() *
-                        std::sqrt(2 * static_cast<double>(invMassSqrDiv2) /
-                                  (dEta < DETA_LUT_SPLIT ? coshEtaLUT_.output_scale() : coshEtaLUT2_.output_scale()));
-
-    double error = std::abs(precInvMass - lutInvMass);
-    massErrors.emplace_back(InvariantMassError{error, error / precInvMass, precInvMass});
+  if (minPTSquared_ || maxPTSquared_) {
+    int64_t pTSquared =
+        obj1.hwPT().to_int64() * obj1.hwPT().to_int64() * static_cast<int64_t>(std::round(cosPhiLUT_.output_scale())) +
+        obj2.hwPT().to_int64() * obj2.hwPT().to_int64() * static_cast<int64_t>(std::round(cosPhiLUT_.output_scale())) +
+        2 * obj1.hwPT().to_int64() * obj2.hwPT().to_int64() * lutCosDPhi;
+    res &= minPTSquared_ ? pTSquared > std::round(minPTSquared_.value() * cosPhiLUT_.output_scale()) : true;
+    res &= maxPTSquared_ ? pTSquared < std::round(maxPTSquared_.value() * cosPhiLUT_.output_scale()) : true;
   }
 
-  int64_t pTSquared =
-      obj1.hwPT().to_int64() * obj1.hwPT().to_int64() * static_cast<int64_t>(std::round(cosPhiLUT_.output_scale())) +
-      obj2.hwPT().to_int64() * obj2.hwPT().to_int64() * static_cast<int64_t>(std::round(cosPhiLUT_.output_scale())) +
-      2 * obj1.hwPT().to_int64() * obj2.hwPT().to_int64() * lutCosDPhi;
-  res &= minPTSquared_ ? pTSquared > std::round(minPTSquared_.value() * cosPhiLUT_.output_scale()) : true;
-
-  int64_t transMassDiv2 =
-      obj1.hwPT().to_int64() * obj2.hwPT().to_int64() * (static_cast<int64_t>(coshEtaLUT_.output_scale()) - lutCosDPhi);
-  res &= minTransMassSqrDiv2_ ? transMassDiv2 > std::round(minTransMassSqrDiv2_.value() * coshEtaLUT_.output_scale())
-                              : true;
-  res &= maxTransMassSqrDiv2_ ? transMassDiv2 < std::round(maxTransMassSqrDiv2_.value() * coshEtaLUT_.output_scale())
-                              : true;
+  if (minTransMassSqrDiv2_ || maxTransMassSqrDiv2_) {
+    int64_t transMassDiv2 = obj1.hwPT().to_int64() * obj2.hwPT().to_int64() *
+                            (static_cast<int64_t>(coshEtaLUT_.output_scale()) - lutCosDPhi);
+    res &= minTransMassSqrDiv2_ ? transMassDiv2 > std::round(minTransMassSqrDiv2_.value() * coshEtaLUT_.output_scale())
+                                : true;
+    res &= maxTransMassSqrDiv2_ ? transMassDiv2 < std::round(maxTransMassSqrDiv2_.value() * coshEtaLUT_.output_scale())
+                                : true;
+  }
 
   return res;
 }

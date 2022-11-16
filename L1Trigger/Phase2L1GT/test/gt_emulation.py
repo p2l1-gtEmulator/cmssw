@@ -23,8 +23,7 @@ process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.cerr.INFO.limit = cms.untracked.int32(0)  # default: 0
 
 process.options = cms.untracked.PSet(
-    wantSummary = cms.untracked.bool(True),
-    
+    wantSummary = cms.untracked.bool(True)
 )
 
 ############################################################
@@ -77,25 +76,14 @@ process.pUpstreamEmulators = cms.Path(process.UpstreamEmulators)
 # L1 Global Trigger Emulation
 ############################################################
 
-process.L1GTProducer = cms.EDProducer(
-    "L1GTProducer",
-    GTTPromptJets = cms.InputTag("L1TrackJetsEmulation", "L1TrackJets"),
-    GTTDisplacedJets = cms.InputTag("L1TrackJetsExtendedEmulation", "L1TrackJetsExtended"),
-    GTTPrimaryVert = cms.InputTag("L1VertexFinderEmulator", "l1verticesEmulation"),
-    GMTSaPromptMuons = cms.InputTag("L1SAMuonsGmt", "promptSAMuons"),
-    GMTSaDisplacedMuons = cms.InputTag("L1SAMuonsGmt", "displacedSAMuons"),
-    GMTTkMuons = cms.InputTag("L1TkMuonsGmt")
-)
-process.pL1GTProducer = cms.Path(process.L1GTProducer)
-
 # Conditions
-from L1Trigger.Phase2L1GT.l1GTSingleObjectCond_cfi import l1GTSingleObjectCond
-from L1Trigger.Phase2L1GT.l1GTDoubleObjectCond_cfi import l1GTDoubleObjectCond
-from L1Trigger.Phase2L1GT.l1GTTripleObjectCond_cfi import l1GTTripleObjectCond
-from L1Trigger.Phase2L1GT.l1GTQuadObjectCond_cfi import l1GTQuadObjectCond
+from L1Trigger.Phase2L1GT.L1GTSingleObjectCond_cfi import L1GTSingleObjectCond
+from L1Trigger.Phase2L1GT.L1GTDoubleObjectCond_cfi import L1GTDoubleObjectCond
+from L1Trigger.Phase2L1GT.L1GTTripleObjectCond_cfi import L1GTTripleObjectCond
+from L1Trigger.Phase2L1GT.L1GTQuadObjectCond_cfi import L1GTQuadObjectCond
 
 # Some dummy seed to test tracker interface
-process.DoubleJetCondition = l1GTDoubleObjectCond.clone(
+process.DoubleJetCondition = L1GTDoubleObjectCond.clone(
     collection1 = cms.PSet(
         tag = cms.InputTag("L1GTProducer", "GTTPromptJets"),
         minPt = cms.double(12)
@@ -106,7 +94,7 @@ process.DoubleJetCondition = l1GTDoubleObjectCond.clone(
     )
 )
 
-process.TripleJetCondition = l1GTTripleObjectCond.clone(
+process.TripleJetCondition = L1GTTripleObjectCond.clone(
     collection1 = cms.PSet(
         tag = cms.InputTag("L1GTProducer", "GTTPromptJets"),
         minPt = cms.double(50)
@@ -121,7 +109,7 @@ process.TripleJetCondition = l1GTTripleObjectCond.clone(
     )
 )
 
-process.TripleJetCondition = l1GTTripleObjectCond.clone(
+process.TripleJetCondition = L1GTTripleObjectCond.clone(
     collection1 = cms.PSet(
         tag = cms.InputTag("L1GTProducer", "GTTPromptJets"),
         minPt = cms.double(50)
@@ -141,7 +129,7 @@ process.pTripleJetCondition = cms.Path(process.TripleJetCondition)
 
 
 # B-physics seeds from https://twiki.cern.ch/twiki/pub/CMS/PhaseIIL1TriggerMenuTools/L1Menu_L1TDR_270121.pdf
-process.doubleTkMuon1 = l1GTDoubleObjectCond.clone(
+process.doubleTkMuon1 = L1GTDoubleObjectCond.clone(
     collection1 = cms.PSet(
         tag = cms.InputTag("L1GTProducer", "GMTTkMuons"),
         minPt = cms.double(2),
@@ -160,7 +148,7 @@ process.doubleTkMuon1 = l1GTDoubleObjectCond.clone(
 )
 process.pDoubleTkMuon1 = cms.Path(process.doubleTkMuon1)
 
-process.doubleTkMuon2 = l1GTDoubleObjectCond.clone(
+process.doubleTkMuon2 = L1GTDoubleObjectCond.clone(
     collection1 = cms.PSet(
         tag = cms.InputTag("L1GTProducer", "GMTTkMuons"),
         minPt = cms.double(4),
@@ -179,7 +167,7 @@ process.doubleTkMuon2 = l1GTDoubleObjectCond.clone(
 )
 process.pDoubleTkMuon2 = cms.Path(process.doubleTkMuon2)
 
-process.doubleTkMuon3 = l1GTDoubleObjectCond.clone(
+process.doubleTkMuon3 = L1GTDoubleObjectCond.clone(
     collection1 = cms.PSet(
         tag = cms.InputTag("L1GTProducer", "GMTTkMuons"),
         minPt = cms.double(4.5),
@@ -200,7 +188,7 @@ process.doubleTkMuon3 = l1GTDoubleObjectCond.clone(
 process.pDoubleTkMuon3 = cms.Path(process.doubleTkMuon3)
 
 
-process.tripleTkMuon1 = l1GTTripleObjectCond.clone(
+process.tripleTkMuon1 = L1GTTripleObjectCond.clone(
     collection1 = cms.PSet(
         tag = cms.InputTag("L1GTProducer", "GMTTkMuons"),
         minPt = cms.double(5),
@@ -222,7 +210,7 @@ process.tripleTkMuon1 = l1GTTripleObjectCond.clone(
 )
 
 # Additional restriction on Muon 5 and Muon 3
-process.doubleTkMuon3 = l1GTDoubleObjectCond.clone(
+process.doubleTkMuon3 = L1GTDoubleObjectCond.clone(
     collection1 = cms.PSet(
         tag = cms.InputTag("L1GTProducer", "GMTTkMuons"),
         minPt = cms.double(5),

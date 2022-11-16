@@ -1,4 +1,4 @@
-from L1Trigger.Phase2L1GT.l1GTScales import l1GTScales
+from L1Trigger.Phase2L1GT.L1GTScales import L1GTScales
 
 class Condition:
     _ObjectNameConversions = {
@@ -36,13 +36,13 @@ class Condition:
         self.InputObjects = {}
         self._InputTags = []
         self._HWConversionFunctions = {
-            'minPt': l1GTScales.to_hw_pT,
-            'minEta': l1GTScales.to_hw_eta,
-            'maxEta': l1GTScales.to_hw_eta,
-            'minPhi': l1GTScales.to_hw_phi,
-            'maxPhi': l1GTScales.to_hw_phi,
-            'minDz': l1GTScales.to_hw_dZ,
-            'maxDz': l1GTScales.to_hw_dZ,
+            'minPt': L1GTScales.to_hw_pT,
+            'minEta': L1GTScales.to_hw_eta,
+            'maxEta': L1GTScales.to_hw_eta,
+            'minPhi': L1GTScales.to_hw_phi,
+            'maxPhi': L1GTScales.to_hw_phi,
+            'minDz': L1GTScales.to_hw_dZ,
+            'maxDz': L1GTScales.to_hw_dZ,
         }
 
         self._cut_aliases = {
@@ -99,16 +99,16 @@ class DoubleObjCond(Condition):
         Condition.__init__(self)
         
         self._HWConversionFunctions.update({
-            'minDEta': l1GTScales.to_hw_eta,
-            'maxDEta': l1GTScales.to_hw_eta,
-            'minDPhi': l1GTScales.to_hw_phi,
-            'maxDPhi': l1GTScales.to_hw_phi,
-            'minDR': l1GTScales.to_hw_dRSquared,
-            'maxDR': l1GTScales.to_hw_dRSquared,
-            'minInvMass': l1GTScales.to_hw_InvMassSqrDiv2,
-            'maxInvMass': l1GTScales.to_hw_InvMassSqrDiv2,
-            'minTransMass': l1GTScales.to_hw_TransMassSqrDiv2,
-            'maxTransMass': l1GTScales.to_hw_TransMassSqrDiv2,
+            'minDEta': L1GTScales.to_hw_eta,
+            'maxDEta': L1GTScales.to_hw_eta,
+            'minDPhi': L1GTScales.to_hw_phi,
+            'maxDPhi': L1GTScales.to_hw_phi,
+            'minDR': L1GTScales.to_hw_dRSquared,
+            'maxDR': L1GTScales.to_hw_dRSquared,
+            'minInvMass': L1GTScales.to_hw_InvMassSqrDiv2,
+            'maxInvMass': L1GTScales.to_hw_InvMassSqrDiv2,
+            'minTransMass': L1GTScales.to_hw_TransMassSqrDiv2,
+            'maxTransMass': L1GTScales.to_hw_TransMassSqrDiv2,
         })
 
         self._cut_aliases.update({ 

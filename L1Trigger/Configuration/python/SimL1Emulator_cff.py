@@ -224,6 +224,10 @@ _phase2_siml1emulator.add(L1NNTauProducerPuppi)
 _phase2_siml1emulator.add(tau2VtxTaskHW)
 
 
+# GT Producer
+from L1Trigger.Phase2L1GT.L1GTProducer_cff import *
+_phase2_siml1emulator.add(L1GTProducer)
+
 # --> add modules
 from Configuration.Eras.Modifier_phase2_trigger_cff import phase2_trigger
 phase2_trigger.toReplaceWith( SimL1EmulatorTask , _phase2_siml1emulator)
