@@ -72,6 +72,8 @@ private:
   const std::optional<int> maxDEta_;
   const std::optional<int> minDPhi_;
   const std::optional<int> maxDPhi_;
+  const std::optional<int> minDz_;
+  const std::optional<int> maxDz_;
 
   const std::optional<int> minDRSquared_;
   const std::optional<int> maxDRSquared_;
@@ -114,6 +116,10 @@ L1GTDoubleObjectCond::L1GTDoubleObjectCond(const edm::ParameterSet& config)
           "minDPhi", config, std::bind(&L1GTScales::to_hw_phi, scales_, std::placeholders::_1))),
       maxDPhi_(getOptionalParam<int, double>(
           "maxDPhi", config, std::bind(&L1GTScales::to_hw_phi, scales_, std::placeholders::_1))),
+      minDz_(getOptionalParam<int, double>(
+          "minDz", config, std::bind(&L1GTScales::to_hw_z0, scales_, std::placeholders::_1))),
+      maxDz_(getOptionalParam<int, double>(
+          "maxDz", config, std::bind(&L1GTScales::to_hw_z0, scales_, std::placeholders::_1))),
       minDRSquared_(getOptionalParam<int, double>(
           "minDR", config, std::bind(&L1GTScales::to_hw_dRSquared, scales_, std::placeholders::_1))),
       maxDRSquared_(getOptionalParam<int, double>(
@@ -162,6 +168,8 @@ void L1GTDoubleObjectCond::fillDescriptions(edm::ConfigurationDescriptions& desc
   desc.addOptional<double>("maxDPhi");
   desc.addOptional<double>("minDR");
   desc.addOptional<double>("maxDR");
+  desc.addOptional<double>("minDz");
+  desc.addOptional<double>("maxDz");
   desc.addOptional<double>("minInvMass");
   desc.addOptional<double>("maxInvMass");
   desc.addOptional<double>("minTransMass");
@@ -287,6 +295,10 @@ bool L1GTDoubleObjectCond::checkObjects(const P2GTCandidate& obj1,
 
   res &= minDPhi_ ? dPhi > minDPhi_ : true;
   res &= maxDPhi_ ? dPhi < maxDPhi_ : true;
+
+  uint32_t dZ = abs(obj1.hwZ0() - obj2.hwZ0());
+  res &= minDz_ ? dZ > minDz_ : true;
+  res &= maxDz_ ? dZ < maxDz_ : true;
 
   uint32_t dRSquared = dEta * dEta + dPhi * dPhi;
   res &= minDRSquared_ ? dRSquared > minDRSquared_ : true;

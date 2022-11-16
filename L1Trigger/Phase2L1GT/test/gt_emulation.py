@@ -155,6 +155,7 @@ process.doubleTkMuon1 = l1GTDoubleObjectCond.clone(
         maxEta = cms.double(1.5)
     ),
     maxDR = cms.double(1.4),
+    maxDz = cms.double(1),
     os = cms.bool(True)
 )
 process.pDoubleTkMuon1 = cms.Path(process.doubleTkMuon1)
@@ -173,6 +174,7 @@ process.doubleTkMuon2 = l1GTDoubleObjectCond.clone(
         maxEta = cms.double(2.4)
     ),
     maxDR = cms.double(1.2),
+    maxDz = cms.double(1),
     os = cms.bool(True)
 )
 process.pDoubleTkMuon2 = cms.Path(process.doubleTkMuon2)
@@ -192,6 +194,7 @@ process.doubleTkMuon3 = l1GTDoubleObjectCond.clone(
     ),
     minInvMass = cms.double(7),
     maxInvMass = cms.double(18),
+    maxDz = cms.double(1),
     os = cms.bool(True)
 )
 process.pDoubleTkMuon3 = cms.Path(process.doubleTkMuon3)
