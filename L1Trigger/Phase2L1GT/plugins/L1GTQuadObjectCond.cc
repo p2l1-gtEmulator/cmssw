@@ -34,10 +34,10 @@ private:
 
   const L1GTScales scales_;
 
-  const L1GTSingleCollectionCut collection1_;
-  const L1GTSingleCollectionCut collection2_;
-  const L1GTSingleCollectionCut collection3_;
-  const L1GTSingleCollectionCut collection4_;
+  const L1GTSingleCollectionCut collection1Cuts_;
+  const L1GTSingleCollectionCut collection2Cuts_;
+  const L1GTSingleCollectionCut collection3Cuts_;
+  const L1GTSingleCollectionCut collection4Cuts_;
 
   const bool os_;  // Opposite sign
   const bool ss_;  // Same sign
@@ -45,29 +45,29 @@ private:
 
 L1GTQuadObjectCond::L1GTQuadObjectCond(const edm::ParameterSet& config)
     : scales_(config.getParameter<edm::ParameterSet>("scales")),
-      collection1_(config.getParameter<edm::ParameterSet>("collection1"), scales_),
-      collection2_(config.getParameter<edm::ParameterSet>("collection2"), scales_),
-      collection3_(config.getParameter<edm::ParameterSet>("collection3"), scales_),
-      collection4_(config.getParameter<edm::ParameterSet>("collection4"), scales_),
+      collection1Cuts_(config.getParameter<edm::ParameterSet>("collection1"), scales_),
+      collection2Cuts_(config.getParameter<edm::ParameterSet>("collection2"), scales_),
+      collection3Cuts_(config.getParameter<edm::ParameterSet>("collection3"), scales_),
+      collection4Cuts_(config.getParameter<edm::ParameterSet>("collection4"), scales_),
       os_(config.exists("os") ? config.getParameter<bool>("os") : false),
       ss_(config.exists("ss") ? config.getParameter<bool>("ss") : false) {
-  consumes<P2GTCandidateCollection>(collection1_.tag());
-  produces<P2GTCandidateVectorRef>(collection1_.tag().instance());
+  consumes<P2GTCandidateCollection>(collection1Cuts_.tag());
+  produces<P2GTCandidateVectorRef>(collection1Cuts_.tag().instance());
 
-  if (!(collection1_.tag() == collection2_.tag())) {
-    consumes<P2GTCandidateCollection>(collection2_.tag());
-    produces<P2GTCandidateVectorRef>(collection2_.tag().instance());
+  if (!(collection1Cuts_.tag() == collection2Cuts_.tag())) {
+    consumes<P2GTCandidateCollection>(collection2Cuts_.tag());
+    produces<P2GTCandidateVectorRef>(collection2Cuts_.tag().instance());
   }
 
-  if (!(collection1_.tag() == collection3_.tag()) && !(collection2_.tag() == collection3_.tag())) {
-    consumes<P2GTCandidateCollection>(collection3_.tag());
-    produces<P2GTCandidateVectorRef>(collection3_.tag().instance());
+  if (!(collection1Cuts_.tag() == collection3Cuts_.tag()) && !(collection2Cuts_.tag() == collection3Cuts_.tag())) {
+    consumes<P2GTCandidateCollection>(collection3Cuts_.tag());
+    produces<P2GTCandidateVectorRef>(collection3Cuts_.tag().instance());
   }
 
-  if (!(collection1_.tag() == collection4_.tag()) && !(collection2_.tag() == collection4_.tag()) &&
-      !(collection3_.tag() == collection4_.tag())) {
-    consumes<P2GTCandidateCollection>(collection4_.tag());
-    produces<P2GTCandidateVectorRef>(collection4_.tag().instance());
+  if (!(collection1Cuts_.tag() == collection4Cuts_.tag()) && !(collection2Cuts_.tag() == collection4Cuts_.tag()) &&
+      !(collection3Cuts_.tag() == collection4Cuts_.tag())) {
+    consumes<P2GTCandidateCollection>(collection4Cuts_.tag());
+    produces<P2GTCandidateVectorRef>(collection4Cuts_.tag().instance());
   }
 }
 
@@ -105,10 +105,10 @@ bool L1GTQuadObjectCond::filter(edm::Event& event, const edm::EventSetup& setup)
   edm::Handle<P2GTCandidateCollection> col2;
   edm::Handle<P2GTCandidateCollection> col3;
   edm::Handle<P2GTCandidateCollection> col4;
-  event.getByLabel(collection1_.tag(), col1);
-  event.getByLabel(collection2_.tag(), col2);
-  event.getByLabel(collection3_.tag(), col3);
-  event.getByLabel(collection4_.tag(), col4);
+  event.getByLabel(collection1Cuts_.tag(), col1);
+  event.getByLabel(collection2Cuts_.tag(), col2);
+  event.getByLabel(collection3Cuts_.tag(), col3);
+  event.getByLabel(collection4Cuts_.tag(), col4);
 
   bool condition_result = false;
 
@@ -188,7 +188,7 @@ bool L1GTQuadObjectCond::filter(edm::Event& event, const edm::EventSetup& setup)
     for (std::size_t idx : triggeredIdcs1) {
       triggerCol1->push_back(P2GTCandidateRef(col1, idx));
     }
-    event.put(std::move(triggerCol1), collection1_.tag().instance());
+    event.put(std::move(triggerCol1), collection1Cuts_.tag().instance());
 
     if (col1.product() != col2.product()) {
       std::unique_ptr<P2GTCandidateVectorRef> triggerCol2 = std::make_unique<P2GTCandidateVectorRef>();
@@ -196,7 +196,7 @@ bool L1GTQuadObjectCond::filter(edm::Event& event, const edm::EventSetup& setup)
       for (std::size_t idx : triggeredIdcs2) {
         triggerCol2->push_back(P2GTCandidateRef(col2, idx));
       }
-      event.put(std::move(triggerCol2), collection2_.tag().instance());
+      event.put(std::move(triggerCol2), collection2Cuts_.tag().instance());
     }
 
     if (col1.product() != col3.product() && col2.product() != col3.product()) {
@@ -205,7 +205,7 @@ bool L1GTQuadObjectCond::filter(edm::Event& event, const edm::EventSetup& setup)
       for (std::size_t idx : triggeredIdcs3) {
         triggerCol3->push_back(P2GTCandidateRef(col3, idx));
       }
-      event.put(std::move(triggerCol3), collection3_.tag().instance());
+      event.put(std::move(triggerCol3), collection3Cuts_.tag().instance());
     }
 
     if (col1.product() != col4.product() && col2.product() != col4.product() && col3.product() != col4.product()) {
@@ -214,7 +214,7 @@ bool L1GTQuadObjectCond::filter(edm::Event& event, const edm::EventSetup& setup)
       for (std::size_t idx : triggeredIdcs4) {
         triggerCol4->push_back(P2GTCandidateRef(col4, idx));
       }
-      event.put(std::move(triggerCol4), collection4_.tag().instance());
+      event.put(std::move(triggerCol4), collection4Cuts_.tag().instance());
     }
   }
 
@@ -227,10 +227,10 @@ bool L1GTQuadObjectCond::checkObjects(const P2GTCandidate& obj1,
                                       const P2GTCandidate& obj4) const {
   bool res{true};
 
-  res &= collection1_.checkObject(obj1);
-  res &= collection2_.checkObject(obj2);
-  res &= collection3_.checkObject(obj3);
-  res &= collection4_.checkObject(obj4);
+  res &= collection1Cuts_.checkObject(obj1);
+  res &= collection2Cuts_.checkObject(obj2);
+  res &= collection3Cuts_.checkObject(obj3);
+  res &= collection4Cuts_.checkObject(obj4);
 
   res &= ss_ ? (obj1.hwCharge() == obj2.hwCharge() && obj1.hwCharge() == obj3.hwCharge() &&
                 obj1.hwCharge() == obj4.hwCharge())

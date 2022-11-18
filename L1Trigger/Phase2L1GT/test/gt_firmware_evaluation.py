@@ -35,6 +35,9 @@ from L1Trigger.Phase2L1GT.L1GTQuadObjectCond_cfi import L1GTQuadObjectCond
 L1GTDoubleObjectCond.sanity_checks = cms.untracked.bool(True)
 L1GTDoubleObjectCond.inv_mass_checks = cms.untracked.bool(True)
 
+L1GTTripleObjectCond.sanity_checks = cms.untracked.bool(True)
+L1GTTripleObjectCond.inv_mass_checks = cms.untracked.bool(True)
+
 # Conditions
 
 process._singleTkMu_14_er2p3 = L1GTSingleObjectCond.clone(
@@ -693,7 +696,12 @@ process._tripleTkMuTkEle_7_5_5_er3p4_SS = L1GTTripleObjectCond.clone(
         minEta=cms.double(-3.4),
         maxEta=cms.double(3.4)
     ),
-    ss=cms.bool(True)
+    delta12=cms.PSet(
+        ss=cms.bool(True)
+    ),
+    delta13=cms.PSet(
+        ss=cms.bool(True)
+    )
 )
 
 process._quadTkMuTkEle_5_5_5_7_er3p4_SS = L1GTQuadObjectCond.clone(
@@ -753,7 +761,7 @@ process._quadTkEleTkMuPUPPIJet_30_40_25_25_er2p4 = L1GTQuadObjectCond.clone(
 
 channel_conf = {}
 idx = 0
-# remove '_', since it are not allowed for module names
+# remove '_', since it is not allowed for module names
 for filt_name in process.filters:
     if filt_name[:1] != '_':
         continue
@@ -763,7 +771,6 @@ for filt_name in process.filters:
     channel_conf[idx] = 'l1t' + filt_name
     setattr(process, 'l1t' + filt_name, cms.Path(getattr(process, new_name)))
     idx += 1
-
 
 # Algo bits
 from L1Trigger.Phase2L1GT.L1GTAlgoChannelConfig import generate_channel_config

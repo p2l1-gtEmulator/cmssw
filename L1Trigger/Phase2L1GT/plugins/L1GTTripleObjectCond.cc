@@ -12,6 +12,7 @@
 
 #include "L1Trigger/Phase2L1GT/interface/L1GTScales.h"
 #include "L1GTSingleCollectionCut.h"
+#include "L1GTDeltaCut.h"
 
 #include <set>
 
@@ -28,36 +29,58 @@ public:
 
 private:
   bool filter(edm::Event&, edm::EventSetup const&) override;
-  bool checkObjects(const P2GTCandidate&, const P2GTCandidate&, const P2GTCandidate&) const;
 
   const L1GTScales scales_;
 
-  const L1GTSingleCollectionCut collection1_;
-  const L1GTSingleCollectionCut collection2_;
-  const L1GTSingleCollectionCut collection3_;
+  const L1GTSingleCollectionCut collection1Cuts_;
+  const L1GTSingleCollectionCut collection2Cuts_;
+  const L1GTSingleCollectionCut collection3Cuts_;
 
-  const bool os_;  // Opposite sign
-  const bool ss_;  // Same sign
+  const bool enable_sanity_checks_;
+  const bool inv_mass_checks_;
+
+  const L1GTDeltaCut delta12Cuts_;
+  const L1GTDeltaCut delta13Cuts_;
+  const L1GTDeltaCut delta23Cuts_;
 };
 
 L1GTTripleObjectCond::L1GTTripleObjectCond(const edm::ParameterSet& config)
     : scales_(config.getParameter<edm::ParameterSet>("scales")),
-      collection1_(config.getParameter<edm::ParameterSet>("collection1"), scales_),
-      collection2_(config.getParameter<edm::ParameterSet>("collection2"), scales_),
-      collection3_(config.getParameter<edm::ParameterSet>("collection3"), scales_),
-      os_(config.exists("os") ? config.getParameter<bool>("os") : false),
-      ss_(config.exists("ss") ? config.getParameter<bool>("ss") : false) {
-  consumes<P2GTCandidateCollection>(collection1_.tag());
-  produces<P2GTCandidateVectorRef>(collection1_.tag().instance());
+      collection1Cuts_(config.getParameter<edm::ParameterSet>("collection1"), scales_),
+      collection2Cuts_(config.getParameter<edm::ParameterSet>("collection2"), scales_),
+      collection3Cuts_(config.getParameter<edm::ParameterSet>("collection3"), scales_),
+      enable_sanity_checks_(config.getUntrackedParameter<bool>("sanity_checks")),
+      inv_mass_checks_(config.getUntrackedParameter<bool>("inv_mass_checks")),
+      delta12Cuts_(config.exists("delta12") ? config.getParameter<edm::ParameterSet>("delta12") : edm::ParameterSet(),
+                   config,
+                   scales_,
+                   enable_sanity_checks_,
+                   inv_mass_checks_),
+      delta13Cuts_(config.exists("delta13") ? config.getParameter<edm::ParameterSet>("delta13") : edm::ParameterSet(),
+                   config,
+                   scales_,
+                   enable_sanity_checks_,
+                   inv_mass_checks_),
+      delta23Cuts_(config.exists("delta23") ? config.getParameter<edm::ParameterSet>("delta23") : edm::ParameterSet(),
+                   config,
+                   scales_,
+                   enable_sanity_checks_,
+                   inv_mass_checks_) {
+  consumes<P2GTCandidateCollection>(collection1Cuts_.tag());
+  produces<P2GTCandidateVectorRef>(collection1Cuts_.tag().instance());
 
-  if (!(collection1_.tag() == collection2_.tag())) {
-    consumes<P2GTCandidateCollection>(collection2_.tag());
-    produces<P2GTCandidateVectorRef>(collection2_.tag().instance());
+  if (!(collection1Cuts_.tag() == collection2Cuts_.tag())) {
+    consumes<P2GTCandidateCollection>(collection2Cuts_.tag());
+    produces<P2GTCandidateVectorRef>(collection2Cuts_.tag().instance());
   }
 
-  if (!(collection1_.tag() == collection3_.tag()) && !(collection2_.tag() == collection3_.tag())) {
-    consumes<P2GTCandidateCollection>(collection3_.tag());
-    produces<P2GTCandidateVectorRef>(collection3_.tag().instance());
+  if (!(collection1Cuts_.tag() == collection3Cuts_.tag()) && !(collection2Cuts_.tag() == collection3Cuts_.tag())) {
+    consumes<P2GTCandidateCollection>(collection3Cuts_.tag());
+    produces<P2GTCandidateVectorRef>(collection3Cuts_.tag().instance());
+  }
+
+  if (inv_mass_checks_) {
+    produces<InvariantMassErrorCollection>();
   }
 }
 
@@ -76,12 +99,26 @@ void L1GTTripleObjectCond::fillDescriptions(edm::ConfigurationDescriptions& desc
   L1GTSingleCollectionCut::fillDescriptions(collection3Desc);
   desc.add<edm::ParameterSetDescription>("collection3", collection3Desc);
 
-  desc.addOptional<bool>("os", false);
-  desc.addOptional<bool>("ss", false);
-
   edm::ParameterSetDescription scalesDesc;
   L1GTScales::fillDescriptions(scalesDesc);
   desc.add<edm::ParameterSetDescription>("scales", scalesDesc);
+
+  desc.addUntracked<bool>("sanity_checks");
+  desc.addUntracked<bool>("inv_mass_checks");
+
+  edm::ParameterSetDescription delta12Desc;
+  L1GTDeltaCut::fillDescriptions(delta12Desc);
+  desc.add<edm::ParameterSetDescription>("delta12", delta12Desc);
+
+  edm::ParameterSetDescription delta13Desc;
+  L1GTDeltaCut::fillDescriptions(delta13Desc);
+  desc.add<edm::ParameterSetDescription>("delta13", delta13Desc);
+
+  edm::ParameterSetDescription delta23Desc;
+  L1GTDeltaCut::fillDescriptions(delta23Desc);
+  desc.add<edm::ParameterSetDescription>("delta23", delta23Desc);
+
+  L1GTDeltaCut::fillLUTDescriptions(desc);
 
   descriptions.addWithDefaultLabel(desc);
 }
@@ -90,15 +127,17 @@ bool L1GTTripleObjectCond::filter(edm::Event& event, const edm::EventSetup& setu
   edm::Handle<P2GTCandidateCollection> col1;
   edm::Handle<P2GTCandidateCollection> col2;
   edm::Handle<P2GTCandidateCollection> col3;
-  event.getByLabel(collection1_.tag(), col1);
-  event.getByLabel(collection2_.tag(), col2);
-  event.getByLabel(collection3_.tag(), col3);
+  event.getByLabel(collection1Cuts_.tag(), col1);
+  event.getByLabel(collection2Cuts_.tag(), col2);
+  event.getByLabel(collection3Cuts_.tag(), col3);
 
   bool condition_result = false;
 
   std::set<std::size_t> triggeredIdcs1;
   std::set<std::size_t> triggeredIdcs2;
   std::set<std::size_t> triggeredIdcs3;
+
+  InvariantMassErrorCollection massErrors;
 
   for (std::size_t idx1 = 0; idx1 < col1->size(); ++idx1) {
     for (std::size_t idx2 = 0; idx2 < col2->size(); ++idx2) {
@@ -116,7 +155,14 @@ bool L1GTTripleObjectCond::filter(edm::Event& event, const edm::EventSetup& setu
           continue;
         }
 
-        bool pass{checkObjects(col1->at(idx1), col2->at(idx2), col3->at(idx3))};
+        bool pass = true;
+        pass &= collection1Cuts_.checkObject(col1->at(idx1));
+        pass &= collection2Cuts_.checkObject(col2->at(idx2));
+        pass &= collection3Cuts_.checkObject(col3->at(idx3));
+        pass &= delta12Cuts_.checkObjects(col1->at(idx1), col2->at(idx2), massErrors);
+        pass &= delta13Cuts_.checkObjects(col1->at(idx1), col3->at(idx3), massErrors);
+        pass &= delta23Cuts_.checkObjects(col2->at(idx2), col3->at(idx3), massErrors);
+
         condition_result |= pass;
 
         if (pass) {
@@ -146,7 +192,7 @@ bool L1GTTripleObjectCond::filter(edm::Event& event, const edm::EventSetup& setu
     for (std::size_t idx : triggeredIdcs1) {
       triggerCol1->push_back(P2GTCandidateRef(col1, idx));
     }
-    event.put(std::move(triggerCol1), collection1_.tag().instance());
+    event.put(std::move(triggerCol1), collection1Cuts_.tag().instance());
 
     if (col1.product() != col2.product()) {
       std::unique_ptr<P2GTCandidateVectorRef> triggerCol2 = std::make_unique<P2GTCandidateVectorRef>();
@@ -154,7 +200,7 @@ bool L1GTTripleObjectCond::filter(edm::Event& event, const edm::EventSetup& setu
       for (std::size_t idx : triggeredIdcs2) {
         triggerCol2->push_back(P2GTCandidateRef(col2, idx));
       }
-      event.put(std::move(triggerCol2), collection2_.tag().instance());
+      event.put(std::move(triggerCol2), collection2Cuts_.tag().instance());
     }
 
     if (col1.product() != col3.product() && col2.product() != col3.product()) {
@@ -163,25 +209,15 @@ bool L1GTTripleObjectCond::filter(edm::Event& event, const edm::EventSetup& setu
       for (std::size_t idx : triggeredIdcs3) {
         triggerCol3->push_back(P2GTCandidateRef(col3, idx));
       }
-      event.put(std::move(triggerCol3), collection3_.tag().instance());
+      event.put(std::move(triggerCol3), collection3Cuts_.tag().instance());
     }
   }
 
+  if (inv_mass_checks_) {
+    event.put(std::move(std::make_unique<InvariantMassErrorCollection>(std::move(massErrors))), "");
+  }
+
   return condition_result;
-}
-
-bool L1GTTripleObjectCond::checkObjects(const P2GTCandidate& obj1,
-                                        const P2GTCandidate& obj2,
-                                        const P2GTCandidate& obj3) const {
-  bool res{true};
-  res &= collection1_.checkObject(obj1);
-  res &= collection2_.checkObject(obj2);
-  res &= collection3_.checkObject(obj3);
-
-  res &= ss_ ? (obj1.hwCharge() == obj2.hwCharge() && obj1.hwCharge() == obj3.hwCharge()) : true;
-  res &= os_ ? !(obj1.hwCharge() == obj2.hwCharge() && obj1.hwCharge() == obj3.hwCharge()) : true;
-
-  return res;
 }
 
 DEFINE_FWK_MODULE(L1GTTripleObjectCond);

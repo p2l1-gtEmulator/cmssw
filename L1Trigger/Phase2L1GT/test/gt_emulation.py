@@ -192,10 +192,23 @@ process.tripleTkMuon1 = L1GTTripleObjectCond.clone(
         minEta = cms.double(-2.4),
         maxEta = cms.double(2.4)
     ),
+    delta12 = cms.PSet(
+        os = cms.bool(True),
+        minInvMass = cms.double(0),
+        maxInvMass = cms.double(9),
+        maxDz = cms.double(1)
+    ),
+    delta13 = cms.PSet(
+        maxDz = cms.double(1)
+    ),
+    delta23 = cms.PSet(
+        maxDz = cms.double(1)
+    )
 )
+process.pTripleTkMuon1 = cms.Path(process.tripleTkMuon1)
 
-# Additional restriction on Muon 5 and Muon 3
-process.doubleTkMuon3 = L1GTDoubleObjectCond.clone(
+
+process.tripleTkMuon2 = L1GTTripleObjectCond.clone(
     collection1 = cms.PSet(
         tag = cms.InputTag("L1GTProducer", "GMTTkMuons"),
         minPt = cms.double(5),
@@ -208,11 +221,26 @@ process.doubleTkMuon3 = L1GTDoubleObjectCond.clone(
         minEta = cms.double(-2.4),
         maxEta = cms.double(2.4)
     ),
-    maxInvMass = cms.double(9),
-    os = cms.bool(True)
+    collection3 = cms.PSet(
+        tag = cms.InputTag("L1GTProducer", "GMTTkMuons"),
+        minPt = cms.double(2),
+        minEta = cms.double(-2.4),
+        maxEta = cms.double(2.4)
+    ),
+    delta12 = cms.PSet(
+        os = cms.bool(True),
+        maxDz = cms.double(1)
+    ),
+    delta13 = cms.PSet(
+        minInvMass = cms.double(5),
+        maxInvMass = cms.double(17),
+        maxDz = cms.double(1)
+    ),
+    delta23 = cms.PSet(
+        maxDz = cms.double(1)
+    )
 )
-
-process.pTripleTkMuon = cms.Path(process.tripleTkMuon1 + process.doubleTkMuon3)
+process.pTripleTkMuon2 = cms.Path(process.tripleTkMuon2)
 
 
 ############################################################

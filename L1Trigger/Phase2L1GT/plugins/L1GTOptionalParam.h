@@ -1,5 +1,5 @@
-#ifndef L1GTOptionalParam_h
-#define L1GTOptionalParam_h
+#ifndef L1Trigger_Phase2L1GT_L1GTOptionalParam_h
+#define L1Trigger_Phase2L1GT_L1GTOptionalParam_h
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
@@ -28,4 +28,4 @@ namespace l1t {
   }
 }  // namespace l1t
 
-#endif // L1GTOptionalParam_h
+#endif // L1Trigger_Phase2L1GT_L1GTOptionalParam_h

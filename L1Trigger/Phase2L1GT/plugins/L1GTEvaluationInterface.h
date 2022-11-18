@@ -1,5 +1,5 @@
-#ifndef L1GTTestInterface_h
-#define L1GTTestInterface_h
+#ifndef L1Trigger_Phase2L1GT_L1GTEvaluationInterface_h
+#define L1Trigger_Phase2L1GT_L1GTEvaluationInterface_h
 
 #include "DataFormats/L1Trigger/interface/P2GTCandidate.h"
 
@@ -536,4 +536,4 @@ namespace l1t {
   };
 }  // namespace l1t
 
-#endif  // L1GTTestInterface_h
+#endif  // L1Trigger_Phase2L1GT_L1GTEvaluationInterface_h
