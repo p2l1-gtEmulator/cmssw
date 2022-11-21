@@ -112,6 +112,23 @@ process.TripleJetCondition = L1GTTripleObjectCond.clone(
 process.pDoubleJetCondition = cms.Path(process.DoubleJetCondition)
 process.pTripleJetCondition = cms.Path(process.TripleJetCondition)
 
+process.tkElePuppiJet = L1GTDoubleObjectCond.clone(
+    collection1 = cms.PSet(
+        tag = cms.InputTag("L1GTProducer", "CL2Electrons"),
+        minPt = cms.double(28),
+        minEta = cms.double(-2.1),
+        maxEta = cms.double(2.1)
+    ),
+    collection2 = cms.PSet(
+        tag = cms.InputTag("L1GTProducer", "CL2Jets"),
+        minPt = cms.double(40),
+        minEta = cms.double(-2.4),
+        maxEta = cms.double(2.4)
+    ),
+    minDR = cms.double(0.3),
+    maxDz = cms.double(1)
+)
+process.pTkElePuppiJet = cms.Path(process.tkElePuppiJet)
 
 # B-physics seeds from https://twiki.cern.ch/twiki/pub/CMS/PhaseIIL1TriggerMenuTools/L1Menu_L1TDR_270121.pdf
 process.doubleTkMuon1 = L1GTDoubleObjectCond.clone(

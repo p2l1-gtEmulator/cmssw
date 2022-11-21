@@ -18,6 +18,12 @@
 #include "DataFormats/L1TMuonPhase2/interface/SAMuon.h"
 #include "DataFormats/L1TMuonPhase2/interface/TrackerMuon.h"
 
+#include "DataFormats/L1TParticleFlow/interface/PFJet.h"
+#include "DataFormats/L1TCorrelator/interface/TkEmFwd.h"
+#include "DataFormats/L1TCorrelator/interface/TkEm.h"
+#include "DataFormats/L1TCorrelator/interface/TkElectronFwd.h"
+#include "DataFormats/L1TCorrelator/interface/TkElectron.h"
+
 #include <vector>
 #include <array>
 #include <string>
@@ -41,23 +47,22 @@ private:
   const edm::InputTag gmtSaPromptMuonTag_;
   const edm::InputTag gmtSaDisplacedMuonTag_;
   const edm::InputTag gmtTkMuonTag_;
+
+  const edm::InputTag cl2JetTag_;
+  const edm::InputTag cl2PhotonTag_;
+  const edm::InputTag cl2ElectronTag_;
 };
 
-template <typename T>
-static inline T getOptionalParam(const char *name, const edm::ParameterSet &config) {
-  if (config.exists(name)) {
-    return config.getParameter<T>(name);
-  }
-  return T();
-}
-
 L1GTProducer::L1GTProducer(const edm::ParameterSet &config)
-    : gttPromptJetTag_(getOptionalParam<edm::InputTag>("GTTPromptJets", config)),
-      gttDisplacedJetTag_(getOptionalParam<edm::InputTag>("GTTDisplacedJets", config)),
-      gttPrimaryVertexTag_(getOptionalParam<edm::InputTag>("GTTPrimaryVert", config)),
-      gmtSaPromptMuonTag_(getOptionalParam<edm::InputTag>("GMTSaPromptMuons", config)),
-      gmtSaDisplacedMuonTag_(getOptionalParam<edm::InputTag>("GMTSaDisplacedMuons", config)),
-      gmtTkMuonTag_(getOptionalParam<edm::InputTag>("GMTTkMuons", config)) {
+    : gttPromptJetTag_(config.getParameter<edm::InputTag>("GTTPromptJets")),
+      gttDisplacedJetTag_(config.getParameter<edm::InputTag>("GTTDisplacedJets")),
+      gttPrimaryVertexTag_(config.getParameter<edm::InputTag>("GTTPrimaryVert")),
+      gmtSaPromptMuonTag_(config.getParameter<edm::InputTag>("GMTSaPromptMuons")),
+      gmtSaDisplacedMuonTag_(config.getParameter<edm::InputTag>("GMTSaDisplacedMuons")),
+      gmtTkMuonTag_(config.getParameter<edm::InputTag>("GMTTkMuons")),
+      cl2JetTag_(config.getParameter<edm::InputTag>("CL2Jets")),
+      cl2PhotonTag_(config.getParameter<edm::InputTag>("CL2Photons")),
+      cl2ElectronTag_(config.getParameter<edm::InputTag>("CL2Electrons")) {
   consumes<TkJetWordCollection>(gttPromptJetTag_);
   consumes<TkJetWordCollection>(gttDisplacedJetTag_);
   consumes<VertexWordCollection>(gttPrimaryVertexTag_);
@@ -66,6 +71,10 @@ L1GTProducer::L1GTProducer(const edm::ParameterSet &config)
   consumes<SAMuonCollection>(gmtSaDisplacedMuonTag_);
   consumes<TrackerMuonCollection>(gmtTkMuonTag_);
 
+  consumes<PFJetCollection>(cl2JetTag_);
+  consumes<TkEmCollection>(cl2PhotonTag_);
+  consumes<TkElectronCollection>(cl2ElectronTag_);
+
   produces<P2GTCandidateCollection>("GTTPromptJets");
   produces<P2GTCandidateCollection>("GTTDisplacedJets");
   produces<P2GTCandidateCollection>("GTTPrimaryVert");
@@ -73,6 +82,10 @@ L1GTProducer::L1GTProducer(const edm::ParameterSet &config)
   produces<P2GTCandidateCollection>("GMTSaPromptMuons");
   produces<P2GTCandidateCollection>("GMTSaDisplacedMuons");
   produces<P2GTCandidateCollection>("GMTTkMuons");
+
+  produces<P2GTCandidateCollection>("CL2Jets");
+  produces<P2GTCandidateCollection>("CL2Photons");
+  produces<P2GTCandidateCollection>("CL2Electrons");
 }
 
 void L1GTProducer::fillDescriptions(edm::ConfigurationDescriptions &description) {
@@ -84,6 +97,10 @@ void L1GTProducer::fillDescriptions(edm::ConfigurationDescriptions &description)
   desc.addOptional<edm::InputTag>("GMTSaPromptMuons");
   desc.addOptional<edm::InputTag>("GMTSaDisplacedMuons");
   desc.addOptional<edm::InputTag>("GMTTkMuons");
+
+  desc.addOptional<edm::InputTag>("CL2Jets");
+  desc.addOptional<edm::InputTag>("CL2Photons");
+  desc.addOptional<edm::InputTag>("CL2Electrons");
 
   description.addWithDefaultLabel(desc);
 }
@@ -115,6 +132,10 @@ void L1GTProducer::produce(edm::Event &event, const edm::EventSetup &setup) {
   produceByTag<SAMuonCollection>("GMTSaPromptMuons", gmtSaPromptMuonTag_, event);
   produceByTag<SAMuonCollection>("GMTSaDisplacedMuons", gmtSaDisplacedMuonTag_, event);
   produceByTag<TrackerMuonCollection>("GMTTkMuons", gmtTkMuonTag_, event);
+
+  produceByTag<PFJetCollection>("CL2Jets", cl2JetTag_, event);
+  produceByTag<TkEmCollection>("CL2Photons", cl2PhotonTag_, event);
+  produceByTag<TkElectronCollection>("CL2Electrons", cl2ElectronTag_, event);
 }
 
 DEFINE_FWK_MODULE(L1GTProducer);

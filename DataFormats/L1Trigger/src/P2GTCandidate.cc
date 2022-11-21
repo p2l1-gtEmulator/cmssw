@@ -6,6 +6,13 @@
 #include "DataFormats/L1TMuonPhase2/interface/SAMuon.h"
 #include "DataFormats/L1TMuonPhase2/interface/TrackerMuon.h"
 
+#include "DataFormats/L1TParticleFlow/interface/PFJet.h"
+#include "DataFormats/L1TCorrelator/interface/TkEm.h"
+#include "DataFormats/L1TCorrelator/interface/TkElectron.h"
+
+#include "DataFormats/L1TParticleFlow/interface/gt_datatypes.h"
+#include "DataFormats/L1TParticleFlow/interface/egamma.h"
+
 namespace l1t {
   P2GTCandidate::P2GTCandidate() {}
 
@@ -42,6 +49,48 @@ namespace l1t {
         hwCharge_(obj.hwCharge()),
         hwD0_(obj.hwD0()),
         hwBeta_(obj.hwBeta()) {}
+
+  P2GTCandidate P2GTCandidate::initPFJet(const PFJet& edmJet) {
+    l1gt::Jet gtJet = l1gt::Jet::unpack(const_cast<PFJet&>(edmJet).encodedJet());
+    P2GTCandidate gtCandiate;
+    gtCandiate.hwPT_ = gtJet.v3.pt.to_int();
+    gtCandiate.hwPhi_ = gtJet.v3.phi.to_int();
+    gtCandiate.hwEta_ = gtJet.v3.eta.to_int();
+    gtCandiate.hwZ0_ = gtJet.z0.to_int();
+
+    return gtCandiate;
+  }
+
+  P2GTCandidate P2GTCandidate::initTkEm(const TkEm& edmTkEm) {
+    l1gt::Photon gtPhoton = l1ct::EGIsoObj::unpack(const_cast<TkEm&>(edmTkEm).egBinaryWord<96>()).toGT();
+    P2GTCandidate gtCandiate;
+    gtCandiate.hwPT_ = gtPhoton.v3.pt.to_int();
+    gtCandiate.hwPhi_ = gtPhoton.v3.phi.to_int();
+    gtCandiate.hwEta_ = gtPhoton.v3.eta.to_int();
+    gtCandiate.hwIso_ = gtPhoton.isolation.to_int();
+    gtCandiate.hwQual_ = gtPhoton.quality.to_int();
+
+    return gtCandiate;
+  }
+
+  P2GTCandidate P2GTCandidate::initTkElectron(const TkElectron& edmTkElectron) {
+    l1gt::Electron gtElectron =
+        l1ct::EGIsoEleObj::unpack(const_cast<TkElectron&>(edmTkElectron).egBinaryWord<96>()).toGT();
+    P2GTCandidate gtCandiate;
+    gtCandiate.hwPT_ = gtElectron.v3.pt.to_int();
+    gtCandiate.hwPhi_ = gtElectron.v3.phi.to_int();
+    gtCandiate.hwEta_ = gtElectron.v3.eta.to_int();
+    gtCandiate.hwZ0_ = gtElectron.z0.to_int();
+    gtCandiate.hwIso_ = gtElectron.isolation.to_int();
+    gtCandiate.hwQual_ = gtElectron.quality.to_int();
+    gtCandiate.hwCharge_ = gtElectron.charge.to_int();
+
+    return gtCandiate;
+  }
+
+  P2GTCandidate::P2GTCandidate(const PFJet& obj) : P2GTCandidate(initPFJet(obj)) {}
+  P2GTCandidate::P2GTCandidate(const TkEm& obj) : P2GTCandidate(initTkEm(obj)) {}
+  P2GTCandidate::P2GTCandidate(const TkElectron& obj) : P2GTCandidate(initTkElectron(obj)) {}
 
   bool P2GTCandidate::operator==(const P2GTCandidate& rhs) const {
     return hwPT_ == rhs.hwPT_ && hwPhi_ == rhs.hwPhi_ && hwEta_ == rhs.hwEta_ && hwZ0_ == rhs.hwZ0_ &&

@@ -16,6 +16,9 @@ namespace l1t {
   class EtSum;
   class SAMuon;
   class TrackerMuon;
+  class PFJet;
+  class TkEm;
+  class TkElectron;
 
   class P2GTCandidate;
   typedef std::vector<P2GTCandidate> P2GTCandidateCollection;
@@ -63,7 +66,7 @@ namespace l1t {
     };
 
     P2GTCandidate();
-    
+
     // GTT
     P2GTCandidate(const VertexWord&);
     P2GTCandidate(const TkJetWord&);
@@ -71,6 +74,11 @@ namespace l1t {
     // GMT
     P2GTCandidate(const SAMuon&);
     P2GTCandidate(const TrackerMuon&);
+
+    // CL2
+    P2GTCandidate(const PFJet&);
+    P2GTCandidate(const TkEm&);
+    P2GTCandidate(const TkElectron&);
 
     void setHwPT(hwPT_t hwPT) { hwPT_ = hwPT.to_int(); }
     void setHwPhi(hwPhi_t hwPhi) { hwPhi_ = hwPhi.to_int(); }
@@ -240,10 +248,14 @@ namespace l1t {
       return static_cast<int>(hwNumber_of_tracks_not_in_pv_);
     }
 
-    bool operator==(const l1t::P2GTCandidate& rhs) const;
-    bool operator!=(const l1t::P2GTCandidate& rhs) const;
+    bool operator==(const P2GTCandidate& rhs) const;
+    bool operator!=(const P2GTCandidate& rhs) const;
 
   private:
+    static P2GTCandidate initPFJet(const PFJet&);
+    static P2GTCandidate initTkEm(const TkEm&);
+    static P2GTCandidate initTkElectron(const TkElectron&);
+
     OptionalInt hwPT_;
     OptionalInt hwPhi_;
     OptionalInt hwEta_;
