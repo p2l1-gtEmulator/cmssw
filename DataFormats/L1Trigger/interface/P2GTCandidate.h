@@ -19,6 +19,7 @@ namespace l1t {
   class PFJet;
   class TkEm;
   class TkElectron;
+  class EtSum;
 
   class P2GTCandidate;
   typedef std::vector<P2GTCandidate> P2GTCandidateCollection;
@@ -79,6 +80,8 @@ namespace l1t {
     P2GTCandidate(const PFJet&);
     P2GTCandidate(const TkEm&);
     P2GTCandidate(const TkElectron&);
+
+    P2GTCandidate(const EtSum&);
 
     void setHwPT(hwPT_t hwPT) { hwPT_ = hwPT.to_int(); }
     void setHwPhi(hwPhi_t hwPhi) { hwPhi_ = hwPhi.to_int(); }
@@ -255,6 +258,7 @@ namespace l1t {
     static P2GTCandidate initPFJet(const PFJet&);
     static P2GTCandidate initTkEm(const TkEm&);
     static P2GTCandidate initTkElectron(const TkElectron&);
+    static P2GTCandidate initPfMET(const EtSum&);
 
     OptionalInt hwPT_;
     OptionalInt hwPhi_;

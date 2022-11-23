@@ -10,5 +10,6 @@ L1GTProducer = cms.EDProducer(
     GMTTkMuons = cms.InputTag("L1TkMuonsGmt"),
     CL2Jets = cms.InputTag("scPFL1PuppiEmulator"),
     CL2Electrons = cms.InputTag("l1ctLayer2EG", "L1CtTkElectron"),
-    CL2Photons = cms.InputTag("l1ctLayer2EG", "L1CtTkEm")
+    CL2Photons = cms.InputTag("l1ctLayer2EG", "L1CtTkEm"),
+    CL2EtSum = cms.InputTag("L1MetPfProducer")
 )

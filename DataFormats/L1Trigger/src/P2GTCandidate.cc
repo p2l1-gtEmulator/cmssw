@@ -13,6 +13,8 @@
 #include "DataFormats/L1TParticleFlow/interface/gt_datatypes.h"
 #include "DataFormats/L1TParticleFlow/interface/egamma.h"
 
+#include "DataFormats/L1Trigger/interface/EtSum.h"
+
 namespace l1t {
   P2GTCandidate::P2GTCandidate() {}
 
@@ -91,6 +93,18 @@ namespace l1t {
   P2GTCandidate::P2GTCandidate(const PFJet& obj) : P2GTCandidate(initPFJet(obj)) {}
   P2GTCandidate::P2GTCandidate(const TkEm& obj) : P2GTCandidate(initTkEm(obj)) {}
   P2GTCandidate::P2GTCandidate(const TkElectron& obj) : P2GTCandidate(initTkElectron(obj)) {}
+
+  P2GTCandidate P2GTCandidate::initPfMET(const EtSum& obj) {
+    l1gt::Sum sum{true /* valid */, obj.pt(), obj.phi() / l1gt::Scales::ETAPHI_LSB, 0 /* scalar sum */};
+
+    P2GTCandidate gtCandiate;
+    gtCandiate.hwPT_ = sum.vector_pt.V.to_int();
+    gtCandiate.hwPhi_ = sum.vector_phi.V.to_int();
+    gtCandiate.hwSca_sum_ = sum.scalar_pt.V.to_int();
+    return gtCandiate;
+  }
+
+  P2GTCandidate::P2GTCandidate(const EtSum& obj) : P2GTCandidate(initPfMET(obj)) {}
 
   bool P2GTCandidate::operator==(const P2GTCandidate& rhs) const {
     return hwPT_ == rhs.hwPT_ && hwPhi_ == rhs.hwPhi_ && hwEta_ == rhs.hwEta_ && hwZ0_ == rhs.hwZ0_ &&
