@@ -53,10 +53,10 @@ namespace l1t {
   P2GTCandidate P2GTCandidate::initPFJet(const PFJet& edmJet) {
     l1gt::Jet gtJet = l1gt::Jet::unpack(const_cast<PFJet&>(edmJet).encodedJet());
     P2GTCandidate gtCandiate;
-    gtCandiate.hwPT_ = gtJet.v3.pt.to_int();
-    gtCandiate.hwPhi_ = gtJet.v3.phi.to_int();
-    gtCandiate.hwEta_ = gtJet.v3.eta.to_int();
-    gtCandiate.hwZ0_ = gtJet.z0.to_int();
+    gtCandiate.hwPT_ = gtJet.v3.pt.V.to_int();
+    gtCandiate.hwPhi_ = gtJet.v3.phi.V.to_int();
+    gtCandiate.hwEta_ = gtJet.v3.eta.V.to_int();
+    gtCandiate.hwZ0_ = gtJet.z0.V.to_int();
 
     return gtCandiate;
   }
@@ -64,11 +64,11 @@ namespace l1t {
   P2GTCandidate P2GTCandidate::initTkEm(const TkEm& edmTkEm) {
     l1gt::Photon gtPhoton = l1ct::EGIsoObj::unpack(const_cast<TkEm&>(edmTkEm).egBinaryWord<96>()).toGT();
     P2GTCandidate gtCandiate;
-    gtCandiate.hwPT_ = gtPhoton.v3.pt.to_int();
-    gtCandiate.hwPhi_ = gtPhoton.v3.phi.to_int();
-    gtCandiate.hwEta_ = gtPhoton.v3.eta.to_int();
-    gtCandiate.hwIso_ = gtPhoton.isolation.to_int();
-    gtCandiate.hwQual_ = gtPhoton.quality.to_int();
+    gtCandiate.hwPT_ = gtPhoton.v3.pt.V.to_int();
+    gtCandiate.hwPhi_ = gtPhoton.v3.phi.V.to_int();
+    gtCandiate.hwEta_ = gtPhoton.v3.eta.V.to_int();
+    gtCandiate.hwIso_ = gtPhoton.isolation.V.to_int();
+    gtCandiate.hwQual_ = gtPhoton.quality.V.to_int();
 
     return gtCandiate;
   }
@@ -77,13 +77,13 @@ namespace l1t {
     l1gt::Electron gtElectron =
         l1ct::EGIsoEleObj::unpack(const_cast<TkElectron&>(edmTkElectron).egBinaryWord<96>()).toGT();
     P2GTCandidate gtCandiate;
-    gtCandiate.hwPT_ = gtElectron.v3.pt.to_int();
-    gtCandiate.hwPhi_ = gtElectron.v3.phi.to_int();
-    gtCandiate.hwEta_ = gtElectron.v3.eta.to_int();
-    gtCandiate.hwZ0_ = gtElectron.z0.to_int();
-    gtCandiate.hwIso_ = gtElectron.isolation.to_int();
-    gtCandiate.hwQual_ = gtElectron.quality.to_int();
-    gtCandiate.hwCharge_ = gtElectron.charge.to_int();
+    gtCandiate.hwPT_ = gtElectron.v3.pt.V.to_int();
+    gtCandiate.hwPhi_ = gtElectron.v3.phi.V.to_int();
+    gtCandiate.hwEta_ = gtElectron.v3.eta.V.to_int();
+    gtCandiate.hwZ0_ = gtElectron.z0.V.to_int();
+    gtCandiate.hwIso_ = gtElectron.isolation.V.to_int();
+    gtCandiate.hwQual_ = gtElectron.quality.V.to_int();
+    gtCandiate.hwCharge_ = gtElectron.charge.V.to_int();
 
     return gtCandiate;
   }
