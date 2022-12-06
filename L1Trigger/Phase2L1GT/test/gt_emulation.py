@@ -82,7 +82,7 @@ from L1Trigger.Phase2L1GT.L1GTDoubleObjectCond_cfi import L1GTDoubleObjectCond
 from L1Trigger.Phase2L1GT.L1GTTripleObjectCond_cfi import L1GTTripleObjectCond
 from L1Trigger.Phase2L1GT.L1GTQuadObjectCond_cfi import L1GTQuadObjectCond
 
-# Some dummy seed to test tracker interface
+# Some dummy seeds to test tracker interface
 process.DoubleJetCondition = L1GTDoubleObjectCond.clone(
     collection1 = cms.PSet(
         tag = cms.InputTag("L1GTProducer", "GTTPromptJets"),
@@ -130,7 +130,120 @@ process.tkElePuppiJet = L1GTDoubleObjectCond.clone(
 )
 process.pTkElePuppiJet = cms.Path(process.tkElePuppiJet)
 
-# B-physics seeds from https://twiki.cern.ch/twiki/pub/CMS/PhaseIIL1TriggerMenuTools/L1Menu_L1TDR_270121.pdf
+# Some seeds from https://twiki.cern.ch/twiki/pub/CMS/PhaseIIL1TriggerMenuTools/L1Menu_emulators12_3_x_060522.pdf
+
+process.SingleTkMuon = L1GTSingleObjectCond.clone(
+    tag =  cms.InputTag("L1GTProducer", "GMTTkMuons"),
+    minPt = cms.double(22),
+    minEta = cms.double(-2.4),
+    maxEta = cms.double(2.4)
+)
+process.pSingleTkMuon = cms.Path(process.SingleTkMuon)
+
+process.DoubleTkMuon = L1GTDoubleObjectCond.clone(
+    collection1 = cms.PSet(
+        tag = cms.InputTag("L1GTProducer", "GMTTkMuons"),
+        minPt = cms.double(15),
+        minEta = cms.double(-2.4),
+        maxEta = cms.double(2.4)
+    ),
+    collection2 = cms.PSet(
+        tag = cms.InputTag("L1GTProducer", "GMTTkMuons"),
+        minPt = cms.double(7),
+        minEta = cms.double(-2.4),
+        maxEta = cms.double(2.4)
+    ),
+    maxDz = cms.double(1),
+)
+process.pDoubleTkMuon = cms.Path(process.DoubleTkMuon)
+
+process.TripleTkMuon = L1GTTripleObjectCond.clone(
+    collection1 = cms.PSet(
+        tag = cms.InputTag("L1GTProducer", "GMTTkMuons"),
+        minPt = cms.double(5),
+        minEta = cms.double(-2.4),
+        maxEta = cms.double(2.4)
+    ),
+    collection2 = cms.PSet(
+        tag = cms.InputTag("L1GTProducer", "GMTTkMuons"),
+        minPt = cms.double(3),
+        minEta = cms.double(-2.4),
+        maxEta = cms.double(2.4)
+    ),
+    collection3 = cms.PSet(
+        tag = cms.InputTag("L1GTProducer", "GMTTkMuons"),
+        minPt = cms.double(3),
+        minEta = cms.double(-2.4),
+        maxEta = cms.double(2.4)
+    ),
+    delta12 = cms.PSet(
+        maxDz = cms.double(1)
+    ),
+    delta13 = cms.PSet(
+        maxDz = cms.double(1)
+    ),
+    delta23 = cms.PSet(
+        maxDz = cms.double(1)
+    )
+)
+process.pTripleTkMuon = cms.Path(process.TripleTkMuon)
+
+# TODO Some other missing seeds
+
+process.HadSinglePuppiJet = L1GTSingleObjectCond.clone(
+    tag =  cms.InputTag("L1GTProducer", "CL2Jets"),
+    minPt = cms.double(230),
+    minEta = cms.double(-2.4),
+    maxEta = cms.double(2.4)
+)
+process.pHadSinglePuppiJet = cms.Path(process.HadSinglePuppiJet)
+
+process.HadDoublePuppiJet = L1GTDoubleObjectCond.clone(
+    collection1 = cms.PSet(
+        tag = cms.InputTag("L1GTProducer", "CL2Jets"),
+        minPt = cms.double(112),
+        minEta = cms.double(-2.4),
+        maxEta = cms.double(2.4)
+    ),
+    collection2 = cms.PSet(
+        tag = cms.InputTag("L1GTProducer", "CL2Jets"),
+        minPt = cms.double(112),
+        minEta = cms.double(-2.4),
+        maxEta = cms.double(2.4)
+    ),
+    maxDEta = cms.double(1.6),
+)
+process.pHadDoublePuppiJet = cms.Path(process.HadDoublePuppiJet)
+
+# TODO some other seeds
+
+# ET miss seed
+
+process.PuppiMET = L1GTSingleObjectCond.clone(
+    tag = cms.InputTag("L1GTProducer", "CL2Jets"),
+    minPt = cms.double(200)
+)
+process.pPuppiMET = cms.Path(process.PuppiMET)
+
+process.VBFDoublePuppiJet = L1GTDoubleObjectCond.clone(
+    collection1 = cms.PSet(
+        tag = cms.InputTag("L1GTProducer", "CL2Jets"),
+        minPt = cms.double(160),
+        minEta = cms.double(-5),
+        maxEta = cms.double(5)
+    ),
+    collection2 = cms.PSet(
+        tag = cms.InputTag("L1GTProducer", "CL2Jets"),
+        minPt = cms.double(35),
+        minEta = cms.double(-5),
+        maxEta = cms.double(5)
+    ),
+    minInvMass = cms.double(620),
+)
+process.pVBFDoublePuppiJet = cms.Path(process.VBFDoublePuppiJet)
+
+
+# B-physics seeds from https://twiki.cern.ch/twiki/pub/CMS/PhaseIIL1TriggerMenuTools/L1Menu_emulators12_3_x_060522.pdf
 process.doubleTkMuon1 = L1GTDoubleObjectCond.clone(
     collection1 = cms.PSet(
         tag = cms.InputTag("L1GTProducer", "GMTTkMuons"),
