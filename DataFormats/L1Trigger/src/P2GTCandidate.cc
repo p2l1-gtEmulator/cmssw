@@ -52,59 +52,50 @@ namespace l1t {
         hwD0_(obj.hwD0()),
         hwBeta_(obj.hwBeta()) {}
 
-  P2GTCandidate P2GTCandidate::initPFJet(const PFJet& edmJet) {
-    l1gt::Jet gtJet = l1gt::Jet::unpack(const_cast<PFJet&>(edmJet).encodedJet());
-    P2GTCandidate gtCandiate;
-    gtCandiate.hwPT_ = gtJet.v3.pt.V.to_int();
-    gtCandiate.hwPhi_ = gtJet.v3.phi.V.to_int();
-    gtCandiate.hwEta_ = gtJet.v3.eta.V.to_int();
-    gtCandiate.hwZ0_ = gtJet.z0.V.to_int();
-
-    return gtCandiate;
+  P2GTCandidate::P2GTCandidate(const PFJet& obj) {
+    l1gt::Jet gtJet = l1gt::Jet::unpack(const_cast<PFJet&>(obj).encodedJet());
+    hwPT_ = gtJet.v3.pt.V.to_int();
+    hwPhi_ = gtJet.v3.phi.V.to_int();
+    hwEta_ = gtJet.v3.eta.V.to_int();
+    hwZ0_ = gtJet.z0.V.to_int();
   }
 
-  P2GTCandidate P2GTCandidate::initTkEm(const TkEm& edmTkEm) {
-    l1gt::Photon gtPhoton = l1ct::EGIsoObj::unpack(const_cast<TkEm&>(edmTkEm).egBinaryWord<96>()).toGT();
-    P2GTCandidate gtCandiate;
-    gtCandiate.hwPT_ = gtPhoton.v3.pt.V.to_int();
-    gtCandiate.hwPhi_ = gtPhoton.v3.phi.V.to_int();
-    gtCandiate.hwEta_ = gtPhoton.v3.eta.V.to_int();
-    gtCandiate.hwIso_ = gtPhoton.isolation.V.to_int();
-    gtCandiate.hwQual_ = gtPhoton.quality.V.to_int();
-
-    return gtCandiate;
+  P2GTCandidate::P2GTCandidate(const TkEm& obj) {
+    l1gt::Photon gtPhoton = l1ct::EGIsoObj::unpack(const_cast<TkEm&>(obj).egBinaryWord<96>()).toGT();
+    hwPT_ = gtPhoton.v3.pt.V.to_int();
+    hwPhi_ = gtPhoton.v3.phi.V.to_int();
+    hwEta_ = gtPhoton.v3.eta.V.to_int();
+    hwIso_ = gtPhoton.isolation.V.to_int();
+    hwQual_ = gtPhoton.quality.V.to_int();
   }
 
-  P2GTCandidate P2GTCandidate::initTkElectron(const TkElectron& edmTkElectron) {
-    l1gt::Electron gtElectron =
-        l1ct::EGIsoEleObj::unpack(const_cast<TkElectron&>(edmTkElectron).egBinaryWord<96>()).toGT();
-    P2GTCandidate gtCandiate;
-    gtCandiate.hwPT_ = gtElectron.v3.pt.V.to_int();
-    gtCandiate.hwPhi_ = gtElectron.v3.phi.V.to_int();
-    gtCandiate.hwEta_ = gtElectron.v3.eta.V.to_int();
-    gtCandiate.hwZ0_ = gtElectron.z0.V.to_int();
-    gtCandiate.hwIso_ = gtElectron.isolation.V.to_int();
-    gtCandiate.hwQual_ = gtElectron.quality.V.to_int();
-    gtCandiate.hwCharge_ = gtElectron.charge.V.to_int();
-
-    return gtCandiate;
+  P2GTCandidate::P2GTCandidate(const TkElectron& obj) {
+    l1gt::Electron gtElectron{
+        true, {obj.pt(), obj.phi() / l1gt::Scales::ETAPHI_LSB, obj.eta() / l1gt::Scales::ETAPHI_LSB}, 0, 0, 0, 0};
+    hwPT_ = gtElectron.v3.pt.V.to_int();
+    hwPhi_ = gtElectron.v3.phi.V.to_int();
+    hwEta_ = gtElectron.v3.eta.V.to_int();
+    hwZ0_ = gtElectron.z0.V.to_int();
+    hwIso_ = gtElectron.isolation.V.to_int();
+    hwQual_ = gtElectron.quality.V.to_int();
+    hwCharge_ = gtElectron.charge.V.to_int();
   }
 
-  P2GTCandidate::P2GTCandidate(const PFJet& obj) : P2GTCandidate(initPFJet(obj)) {}
-  P2GTCandidate::P2GTCandidate(const TkEm& obj) : P2GTCandidate(initTkEm(obj)) {}
-  P2GTCandidate::P2GTCandidate(const TkElectron& obj) : P2GTCandidate(initTkElectron(obj)) {}
+  P2GTCandidate::P2GTCandidate(const EtSum& met) {
+    l1gt::Sum sum{true /* valid */, met.pt(), met.phi() / l1gt::Scales::ETAPHI_LSB, 0 /* scalar sum */};
 
-  P2GTCandidate P2GTCandidate::initPfMET(const EtSum& obj) {
-    l1gt::Sum sum{true /* valid */, obj.pt(), obj.phi() / l1gt::Scales::ETAPHI_LSB, 0 /* scalar sum */};
-
-    P2GTCandidate gtCandiate;
-    gtCandiate.hwPT_ = sum.vector_pt.V.to_int();
-    gtCandiate.hwPhi_ = sum.vector_phi.V.to_int();
-    gtCandiate.hwSca_sum_ = sum.scalar_pt.V.to_int();
-    return gtCandiate;
+    hwPT_ = sum.vector_pt.V.to_int();
+    hwPhi_ = sum.vector_phi.V.to_int();
+    hwSca_sum_ = sum.scalar_pt.V.to_int();
   }
 
-  P2GTCandidate::P2GTCandidate(const EtSum& obj) : P2GTCandidate(initPfMET(obj)) {}
+  P2GTCandidate::P2GTCandidate(const EtSum& ht, const EtSum& mht) {
+    l1gt::Sum sum{true /* valid */, mht.pt(), mht.phi() / l1gt::Scales::ETAPHI_LSB, ht.pt()};
+
+    hwPT_ = sum.vector_pt.V.to_int();
+    hwPhi_ = sum.vector_phi.V.to_int();
+    hwSca_sum_ = sum.scalar_pt.V.to_int();
+  }
 
   bool P2GTCandidate::operator==(const P2GTCandidate& rhs) const {
     return hwPT_ == rhs.hwPT_ && hwPhi_ == rhs.hwPhi_ && hwEta_ == rhs.hwEta_ && hwZ0_ == rhs.hwZ0_ &&
