@@ -108,7 +108,12 @@ namespace l1t {
       constexpr int HW_PI = 1 << (P2GTCandidate::hwPhi_t::width - 1);  // assumes phi in [-pi, pi)
 
       // Ensure dPhi is always the smaller angle, i.e. always between [0, pi]
-      uint32_t dPhi = HW_PI - abs(abs(obj1.hwPhi().to_int() - obj2.hwPhi().to_int()) - HW_PI);
+      std::optional<uint32_t> dPhi;
+
+      if (minDPhi_ || maxDPhi_ || minDRSquared_ || maxDRSquared_ || minInvMassSqrDiv2_ || maxInvMassSqrDiv2_ ||
+          minTransMassSqrDiv2_ || maxTransMassSqrDiv2_ || minPTSquared_ || maxPTSquared_) {
+        dPhi = HW_PI - abs(abs(obj1.hwPhi().to_int() - obj2.hwPhi().to_int()) - HW_PI);
+      }
 
       res &= minDPhi_ ? dPhi > minDPhi_ : true;
       res &= maxDPhi_ ? dPhi < maxDPhi_ : true;
@@ -120,7 +125,7 @@ namespace l1t {
       }
 
       if (minDRSquared_ || maxDRSquared_) {
-        uint32_t dRSquared = dEta.value() * dEta.value() + dPhi * dPhi;
+        uint32_t dRSquared = dEta.value() * dEta.value() + dPhi.value() * dPhi.value();
         res &= minDRSquared_ ? dRSquared > minDRSquared_ : true;
         res &= maxDRSquared_ ? dRSquared < maxDRSquared_ : true;
       }
@@ -136,9 +141,12 @@ namespace l1t {
       }
 
       // Optimization: (cos(x + pi) = -cos(x), x in [0, pi))
-      int32_t lutCosDPhi = dPhi >= HW_PI ? -cosPhiLUT_[dPhi] : cosPhiLUT_[dPhi];
+      int32_t lutCosDPhi;
+      if (dPhi) {
+        lutCosDPhi = dPhi >= HW_PI ? -cosPhiLUT_[dPhi.value()] : cosPhiLUT_[dPhi.value()];
+      }
 
-      if (enable_sanity_checks_ && dEta) {
+      if (enable_sanity_checks_ && dEta && dPhi) {
         // Check whether the LUT error is smaller or equal than the expected maximum LUT error
         double coshEtaLUTMax =
             dEta < L1TSingleInOutLUT::DETA_LUT_SPLIT ? coshEtaLUT_.hwMax_error() : coshEtaLUT2_.hwMax_error();
@@ -152,11 +160,11 @@ namespace l1t {
                                     << ", dEta: " << dEta.value() << ", scale: " << etaLUTScale;
         }
 
-        if (std::abs(lutCosDPhi - cosPhiLUT_.output_scale() * std::cos(dPhi * scales_.phi_lsb())) >
+        if (std::abs(lutCosDPhi - cosPhiLUT_.output_scale() * std::cos(dPhi.value() * scales_.phi_lsb())) >
             cosPhiLUT_.hwMax_error()) {
           edm::LogError("COS LUT") << "Difference larger than max LUT error: " << cosPhiLUT_.hwMax_error()
                                    << ", lut: " << lutCosDPhi
-                                   << ", calc: " << cosPhiLUT_.output_scale() * std::cos(dPhi * scales_.phi_lsb());
+                                   << ", calc: " << cosPhiLUT_.output_scale() * std::cos(dPhi.value() * scales_.phi_lsb());
         }
       }
 
@@ -186,7 +194,7 @@ namespace l1t {
           double precInvMass =
               scales_.pT_lsb() *
               std::sqrt(2 * obj1.hwPT().to_double() * obj2.hwPT().to_double() *
-                        (std::cosh(dEta.value() * scales_.eta_lsb()) - std::cos(dPhi * scales_.phi_lsb())));
+                        (std::cosh(dEta.value() * scales_.eta_lsb()) - std::cos(dPhi.value() * scales_.phi_lsb())));
 
           double lutInvMass =
               scales_.pT_lsb() * std::sqrt(2 * static_cast<double>(invMassSqrDiv2) /
