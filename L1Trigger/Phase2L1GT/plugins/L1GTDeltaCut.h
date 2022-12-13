@@ -96,10 +96,14 @@ namespace l1t {
                       InvariantMassErrorCollection& massErrors) const {
       bool res = true;
 
-      uint32_t dEta = (obj1.hwEta() > obj2.hwEta()) ? obj1.hwEta().to_int() - obj2.hwEta().to_int()
-                                                    : obj2.hwEta().to_int() - obj1.hwEta().to_int();
-      res &= minDEta_ ? dEta > minDEta_ : true;
-      res &= maxDEta_ ? dEta < maxDEta_ : true;
+      std::optional<uint32_t> dEta;
+
+      if (minDEta_ || maxDEta_ || minDRSquared_ || maxDRSquared_ || minInvMassSqrDiv2_ || maxInvMassSqrDiv2_) {
+        dEta = (obj1.hwEta() > obj2.hwEta()) ? obj1.hwEta().to_int() - obj2.hwEta().to_int()
+                                             : obj2.hwEta().to_int() - obj1.hwEta().to_int();
+        res &= minDEta_ ? dEta > minDEta_ : true;
+        res &= maxDEta_ ? dEta < maxDEta_ : true;
+      }
 
       constexpr int HW_PI = 1 << (P2GTCandidate::hwPhi_t::width - 1);  // assumes phi in [-pi, pi)
 
@@ -116,7 +120,7 @@ namespace l1t {
       }
 
       if (minDRSquared_ || maxDRSquared_) {
-        uint32_t dRSquared = dEta * dEta + dPhi * dPhi;
+        uint32_t dRSquared = dEta.value() * dEta.value() + dPhi * dPhi;
         res &= minDRSquared_ ? dRSquared > minDRSquared_ : true;
         res &= maxDRSquared_ ? dRSquared < maxDRSquared_ : true;
       }
@@ -124,25 +128,28 @@ namespace l1t {
       res &= os_ ? obj1.hwCharge() != obj2.hwCharge() : true;
       res &= ss_ ? obj1.hwCharge() == obj2.hwCharge() : true;
 
-      int32_t lutCoshDEta = dEta < L1TSingleInOutLUT::DETA_LUT_SPLIT
-                                ? coshEtaLUT_[dEta]
-                                : coshEtaLUT2_[dEta - L1TSingleInOutLUT::DETA_LUT_SPLIT];
+      int32_t lutCoshDEta;
+      if (dEta) {
+        lutCoshDEta = dEta < L1TSingleInOutLUT::DETA_LUT_SPLIT
+                          ? coshEtaLUT_[dEta.value()]
+                          : coshEtaLUT2_[dEta.value() - L1TSingleInOutLUT::DETA_LUT_SPLIT];
+      }
 
       // Optimization: (cos(x + pi) = -cos(x), x in [0, pi))
       int32_t lutCosDPhi = dPhi >= HW_PI ? -cosPhiLUT_[dPhi] : cosPhiLUT_[dPhi];
 
-      if (enable_sanity_checks_) {
+      if (enable_sanity_checks_ && dEta) {
         // Check whether the LUT error is smaller or equal than the expected maximum LUT error
         double coshEtaLUTMax =
             dEta < L1TSingleInOutLUT::DETA_LUT_SPLIT ? coshEtaLUT_.hwMax_error() : coshEtaLUT2_.hwMax_error();
         double etaLUTScale =
             dEta < L1TSingleInOutLUT::DETA_LUT_SPLIT ? coshEtaLUT_.output_scale() : coshEtaLUT2_.output_scale();
 
-        if (std::abs(lutCoshDEta - etaLUTScale * std::cosh(dEta * scales_.eta_lsb())) > coshEtaLUTMax) {
+        if (std::abs(lutCoshDEta - etaLUTScale * std::cosh(dEta.value() * scales_.eta_lsb())) > coshEtaLUTMax) {
           edm::LogError("COSH LUT") << "Difference larger than max LUT error: " << coshEtaLUTMax
                                     << ", lut: " << lutCoshDEta
-                                    << ", calc: " << etaLUTScale * std::cosh(dEta * scales_.eta_lsb())
-                                    << ", dEta: " << dEta << ", scale: " << etaLUTScale;
+                                    << ", calc: " << etaLUTScale * std::cosh(dEta.value() * scales_.eta_lsb())
+                                    << ", dEta: " << dEta.value() << ", scale: " << etaLUTScale;
         }
 
         if (std::abs(lutCosDPhi - cosPhiLUT_.output_scale() * std::cos(dPhi * scales_.phi_lsb())) >
@@ -177,8 +184,9 @@ namespace l1t {
 
         if (inv_mass_checks_) {
           double precInvMass =
-              scales_.pT_lsb() * std::sqrt(2 * obj1.hwPT().to_double() * obj2.hwPT().to_double() *
-                                           (std::cosh(dEta * scales_.eta_lsb()) - std::cos(dPhi * scales_.phi_lsb())));
+              scales_.pT_lsb() *
+              std::sqrt(2 * obj1.hwPT().to_double() * obj2.hwPT().to_double() *
+                        (std::cosh(dEta.value() * scales_.eta_lsb()) - std::cos(dPhi * scales_.phi_lsb())));
 
           double lutInvMass =
               scales_.pT_lsb() * std::sqrt(2 * static_cast<double>(invMassSqrDiv2) /
