@@ -83,9 +83,9 @@ namespace l1t {
           maxTransMassSqrDiv2_(getOptionalParam<double, double>(
               "maxTransMass", config, std::bind(&L1GTScales::to_hw_TransMassSqrDiv2, scales, std::placeholders::_1))),
           minPTSquared_(getOptionalParam<double, double>(
-              "minPt", config, std::bind(&L1GTScales::to_hw_PtSquared, scales, std::placeholders::_1))),
+              "minCombPt", config, std::bind(&L1GTScales::to_hw_PtSquared, scales, std::placeholders::_1))),
           maxPTSquared_(getOptionalParam<double, double>(
-              "maxPt", config, std::bind(&L1GTScales::to_hw_PtSquared, scales, std::placeholders::_1))),
+              "maxCombPt", config, std::bind(&L1GTScales::to_hw_PtSquared, scales, std::placeholders::_1))),
           os_(config.exists("os") ? config.getParameter<bool>("os") : false),
           ss_(config.exists("ss") ? config.getParameter<bool>("ss") : false),
           enable_sanity_checks_(enable_sanity_checks),
@@ -250,8 +250,8 @@ namespace l1t {
       desc.addOptional<double>("maxInvMass");
       desc.addOptional<double>("minTransMass");
       desc.addOptional<double>("maxTransMass");
-      desc.addOptional<double>("minPt");
-      desc.addOptional<double>("maxPt");
+      desc.addOptional<double>("minCombPt");
+      desc.addOptional<double>("maxCombPt");
       desc.addOptional<bool>("os", false);
       desc.addOptional<bool>("ss", false);
     }

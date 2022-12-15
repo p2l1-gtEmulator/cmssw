@@ -1,10 +1,17 @@
 
-cond_{{condition_name}} : entity work.p2gt_doubleObjCond
+cond_{{condition_name}} : entity work.p2gt_tripleObjCond
 generic map(
-  {% if objects_first != objects_second %}
-  coll_correl     => DIFFERENT,
-  {%- else %}
+
+  {% if (objects_first == objects_second) and (objects_first != objects_third) and (objects_second != objects_third) %}
   coll_correl     => SAME12,
+  {% elif (objects_first != objects_second) and (objects_first == objects_third) and (objects_second != objects_third) %}
+  coll_correl     => SAME13,
+  {% elif (objects_first != objects_second) and (objects_first != objects_third) and (objects_second == objects_third) %}
+  coll_correl     => SAME13,
+  {% elif (objects_first == objects_second) and (objects_first == objects_third) and (objects_second == objects_third) %}
+  coll_correl     => SAME123,
+  {%- else %}
+  coll_correl     => DIFFERENT,
   {%- endif %}
   {% for key, value in cuts.items() +%}
   {% if value.hwcut[0] is sameas true or value is sameas false %}
@@ -28,6 +35,9 @@ port map(
   object1       => objects({{objects_first}}),
   {% if objects_first != objects_second %}
   object2       => objects({{objects_second}}),
+  {% endif %}
+  {% if (objects_second != objects_third) and (objects_first != objects_third) %}
+  object3       => objects({{objects_third}}),
   {% endif %}
   algo_bit_out  => {{algo_bit_name}} 
 );
