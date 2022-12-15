@@ -82,6 +82,7 @@ namespace l1t {
     P2GTCandidate(const TkElectron&);
 
     P2GTCandidate(const EtSum&);
+    P2GTCandidate(const EtSum&, const EtSum&);
 
     void setHwPT(hwPT_t hwPT) { hwPT_ = hwPT.to_int(); }
     void setHwPhi(hwPhi_t hwPhi) { hwPhi_ = hwPhi.to_int(); }
@@ -255,11 +256,6 @@ namespace l1t {
     bool operator!=(const P2GTCandidate& rhs) const;
 
   private:
-    static P2GTCandidate initPFJet(const PFJet&);
-    static P2GTCandidate initTkEm(const TkEm&);
-    static P2GTCandidate initTkElectron(const TkElectron&);
-    static P2GTCandidate initPfMET(const EtSum&);
-
     OptionalInt hwPT_;
     OptionalInt hwPhi_;
     OptionalInt hwEta_;

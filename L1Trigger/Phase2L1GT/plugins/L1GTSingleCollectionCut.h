@@ -31,6 +31,8 @@ namespace l1t {
               "minZ0", config, std::bind(&L1GTScales::to_hw_z0, scales, std::placeholders::_1))),
           maxZ0_(getOptionalParam<int, double>(
               "maxZ0", config, std::bind(&L1GTScales::to_hw_z0, scales, std::placeholders::_1))),
+          minScalarSumPt_(getOptionalParam<int, double>(
+              "minScalarSumPt", config, std::bind(&L1GTScales::to_hw_pT, scales, std::placeholders::_1))),
           qual_(getOptionalParam<unsigned int>("qual", config)),
           iso_(getOptionalParam<unsigned int>("iso", config)) {}
 
@@ -48,6 +50,8 @@ namespace l1t {
       result &= minZ0_ ? (obj.hwZ0() > minZ0_) : true;
       result &= maxZ0_ ? (obj.hwZ0() < maxZ0_) : true;
 
+      result &= minScalarSumPt_ ? (obj.hwSca_sum() > minScalarSumPt_) : true;
+
       result &= qual_ ? (obj.hwQual() == qual_) : true;
       result &= iso_ ? (obj.hwIso() == iso_) : true;
 
@@ -63,6 +67,7 @@ namespace l1t {
       desc.addOptional<double>("maxPhi");
       desc.addOptional<double>("minZ0");
       desc.addOptional<double>("maxZ0");
+      desc.addOptional<double>("minScalarSumPt");
       desc.addOptional<unsigned int>("qual");
       desc.addOptional<unsigned int>("iso");
     }
@@ -78,6 +83,7 @@ namespace l1t {
     const std::optional<int> maxPhi_;
     const std::optional<int> minZ0_;
     const std::optional<int> maxZ0_;
+    const std::optional<int> minScalarSumPt_;
     const std::optional<int> qual_;
     const std::optional<int> iso_;
   };

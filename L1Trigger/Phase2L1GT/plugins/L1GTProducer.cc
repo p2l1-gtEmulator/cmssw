@@ -54,6 +54,7 @@ private:
   const edm::InputTag cl2PhotonTag_;
   const edm::InputTag cl2ElectronTag_;
   const edm::InputTag cl2EtSumTag_;
+  const edm::InputTag cl2HtSumTag_;
 };
 
 L1GTProducer::L1GTProducer(const edm::ParameterSet &config)
@@ -66,7 +67,8 @@ L1GTProducer::L1GTProducer(const edm::ParameterSet &config)
       cl2JetTag_(config.getParameter<edm::InputTag>("CL2Jets")),
       cl2PhotonTag_(config.getParameter<edm::InputTag>("CL2Photons")),
       cl2ElectronTag_(config.getParameter<edm::InputTag>("CL2Electrons")),
-      cl2EtSumTag_(config.getParameter<edm::InputTag>("CL2EtSum")) {
+      cl2EtSumTag_(config.getParameter<edm::InputTag>("CL2EtSum")),
+      cl2HtSumTag_(config.getParameter<edm::InputTag>("CL2HtSum")) {
   consumes<TkJetWordCollection>(gttPromptJetTag_);
   consumes<TkJetWordCollection>(gttDisplacedJetTag_);
   consumes<VertexWordCollection>(gttPrimaryVertexTag_);
@@ -79,6 +81,7 @@ L1GTProducer::L1GTProducer(const edm::ParameterSet &config)
   consumes<TkEmCollection>(cl2PhotonTag_);
   consumes<TkElectronCollection>(cl2ElectronTag_);
   consumes<std::vector<l1t::EtSum>>(cl2EtSumTag_);
+  consumes<std::vector<l1t::EtSum>>(cl2HtSumTag_);
 
   produces<P2GTCandidateCollection>("GTTPromptJets");
   produces<P2GTCandidateCollection>("GTTDisplacedJets");
@@ -92,6 +95,7 @@ L1GTProducer::L1GTProducer(const edm::ParameterSet &config)
   produces<P2GTCandidateCollection>("CL2Photons");
   produces<P2GTCandidateCollection>("CL2Electrons");
   produces<P2GTCandidateCollection>("CL2EtSum");
+  produces<P2GTCandidateCollection>("CL2HtSum");
 }
 
 void L1GTProducer::fillDescriptions(edm::ConfigurationDescriptions &description) {
@@ -108,6 +112,7 @@ void L1GTProducer::fillDescriptions(edm::ConfigurationDescriptions &description)
   desc.addOptional<edm::InputTag>("CL2Photons");
   desc.addOptional<edm::InputTag>("CL2Electrons");
   desc.addOptional<edm::InputTag>("CL2EtSum");
+  desc.addOptional<edm::InputTag>("CL2HtSum");
 
   description.addWithDefaultLabel(desc);
 }
@@ -131,6 +136,14 @@ static void produceByTag(const std::string &productName, const edm::InputTag &ta
   event.put(std::move(outputCollection), productName);
 }
 
+static void produceCl2HtSum(const std::string &productName, const edm::InputTag &tag, edm::Event &event) {
+  std::unique_ptr<P2GTCandidateCollection> outputCollection = std::make_unique<P2GTCandidateCollection>();
+  edm::Handle<std::vector<EtSum>> htCollection;
+  event.getByLabel(tag, htCollection);
+  outputCollection->emplace_back(P2GTCandidate(htCollection->at(0), htCollection->at(1)));
+  event.put(std::move(outputCollection), productName);
+}
+
 void L1GTProducer::produce(edm::Event &event, const edm::EventSetup &setup) {
   produceByTag<TkJetWordCollection>("GTTPromptJets", gttPromptJetTag_, event);
   produceByTag<TkJetWordCollection>("GTTDisplacedJets", gttDisplacedJetTag_, event);
@@ -144,6 +157,7 @@ void L1GTProducer::produce(edm::Event &event, const edm::EventSetup &setup) {
   produceByTag<TkEmCollection>("CL2Photons", cl2PhotonTag_, event);
   produceByTag<TkElectronCollection>("CL2Electrons", cl2ElectronTag_, event);
   produceByTag<std::vector<EtSum>, 1>("CL2EtSum", cl2EtSumTag_, event);
+  produceCl2HtSum("CL2HtSum", cl2HtSumTag_, event);
 }
 
 DEFINE_FWK_MODULE(L1GTProducer);
