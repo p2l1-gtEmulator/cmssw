@@ -120,7 +120,7 @@ bool L1GTQuadObjectCond::filter(edm::Event& event, const edm::EventSetup& setup)
   for (std::size_t idx1 = 0; idx1 < col1->size(); ++idx1) {
     for (std::size_t idx2 = 0; idx2 < col2->size(); ++idx2) {
       for (std::size_t idx3 = 0; idx3 < col3->size(); ++idx3) {
-        for (std::size_t idx4 = 0; idx3 < col3->size(); ++idx3) {
+        for (std::size_t idx4 = 0; idx4 < col4->size(); ++idx4) {
           // If we're looking at the same collection then we shouldn't use the same object in one comparison.
           if (col1.product() == col2.product() && idx1 == idx2) {
             continue;
