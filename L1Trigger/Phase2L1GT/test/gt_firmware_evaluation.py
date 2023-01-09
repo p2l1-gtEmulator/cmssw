@@ -109,7 +109,7 @@ process._doubleMu_11_9_combPt_19 = L1GTDoubleObjectCond.clone(
         tag=cms.InputTag("GTProducer", "GMTTkMuons"),
         minPt=cms.double(9),
     ),
-    minPt=cms.double(19)
+    minCombPt=cms.double(19)
 )
 
 process._doubleMuEl_11_9_SS = L1GTDoubleObjectCond.clone(

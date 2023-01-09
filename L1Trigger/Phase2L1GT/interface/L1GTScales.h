@@ -47,7 +47,7 @@ namespace l1t {
     double to_hw_InvMassSqrDiv2(double value) const { return value * value / (2 * pT_lsb_ * pT_lsb_); }
     double to_hw_TransMassSqrDiv2(double value) const { return value * value / (2 * pT_lsb_ * pT_lsb_); }
 
-    double to_hw_PtSquared(double value) const { return value * value / pT_lsb_ * pT_lsb_; }
+    double to_hw_PtSquared(double value) const { return value * value / (pT_lsb_ * pT_lsb_); }
 
     double pT_lsb() const { return pT_lsb_; }
     double phi_lsb() const { return phi_lsb_; }
