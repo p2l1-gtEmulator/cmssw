@@ -160,8 +160,8 @@ process.p2gtAlgoBlock = l1tGTAlgoBlock.clone(
 process.out = cms.OutputModule("PoolOutputModule",
 outputCommands = cms.untracked.vstring('drop *',
         'keep *_l1tGTProducer_*_L1TEmulation',
-        'keep l1tP2GTCandidatesl1tP2GTCandidatel1tP2GTCandidatesl1tP2GTCandidateedmrefhelperFindUsingAdvanceedmRefs_*_*_L1TEmulation',
-        'keep *_TriggerResults_*_L1TEmulation'
+        'keep *_TriggerResults_*_L1TEmulation',
+        'keep *_p2gtAlgoBlock_*_L1TEmulation'
     ),
     fileName=cms.untracked.string("l1t_emulation.root")
 )
