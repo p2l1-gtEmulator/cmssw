@@ -123,7 +123,7 @@ process.DoubleJet90x30 = l1tGTDoubleObjectCond.clone(
         minPt = cms.double(30)
     ),
 )
-process.pDoubleJet90x30 = cms.Path(process.DoubleJet90x30)
+process.pDoubleJet90_30 = cms.Path(process.DoubleJet90x30)
 
 process.DoubleJet30MassMin620 = l1tGTDoubleObjectCond.clone(
     collection1 = cms.PSet(
@@ -140,7 +140,7 @@ process.pDoubleJet30_Mass_Min620 = cms.Path(process.DoubleJet30MassMin620)
 
 
 process.DoubleJet90x30xDoubleJet30MassMin620 = cms.EDFilter("PathCombineFilter",
-    logicalExpression = cms.string("pDoubleJet90x30 and pDoubleJet30_Mass_Min620")
+    logicalExpression = cms.string("pDoubleJet90_30 and pDoubleJet30_Mass_Min620")
 )
 process.pDoubleJet_90_30_DoubleJet30_Mass_Min620 = cms.Path(process.DoubleJet90x30xDoubleJet30MassMin620)
 
