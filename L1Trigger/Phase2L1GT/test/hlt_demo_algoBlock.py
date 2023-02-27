@@ -144,7 +144,8 @@ process.DoubleJet30MassMin620 = l1tGTDoubleObjectCond.clone(
     minInvMass = cms.double(620)
 )
 process.pDoubleJet30_Mass_Min620 = cms.Path(process.DoubleJet30MassMin620)
-algorithms += cms.PSet(expression = cms.string("pDoubleJet90x30 and pDoubleJet30_Mass_Min620"))
+algorithms += cms.PSet(name=cms.string("pDoubleJet_90_30_DoubleJet30_Mass_Min620"),
+                       expression=cms.string("pDoubleJet90x30 and pDoubleJet30_Mass_Min620"))
 
 ####### ALGOBLOCK ###########
 
