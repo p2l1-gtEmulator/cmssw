@@ -96,7 +96,7 @@ process.SingleTkMuon22 = l1tGTSingleObjectCond.clone(
     maxEta = cms.double(2.4)
 )
 process.pSingleTkMuon22 = cms.Path(process.SingleTkMuon22)
-algorithms += cms.PSet(expression = cms.string("pSingleTkMuon22"))
+algorithms.append(cms.PSet(expression = cms.string("pSingleTkMuon22")))
 
 ####### SEED 2 ###########
 
@@ -116,7 +116,7 @@ process.DoubleTkMuon15x7 = l1tGTDoubleObjectCond.clone(
     maxDz = cms.double(1),
 )
 process.pDoubleTkMuon15_7 = cms.Path(process.DoubleTkMuon15x7)
-algorithms += cms.PSet(expression = cms.string("pDoubleTkMuon15_7"))
+algorithms.append(cms.PSet(expression = cms.string("pDoubleTkMuon15_7")))
 
 ####### SEED 3 ###########
 
@@ -144,8 +144,8 @@ process.DoubleJet30MassMin620 = l1tGTDoubleObjectCond.clone(
     minInvMass = cms.double(620)
 )
 process.pDoubleJet30_Mass_Min620 = cms.Path(process.DoubleJet30MassMin620)
-algorithms += cms.PSet(name=cms.string("pDoubleJet_90_30_DoubleJet30_Mass_Min620"),
-                       expression=cms.string("pDoubleJet90_30 and pDoubleJet30_Mass_Min620"))
+algorithms.append(cms.PSet(name=cms.string("pDoubleJet_90_30_DoubleJet30_Mass_Min620"),
+                       expression=cms.string("pDoubleJet90_30 and pDoubleJet30_Mass_Min620")))
 
 ####### ALGOBLOCK ###########
 
