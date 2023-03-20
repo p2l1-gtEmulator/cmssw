@@ -33,7 +33,8 @@ process.options = cms.untracked.PSet(
 process.source = cms.Source("PoolSource",
                             fileNames=cms.untracked.vstring(
                                 '/store/mc/Phase2HLTTDRSummer20ReRECOMiniAOD/MinBias_TuneCP5_14TeV-pythia8/FEVT/PU200_111X_mcRun4_realistic_T15_v1-v1/110000/0016DCDC-FCE4-BC47-89AC-43EB1BB82D46.root',
-                            )
+                            ),
+                            inputCommands = cms.untracked.vstring("keep *","drop l1tTkPrimaryVertexs_L1TkPrimaryVertex_*_*")
 )
 
 process.maxEvents = cms.untracked.PSet(input=cms.untracked.int32(20))
@@ -83,9 +84,7 @@ from L1Trigger.Phase2L1GT.l1tGTTripleObjectCond_cfi import l1tGTTripleObjectCond
 from L1Trigger.Phase2L1GT.l1tGTQuadObjectCond_cfi import l1tGTQuadObjectCond
 from L1Trigger.Phase2L1GT.l1tGTQuadObjectCond_cfi import l1tGTQuadObjectCond
 
-from L1Trigger.Phase2L1GT.l1tGTAlgoBlock_cfi import l1tGTAlgoBlock
-
-algorithms = cms.VPSet()
+from L1Trigger.Phase2L1GT.l1tGTAlgoBlockProducer_cff import algorithms
 
 ####### SEED 1 ###########
 
