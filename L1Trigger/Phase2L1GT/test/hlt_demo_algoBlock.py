@@ -82,14 +82,13 @@ from L1Trigger.Phase2L1GT.l1tGTSingleObjectCond_cfi import l1tGTSingleObjectCond
 from L1Trigger.Phase2L1GT.l1tGTDoubleObjectCond_cfi import l1tGTDoubleObjectCond
 from L1Trigger.Phase2L1GT.l1tGTTripleObjectCond_cfi import l1tGTTripleObjectCond
 from L1Trigger.Phase2L1GT.l1tGTQuadObjectCond_cfi import l1tGTQuadObjectCond
-from L1Trigger.Phase2L1GT.l1tGTQuadObjectCond_cfi import l1tGTQuadObjectCond
 
 from L1Trigger.Phase2L1GT.l1tGTAlgoBlockProducer_cff import algorithms
 
 ####### SEED 1 ###########
 
 process.SingleTkMuon22 = l1tGTSingleObjectCond.clone(
-    tag =  cms.InputTag("L1GTProducer", "GMTTkMuons"),
+    tag =  cms.InputTag("l1tGTProducer", "GMTTkMuons"),
     minPt = cms.double(22),
     minEta = cms.double(-2.4),
     maxEta = cms.double(2.4)
@@ -101,13 +100,13 @@ algorithms.append(cms.PSet(expression = cms.string("pSingleTkMuon22")))
 
 process.DoubleTkMuon15x7 = l1tGTDoubleObjectCond.clone(
     collection1 = cms.PSet(
-        tag = cms.InputTag("L1GTProducer", "GMTTkMuons"),
+        tag = cms.InputTag("l1tGTProducer", "GMTTkMuons"),
         minPt = cms.double(14),
         minEta = cms.double(-2.4),
         maxEta = cms.double(2.4)
     ),
     collection2 = cms.PSet(
-        tag = cms.InputTag("L1GTProducer", "GMTTkMuons"),
+        tag = cms.InputTag("l1tGTProducer", "GMTTkMuons"),
         minPt = cms.double(6),
         minEta = cms.double(-2.4),
         maxEta = cms.double(2.4)
@@ -146,12 +145,6 @@ process.pDoubleJet30_Mass_Min620 = cms.Path(process.DoubleJet30MassMin620)
 algorithms.append(cms.PSet(name=cms.string("pDoubleJet_90_30_DoubleJet30_Mass_Min620"),
                        expression=cms.string("pDoubleJet90_30 and pDoubleJet30_Mass_Min620")))
 
-####### ALGOBLOCK ###########
-
-process.p2gtAlgoBlock = l1tGTAlgoBlock.clone(
-    algorithms = algorithms
-) 
-
 ############################################################
 # Analyzable output
 ############################################################
@@ -159,8 +152,9 @@ process.p2gtAlgoBlock = l1tGTAlgoBlock.clone(
 process.out = cms.OutputModule("PoolOutputModule",
 outputCommands = cms.untracked.vstring('drop *',
         'keep *_l1tGTProducer_*_L1TEmulation',
-        'keep *_TriggerResults_*_L1TEmulation',
-        'keep *_p2gtAlgoBlock_*_L1TEmulation'
+        'keep l1tP2GTCandidatesl1tP2GTCandidatel1tP2GTCandidatesl1tP2GTCandidateedmrefhelperFindUsingAdvanceedmRefs_*_*_L1TEmulation',
+        'keep *_l1tGTAlgoBlockProducer_*_L1TEmulation',
+        'keep *_TriggerResults_*_L1TEmulation'
     ),
     fileName=cms.untracked.string("l1t_emulation.root")
 )
