@@ -94,13 +94,23 @@ process.L1simulation_step = cms.Path(process.SimL1Emulator)
 process.endjob_step = cms.EndPath(process.endOfProcess)
 process.FEVTDEBUGHLToutput_step = cms.EndPath(process.FEVTDEBUGHLToutput)
 
+process.out = cms.OutputModule("PoolOutputModule",
+outputCommands = cms.untracked.vstring('drop *',
+        'keep *_l1tGTProducer_*_L1TEmulation',
+        'keep *_l1tGTAlgoBlockProducer_*_L1TEmulation'
+    ),
+    fileName=cms.untracked.string("l1t_emulation.root")
+)
+
+process.pOut = cms.EndPath(process.out)
+
 
 process.load('L1Trigger.Phase2L1GT.l1tGTMenu_cfi')
 
 from L1Trigger.Phase2L1GT.l1tGTAlgoBlockProducer_cff import collectAlgorithmPaths
 
 # Schedule definition
-process.schedule = cms.Schedule(process.raw2digi_step,process.L1simulation_step, *collectAlgorithmPaths(process), process.endjob_step,process.FEVTDEBUGHLToutput_step)
+process.schedule = cms.Schedule(process.raw2digi_step,process.L1simulation_step, *collectAlgorithmPaths(process), process.endjob_step, process.pOut)
 from PhysicsTools.PatAlgos.tools.helpers import associatePatAlgosToolsTask
 associatePatAlgosToolsTask(process)
 
