@@ -29,7 +29,7 @@ process.source = cms.Source("PoolSource",
                             ),
 )
 
-process.maxEvents = cms.untracked.PSet(input=cms.untracked.int32(100))
+process.maxEvents = cms.untracked.PSet(input=cms.untracked.int32(300))
 
 
 process.options = cms.untracked.PSet(

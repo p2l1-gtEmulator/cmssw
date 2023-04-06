@@ -90,7 +90,7 @@ algorithms.append(cms.PSet(expression = cms.string("pSingleTkEle36")))
 
 SingleIsoTkEle28Barrel = l1tGTSingleObjectCond.clone(
     tag = cms.InputTag("l1tGTProducer", "CL2Electrons"),
-    minPt = cms.double(23),
+    minPt = cms.double(15),  #was 23
     minEta = cms.double(-1.479),
     maxEta = cms.double(1.479),
     maxIso = cms.double(0.13),
@@ -100,10 +100,10 @@ algorithms.append(cms.PSet(expression = cms.string("pSingleIsoTkEle28Barrel")))
 
 SingleIsoTkEle28EndcapPos = l1tGTSingleObjectCond.clone(
     tag = cms.InputTag("l1tGTProducer", "CL2Electrons"),
-    minPt = cms.double(23),
+    minPt = cms.double(15), #was 23
     minEta = cms.double(1.479),
     maxEta = cms.double(2.4),
-    qual = cms.vuint32(0b0010),
+    #qual = cms.vuint32(0b0010),
     maxIso = cms.double(0.28)
 )
 pSingleIsoTkEle28EndcapPos = cms.Path(SingleIsoTkEle28EndcapPos) 
@@ -112,10 +112,10 @@ algorithms.append(cms.PSet(expression = cms.string("pSingleIsoTkEle28EndcapPos")
 
 SingleIsoTkEle28EndcapNeg = l1tGTSingleObjectCond.clone(
     tag = cms.InputTag("l1tGTProducer", "CL2Electrons"),
-    minPt = cms.double(23),
+    minPt = cms.double(15), #was 23
     minEta = cms.double(-2.4), 
     maxEta = cms.double(-1.479),
-    qual = cms.vuint32(0b0010),
+    #qual = cms.vuint32(0b0010),
     maxIso = cms.double(0.28)
 
 )
@@ -124,8 +124,22 @@ algorithms.append(cms.PSet(expression = cms.string("pSingleIsoTkEle28EndcapNeg")
 
 
 algorithms.append(cms.PSet(name=cms.string("pSingleIsoTkEle28"),
-                       expression=cms.string("pSingleIsoTkEle28Barrel or pSingleIsoTkEle28EndcapPos or pSingleIsoTkEle28EndcapNeg")))
+                       expression=cms.string("pSingleIsoTkEle28Barrel or (pSingleIsoTkEle28EndcapPos or pSingleIsoTkEle28EndcapNeg)")))
 
+
+SingleIsoTkEle28Endcap = l1tGTSingleObjectCond.clone(
+    tag = cms.InputTag("l1tGTProducer", "CL2Electrons"),
+    minPt = cms.double(15), #was 23
+    minEtaAbs = cms.double(1.479),
+    maxEtaAbs = cms.double(2.4),
+    #qual = cms.vuint32(0b0010),
+    maxIso = cms.double(0.28)
+)
+pSingleIsoTkEle28Endcap = cms.Path(SingleIsoTkEle28Endcap) 
+algorithms.append(cms.PSet(expression = cms.string("pSingleIsoTkEle28Endcap")))
+
+algorithms.append(cms.PSet(name=cms.string("pSingleIsoTkEle28V2"),
+                       expression=cms.string("pSingleIsoTkEle28Barrel or pSingleIsoTkEle28Endcap")))
 
 
 SingleIsoTkPho36Barrel = l1tGTSingleObjectCond.clone(
