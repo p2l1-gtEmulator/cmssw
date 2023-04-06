@@ -96,7 +96,7 @@ SingleIsoTkEle28Barrel = l1tGTSingleObjectCond.clone(
     maxIso = cms.double(0.13),
 )
 pSingleIsoTkEle28Barrel = cms.Path(SingleIsoTkEle28Barrel)
-algorithms.append(cms.PSet(expression = cms.string("pSingleIsoTkEle28Barrel")))
+#algorithms.append(cms.PSet(expression = cms.string("pSingleIsoTkEle28Barrel")))
 
 SingleIsoTkEle28Endcap = l1tGTSingleObjectCond.clone(
     tag = cms.InputTag("l1tGTProducer", "CL2Electrons"),
@@ -107,7 +107,7 @@ SingleIsoTkEle28Endcap = l1tGTSingleObjectCond.clone(
     maxIso = cms.double(0.28)
 )
 pSingleIsoTkEle28Endcap = cms.Path(SingleIsoTkEle28Endcap) 
-algorithms.append(cms.PSet(expression = cms.string("pSingleIsoTkEle28Endcap")))
+#algorithms.append(cms.PSet(expression = cms.string("pSingleIsoTkEle28Endcap")))
 
 algorithms.append(cms.PSet(name=cms.string("pSingleIsoTkEle28"),
                        expression=cms.string("pSingleIsoTkEle28Barrel or pSingleIsoTkEle28Endcap")))
