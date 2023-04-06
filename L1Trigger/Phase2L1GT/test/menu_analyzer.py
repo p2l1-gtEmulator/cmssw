@@ -68,8 +68,13 @@ if __name__ == "__main__":
             print(algo_blk.algoName(), algo_blk.decisionBeforeBxMaskAndPrescale())
 
             for obj in algo_blk.trigObjects():
-                print(" {}: pt {:3.1f} eta {:3.2f} phi {:3.2f}".format(
-                    object_name(obj.objectType()), obj.hwPT() * scale_parameter.pT_lsb.value(),
-                    obj.hwEta() * scale_parameter.eta_lsb.value(), obj.hwPhi() * scale_parameter.phi_lsb.value()))
+                #if obj.hwEta():
+                #    print(" {}: pt {:3.1f} eta {:3.2f} phi {:3.2f}".format(
+                #    object_name(obj.objectType()), obj.hwPT() * scale_parameter.pT_lsb.value(),
+                #    obj.hwEta() * scale_parameter.eta_lsb.value(), obj.hwPhi() * scale_parameter.phi_lsb.value()))
+                #else:
+                    print(" {}: pt {:3.1f} phi {:3.2f}".format(
+                    object_name(obj.objectType()), obj.hwPT() * scale_parameter.pT_lsb.value(), obj.hwPhi() * scale_parameter.phi_lsb.value()))
+
 
         print('*' * 80)

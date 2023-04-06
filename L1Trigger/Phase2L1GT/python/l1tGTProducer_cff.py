@@ -7,10 +7,11 @@ l1tGTProducer = cms.EDProducer(
     GTTPrimaryVert = cms.InputTag("l1tVertexFinderEmulator", "l1verticesEmulation"),
     GMTSaPromptMuons = cms.InputTag("l1tSAMuonsGmt", "promptSAMuons"),
     GMTSaDisplacedMuons = cms.InputTag("l1tSAMuonsGmt", "displacedSAMuons"),
-    GMTTkMuons = cms.InputTag("l1tTkMuonsGmt"),
+    GMTTkMuons = cms.InputTag("l1tTkMuonsGmt", ""),
     CL2Jets = cms.InputTag("l1tSCPFL1PuppiCorrectedEmulator"),
     CL2Electrons = cms.InputTag("l1tLayer2EG", "L1CtTkElectron"),
     CL2Photons = cms.InputTag("l1tLayer2EG", "L1CtTkEm"),
     CL2EtSum = cms.InputTag("l1tMETPFProducer"),
     CL2HtSum = cms.InputTag("l1tSCPFL1PuppiCorrectedEmulatorMHT")
 )
+

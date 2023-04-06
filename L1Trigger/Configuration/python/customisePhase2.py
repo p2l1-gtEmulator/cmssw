@@ -11,3 +11,7 @@ def addHcalTriggerPrimitives(process):
     process.load('SimCalorimetry.HcalTrigPrimProducers.hcaltpdigi_cff')
 
     return process
+
+
+
+
