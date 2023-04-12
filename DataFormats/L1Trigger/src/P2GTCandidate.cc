@@ -44,29 +44,29 @@ namespace l1t {
   }
 
   P2GTCandidate::P2GTCandidate(const SAMuon& obj, ObjectType objectType)
-      : hwPT_(obj.hwPt()),
-        hwPhi_(obj.hwPhi()),
-        hwEta_(obj.hwEta()),
-        hwZ0_(obj.hwZ0() << 7),
-        hwQual_(obj.hwQual()),
-        hwCharge_(obj.hwCharge()),
-        hwD0_(obj.hwD0()),
+      : hwPT_(obj.apPt()),
+        hwPhi_(obj.apPhi()),
+        hwEta_(obj.apEta()),
+        hwZ0_(obj.apZ0() << 7),
+        hwQual_(obj.apQual()),
+        hwCharge_(obj.apCharge()),
+        hwD0_(obj.apD0()),
         objectType_(objectType) {}
 
   P2GTCandidate::P2GTCandidate(const TrackerMuon& obj)
-      : hwPT_(obj.hwPt()),
-        hwPhi_(obj.hwPhi()),
-        hwEta_(obj.hwEta()),
-        hwZ0_(obj.hwZ0() << 7),
-        hwIso_(obj.hwIso()),
-        hwQual_(obj.hwQual()),
-        hwCharge_(obj.hwCharge()),
-        hwD0_(obj.hwD0()),
-        hwBeta_(obj.hwBeta()),
+      : hwPT_(obj.apPt()),
+        hwPhi_(obj.apPhi()),
+        hwEta_(obj.apEta()),
+        hwZ0_(obj.apZ0() << 7),
+        hwIso_(obj.apIso()),
+        hwQual_(obj.apQual()),
+        hwCharge_(obj.apCharge()),
+        hwD0_(obj.apD0()),
+        hwBeta_(obj.apBeta()),
         objectType_(GMTTkMuons) {}
 
   P2GTCandidate::P2GTCandidate(const PFJet& obj) {
-    l1gt::Jet gtJet = l1gt::Jet::unpack(const_cast<PFJet&>(obj).encodedJet());
+    l1gt::Jet gtJet = obj.getHWJetGT();
     hwPT_ = gtJet.v3.pt.V.to_int();
     hwPhi_ = gtJet.v3.phi.V.to_int();
     hwEta_ = gtJet.v3.eta.V.to_int();
