@@ -51,13 +51,13 @@ namespace l1t {
                                                     : std::vector<unsigned int>()),
           regionsMaxIso_(config.exists("regionsMaxIso") ? config.getParameter<std::vector<double>>("regionsMaxIso")
                                                         : std::vector<double>()),
-          regionsminPt_(config.exists("regionsminPt") ? config.getParameter<std::vector<double>>("regionsminPt")
+          regionsMinPt_(config.exists("regionsMinPt") ? config.getParameter<std::vector<double>>("regionsMinPt")
                                                  : std::vector<double>()),
           maxIso_(getOptionalParam<int, double>(
               "maxIso", config, std::bind(&L1GTScales::to_hw_isolation, scales, std::placeholders::_1))),
           oneOverIsoLUT_(lutConfig.getParameterSet("one_over_iso_lut")) {}
 
-    bool checkEtaDependendcuts(const std::vector<double> etavec,
+    bool checkEtadependentcuts(const std::vector<double> etavec,
                                const std::vector<unsigned int> qualvec,
                                const std::vector<double> isovec,
                                const std::vector<double> ptvec,
@@ -84,6 +84,9 @@ namespace l1t {
     }
 
     unsigned int atIndex(const std::vector<double> absetarange, const int objeta) const {
+      // Function that checks at which index the eta of the object is
+      // If object abs(eta) < absetarange[0] the function returns the last index,
+      // Might be undesired behaviour
       for (unsigned int i = 0; i < absetarange.size(); i++) {
         if (std::abs(objeta) >= scales_.to_hw_eta(absetarange[i]) &&
             std::abs(objeta) < scales_.to_hw_eta(absetarange[i + 1])) {
@@ -118,7 +121,7 @@ namespace l1t {
                         : true;
       result &= regionsAbsEtaLowerBounds_.empty()
                     ? true
-                    : checkEtaDependendcuts(regionsAbsEtaLowerBounds_, regionsQual_, regionsMaxIso_, regionsminPt_, obj);
+                    : checkEtadependentcuts(regionsAbsEtaLowerBounds_, regionsQual_, regionsMaxIso_, regionsMinPt_, obj);
       return result;
     }
 
@@ -138,7 +141,7 @@ namespace l1t {
       desc.addOptional<std::vector<double>>("regionsAbsEtaLowerBounds");
       desc.addOptional<std::vector<unsigned int>>("regionsQual");
       desc.addOptional<std::vector<double>>("regionsMaxIso");
-      desc.addOptional<std::vector<double>>("regionsminPt");
+      desc.addOptional<std::vector<double>>("regionsMinPt");
       desc.addOptional<double>("maxIso");
     }
 
@@ -161,7 +164,7 @@ namespace l1t {
     const std::vector<double> regionsAbsEtaLowerBounds_;
     const std::vector<unsigned int> regionsQual_;
     const std::vector<double> regionsMaxIso_;
-    const std::vector<double> regionsminPt_;
+    const std::vector<double> regionsMinPt_;
     const std::optional<double> maxIso_;
     const L1GTSingleInOutLUT oneOverIsoLUT_;
   };
