@@ -18,7 +18,7 @@ from L1Trigger.Phase2L1GT.l1tGTAlgoBlockProducer_cff import algorithms
 ####### MUON SEEDS ###########
 
 #        regionsAbsEtaLowerBounds=cms.vdouble(0,1.2,3),
-#        regionsminPt=cms.vdouble(12,14,15)
+#        regionsMinPt=cms.vdouble(12,14,15)
 
 
 SingleTkMuon22 = l1tGTSingleObjectCond.clone(
@@ -27,7 +27,7 @@ SingleTkMuon22 = l1tGTSingleObjectCond.clone(
     minEta = cms.double(-2.4),
     maxEta = cms.double(2.4),
     regionsAbsEtaLowerBounds=cms.vdouble(0,0.83,1.24),
-    regionsminPt=cms.vdouble(20.3,20.2,20.4)
+    regionsMinPt=cms.vdouble(20.3,20.2,20.4)
 )
 pSingleTkMuon22 = cms.Path(SingleTkMuon22)
 algorithms.append(cms.PSet(expression = cms.string("pSingleTkMuon22")))
@@ -39,7 +39,7 @@ DoubleTkMuon157 = l1tGTDoubleObjectCond.clone(
         minEta = cms.double(-2.4),
         maxEta = cms.double(2.4),
         regionsAbsEtaLowerBounds=cms.vdouble(0,0.83,1.24),
-        regionsminPt=cms.vdouble(13.6,13.5,13.6)
+        regionsMinPt=cms.vdouble(13.6,13.5,13.6)
 
     ),
     collection2 = cms.PSet(
@@ -48,7 +48,7 @@ DoubleTkMuon157 = l1tGTDoubleObjectCond.clone(
         minEta = cms.double(-2.4),
         maxEta = cms.double(2.4),
         regionsAbsEtaLowerBounds=cms.vdouble(0,0.83,1.24),
-        regionsminPt=cms.vdouble(5.9,5.8,6.0)
+        regionsMinPt=cms.vdouble(5.9,5.8,6.0)
     ),
     maxDz = cms.double(1),
 )
@@ -62,7 +62,7 @@ TripleTkMuon533 = l1tGTTripleObjectCond.clone(
         minEta = cms.double(-2.4),
         maxEta = cms.double(2.4),
         regionsAbsEtaLowerBounds=cms.vdouble(0,0.83,1.24),
-        regionsminPt=cms.vdouble(3.9,3.9,4.0)
+        regionsMinPt=cms.vdouble(3.9,3.9,4.0)
     ),
     collection2 = cms.PSet(
         tag = cms.InputTag("l1tGTProducer", "GMTTkMuons"),
@@ -70,7 +70,7 @@ TripleTkMuon533 = l1tGTTripleObjectCond.clone(
         minEta = cms.double(-2.4),
         maxEta = cms.double(2.4),
         regionsAbsEtaLowerBounds=cms.vdouble(0,0.83,1.24),
-        regionsminPt=cms.vdouble(2.0,2.0,2.1)
+        regionsMinPt=cms.vdouble(2.0,2.0,2.1)
     ),
     collection3 = cms.PSet(
         tag = cms.InputTag("l1tGTProducer", "GMTTkMuons"),
@@ -78,7 +78,7 @@ TripleTkMuon533 = l1tGTTripleObjectCond.clone(
         minEta = cms.double(-2.4),
         maxEta = cms.double(2.4),
         regionsAbsEtaLowerBounds=cms.vdouble(0,0.83,1.24),
-        regionsminPt=cms.vdouble(2.0,2.0,2.1)
+        regionsMinPt=cms.vdouble(2.0,2.0,2.1)
     ),
     delta12 = cms.PSet(
         maxDz = cms.double(1)
@@ -101,7 +101,7 @@ SingleTkEle36 = l1tGTSingleObjectCond.clone(
     minEta = cms.double(-2.4),
     maxEta = cms.double(2.4),
     regionsAbsEtaLowerBounds=cms.vdouble(0,1.479),
-    regionsminPt=cms.vdouble(29.9,28.0),
+    regionsMinPt=cms.vdouble(29.9,28.0),
     regionsQual=cms.vuint32(0b0010,0b0010)
     #qual = cms.vuint32(0b0010)
 )
@@ -114,7 +114,7 @@ SingleIsoTkEle28 = l1tGTSingleObjectCond.clone(
     minEta = cms.double(-2.4),
     maxEta = cms.double(2.4),
     regionsAbsEtaLowerBounds=cms.vdouble(0,1.479),
-    regionsminPt=cms.vdouble(23,21.9),
+    regionsMinPt=cms.vdouble(23,21.9),
     regionsQual=cms.vuint32(0b0000,0b0010)
     #qual = cms.vuint32(0b0010)
 )
@@ -163,7 +163,7 @@ SingleIsoTkPho36 = l1tGTSingleObjectCond.clone(
     minEta = cms.double(-2.4),
     maxEta = cms.double(2.4),
     regionsAbsEtaLowerBounds=cms.vdouble(0,1.479),
-    regionsminPt=cms.vdouble(30.8,29.2),
+    regionsMinPt=cms.vdouble(30.8,29.2),
     regionsQual=cms.vuint32(0b0010,0b0100)
     #qual = cms.vuint32(0b0100),
     #maxIso = cms.double(0.205)
@@ -202,7 +202,7 @@ DoubleTkEle2512 = l1tGTDoubleObjectCond.clone(
         minEta = cms.double(-2.4),
         maxEta = cms.double(2.4),
         regionsAbsEtaLowerBounds=cms.vdouble(0,1.479),
-        regionsminPt=cms.vdouble(20.6,19.3),
+        regionsMinPt=cms.vdouble(20.6,19.3),
         regionsQual=cms.vuint32(0b0010,0b0010)
         #qual = cms.vuint32(0b0010)
     ),
@@ -212,7 +212,7 @@ DoubleTkEle2512 = l1tGTDoubleObjectCond.clone(
         minEta = cms.double(-2.4),
         maxEta = cms.double(2.4),
         regionsAbsEtaLowerBounds=cms.vdouble(0,1.479),
-        regionsminPt=cms.vdouble(9.6,9.1),
+        regionsMinPt=cms.vdouble(9.6,9.1),
         regionsQual=cms.vuint32(0b0010,0b0010)
         #qual = cms.vuint32(0b0010)
     ),
@@ -228,7 +228,7 @@ DoubleIsoTkPho2212 = l1tGTDoubleObjectCond.clone(
         minEta = cms.double(-2.4),
         maxEta = cms.double(2.4),
         regionsAbsEtaLowerBounds=cms.vdouble(0,1.479),
-        regionsminPt=cms.vdouble(18.0,16.2),
+        regionsMinPt=cms.vdouble(18.0,16.2),
         regionsQual=cms.vuint32(0b0010,0b0100)
         #qual = cms.vuint32(0b0010)
     ),
@@ -238,7 +238,7 @@ DoubleIsoTkPho2212 = l1tGTDoubleObjectCond.clone(
         minEta = cms.double(-2.4),
         maxEta = cms.double(2.4),
         regionsAbsEtaLowerBounds=cms.vdouble(0,1.479),
-        regionsminPt=cms.vdouble(8.8,6.9),
+        regionsMinPt=cms.vdouble(8.8,6.9),
         regionsQual=cms.vuint32(0b0010,0b0100)
         #qual = cms.vuint32(0b0010)
     ),
@@ -254,7 +254,7 @@ algorithms.append(cms.PSet(expression = cms.string("pDoubleIsoTkPho22_12")))
 #    minEta = cms.double(-2.4),
 #    maxEta = cms.double(2.4),
 #    regionsAbsEtaLowerBounds=cms.vdouble(0,1.479),
-#    regionsminPt=cms.vdouble(30.8,29.2),
+#    regionsMinPt=cms.vdouble(30.8,29.2),
 #    regionsQual=cms.vuint32(0b0010,0b0100)
     #qual = cms.vuint32(0b0100),
     #maxIso = cms.double(0.205)

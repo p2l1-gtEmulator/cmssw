@@ -23,7 +23,7 @@ SinglePuppiJet230 = l1tGTSingleObjectCond.clone(
     minEta = cms.double(-2.4),
     maxEta = cms.double(2.4),
     regionsAbsEtaLowerBounds=cms.vdouble(0,1.5),
-    regionsminPt=cms.vdouble(166.5,141.7)
+    regionsMinPt=cms.vdouble(166.5,141.7)
 )
 pSinglePuppiJet230 = cms.Path(SinglePuppiJet230)
 algorithms.append(cms.PSet(expression = cms.string("pSinglePuppiJet230")))
@@ -50,7 +50,7 @@ QuadJet70554040 = l1tGTQuadObjectCond.clone(
         minEta = cms.double(-2.4),
         maxEta = cms.double(2.4),
         regionsAbsEtaLowerBounds=cms.vdouble(0,1.5),
-        regionsminPt=cms.vdouble(42.7,31.4)
+        regionsMinPt=cms.vdouble(42.7,31.4)
     ),
     collection2 = cms.PSet(
         tag = cms.InputTag("l1tGTProducer", "CL2Jets"),
@@ -58,7 +58,7 @@ QuadJet70554040 = l1tGTQuadObjectCond.clone(
         minEta = cms.double(-2.4),
         maxEta = cms.double(2.4),
         regionsAbsEtaLowerBounds=cms.vdouble(0,1.5),
-        regionsminPt=cms.vdouble(31.1,21.0)
+        regionsMinPt=cms.vdouble(31.1,21.0)
     ),
     collection3 = cms.PSet(
         tag = cms.InputTag("l1tGTProducer", "CL2Jets"),
@@ -66,7 +66,7 @@ QuadJet70554040 = l1tGTQuadObjectCond.clone(
         minEta = cms.double(-2.4),
         maxEta = cms.double(2.4),
         regionsAbsEtaLowerBounds=cms.vdouble(0,1.5),
-        regionsminPt=cms.vdouble(19.5,10.7)
+        regionsMinPt=cms.vdouble(19.5,10.7)
     ),
     collection4 = cms.PSet(
         tag = cms.InputTag("l1tGTProducer", "CL2Jets"),
@@ -74,7 +74,7 @@ QuadJet70554040 = l1tGTQuadObjectCond.clone(
         minEta = cms.double(-2.4),
         maxEta = cms.double(2.4),
         regionsAbsEtaLowerBounds=cms.vdouble(0,1.5),
-        regionsminPt=cms.vdouble(19.5,10.7)
+        regionsMinPt=cms.vdouble(19.5,10.7)
     ),
 
 )
