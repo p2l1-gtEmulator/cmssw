@@ -34,7 +34,7 @@ namespace l1t {
     int to_hw_eta(double value) const { return std::round(value / eta_lsb_); };
     int to_hw_z0(double value) const { return std::round(value / z0_lsb_); };
     // int to_hw_d0(double value) const { return std::round(value / d0_lsb_); };
-    double to_hw_isolation(double value) const { return isolation_lsb_ / (value * pT_lsb_); }
+    double to_hw_isolation(double value) const { return 1. / (value * pT_lsb_); }
     int to_hw_beta(double value) const { return std::round(value / beta_lsb_); };
     int to_hw_mass(double value) const { return std::round(value / mass_lsb_); };
     int to_hw_seed_pT(double value) const { return std::round(value / seed_pT_lsb_); };

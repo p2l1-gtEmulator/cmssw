@@ -52,48 +52,35 @@ namespace l1t {
           regionsMaxIso_(config.exists("regionsMaxIso") ? config.getParameter<std::vector<double>>("regionsMaxIso")
                                                         : std::vector<double>()),
           regionsMinPt_(config.exists("regionsMinPt") ? config.getParameter<std::vector<double>>("regionsMinPt")
-                                                 : std::vector<double>()),
+                                                      : std::vector<double>()),
           maxIso_(getOptionalParam<int, double>(
               "maxIso", config, std::bind(&L1GTScales::to_hw_isolation, scales, std::placeholders::_1))),
           oneOverIsoLUT_(lutConfig.getParameterSet("one_over_iso_lut")) {}
 
-    bool checkEtadependentcuts(const std::vector<double> etavec,
-                               const std::vector<unsigned int> qualvec,
-                               const std::vector<double> isovec,
-                               const std::vector<double> ptvec,
-                               const P2GTCandidate& obj) const {
-      bool res = 1;
+    bool checkEtadependentcuts(const P2GTCandidate& obj) const {
+      bool res = true;
 
       unsigned int index;
-      index = atIndex(etavec, obj.hwEta());
-      res &= ptvec.empty() ? true : (obj.hwPT() > scales_.to_hw_pT(ptvec[index]));
-      res &= isovec.empty()
-                 ? true
-                 : std::round(oneOverIsoLUT_.output_scale() * isovec[index]) < oneOverIsoLUT_[obj.hwIso()] * obj.hwPT();
-      res &= qualvec.empty() ? true : checkForQualMask( obj.hwQual().to_uint(),qualvec[index]);
+      index = atIndex(obj.hwEta());
+      res &= regionsMinPt_.empty() ? true : (obj.hwPT() > scales_.to_hw_pT(regionsMinPt_[index]));
+      res &= regionsMaxIso_.empty() ? true
+                                    : std::round(oneOverIsoLUT_.output_scale() * regionsMaxIso_[index]) <
+                                          oneOverIsoLUT_[obj.hwIso()] * obj.hwPT();
+      res &= regionsQual_.empty() ? true : (obj.hwQual().to_uint() & regionsQual_[index]) == regionsQual_[index];
       return res;
     }
 
-    bool checkForQualMask(const int value, const int mask) const {
-      int masked_value = value & mask;
-      if (masked_value == mask) {
-        return 1;
-      } else {
-        return 0;
-      }
-    }
-
-    unsigned int atIndex(const std::vector<double> absetarange, const int objeta) const {
+    unsigned int atIndex(int objeta) const {
       // Function that checks at which index the eta of the object is
-      // If object abs(eta) < absetarange[0] the function returns the last index,
+      // If object abs(eta) < regionsAbsEtaLowerBounds_[0] the function returns the last index,
       // Might be undesired behaviour
-      for (unsigned int i = 0; i < absetarange.size(); i++) {
-        if (std::abs(objeta) >= scales_.to_hw_eta(absetarange[i]) &&
-            std::abs(objeta) < scales_.to_hw_eta(absetarange[i + 1])) {
+      for (unsigned int i = 0; i < regionsAbsEtaLowerBounds_.size(); i++) {
+        if (std::abs(objeta) >= scales_.to_hw_eta(regionsAbsEtaLowerBounds_[i]) &&
+            std::abs(objeta) < scales_.to_hw_eta(regionsAbsEtaLowerBounds_[i + 1])) {
           return i;
         }
       }
-      return absetarange.size() - 1;
+      return regionsAbsEtaLowerBounds_.size() - 1;
     }
 
     bool checkObject(const P2GTCandidate& obj) const {
@@ -119,9 +106,7 @@ namespace l1t {
       result &= maxIso_ ? std::round(oneOverIsoLUT_.output_scale() * maxIso_.value()) <
                               oneOverIsoLUT_[obj.hwIso()] * obj.hwPT()
                         : true;
-      result &= regionsAbsEtaLowerBounds_.empty()
-                    ? true
-                    : checkEtadependentcuts(regionsAbsEtaLowerBounds_, regionsQual_, regionsMaxIso_, regionsMinPt_, obj);
+      result &= regionsAbsEtaLowerBounds_.empty() ? true : checkEtadependentcuts(obj);
       return result;
     }
 
