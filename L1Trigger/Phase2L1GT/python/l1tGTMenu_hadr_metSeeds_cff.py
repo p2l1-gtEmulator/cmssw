@@ -19,9 +19,11 @@ from L1Trigger.Phase2L1GT.l1tGTAlgoBlockProducer_cff import algorithms
 
 SinglePuppiJet230 = l1tGTSingleObjectCond.clone(
     tag =  cms.InputTag("l1tGTProducer", "CL2Jets"),
-    minPt = cms.double(164.9),
+    #minPt = cms.double(164.9),
     minEta = cms.double(-2.4),
-    maxEta = cms.double(2.4)
+    maxEta = cms.double(2.4),
+    regionsAbsEtaLowerBounds=cms.vdouble(0,1.5),
+    regionsPt=cms.vdouble(166.5,141.7)
 )
 pSinglePuppiJet230 = cms.Path(SinglePuppiJet230)
 algorithms.append(cms.PSet(expression = cms.string("pSinglePuppiJet230")))
@@ -44,27 +46,35 @@ algorithms.append(cms.PSet(expression = cms.string("pPuppiMET200")))
 QuadJet70554040 = l1tGTQuadObjectCond.clone(
     collection1 = cms.PSet(
         tag = cms.InputTag("l1tGTProducer", "CL2Jets"),
-        minPt = cms.double(41.9),
+        #minPt = cms.double(41.9),
         minEta = cms.double(-2.4),
-        maxEta = cms.double(2.4)
+        maxEta = cms.double(2.4),
+        regionsAbsEtaLowerBounds=cms.vdouble(0,1.5),
+        regionsPt=cms.vdouble(42.7,31.4)
     ),
     collection2 = cms.PSet(
         tag = cms.InputTag("l1tGTProducer", "CL2Jets"),
-        minPt = cms.double(30.3),
+        #minPt = cms.double(30.3),
         minEta = cms.double(-2.4),
-        maxEta = cms.double(2.4)
+        maxEta = cms.double(2.4),
+        regionsAbsEtaLowerBounds=cms.vdouble(0,1.5),
+        regionsPt=cms.vdouble(31.1,21.0)
     ),
     collection3 = cms.PSet(
         tag = cms.InputTag("l1tGTProducer", "CL2Jets"),
-        minPt = cms.double(18.8),
+        #minPt = cms.double(18.8),
         minEta = cms.double(-2.4),
-        maxEta = cms.double(2.4)
+        maxEta = cms.double(2.4),
+        regionsAbsEtaLowerBounds=cms.vdouble(0,1.5),
+        regionsPt=cms.vdouble(19.5,10.7)
     ),
     collection4 = cms.PSet(
         tag = cms.InputTag("l1tGTProducer", "CL2Jets"),
-        minPt = cms.double(18.8),
+        #minPt = cms.double(18.8),
         minEta = cms.double(-2.4),
-        maxEta = cms.double(2.4)
+        maxEta = cms.double(2.4),
+        regionsAbsEtaLowerBounds=cms.vdouble(0,1.5),
+        regionsPt=cms.vdouble(19.5,10.7)
     ),
 
 )
