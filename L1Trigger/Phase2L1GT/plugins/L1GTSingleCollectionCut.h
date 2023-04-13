@@ -51,7 +51,7 @@ namespace l1t {
                                                     : std::vector<unsigned int>()),
           regionsMaxIso_(config.exists("regionsMaxIso") ? config.getParameter<std::vector<double>>("regionsMaxIso")
                                                         : std::vector<double>()),
-          regionsPt_(config.exists("regionsPt") ? config.getParameter<std::vector<double>>("regionsPt")
+          regionsminPt_(config.exists("regionsminPt") ? config.getParameter<std::vector<double>>("regionsminPt")
                                                  : std::vector<double>()),
           maxIso_(getOptionalParam<int, double>(
               "maxIso", config, std::bind(&L1GTScales::to_hw_isolation, scales, std::placeholders::_1))),
@@ -70,7 +70,7 @@ namespace l1t {
       res &= isovec.empty()
                  ? true
                  : std::round(oneOverIsoLUT_.output_scale() * isovec[index]) < oneOverIsoLUT_[obj.hwIso()] * obj.hwPT();
-      res &= qualvec.empty() ? true : checkForQualMask(qualvec[index], obj.hwQual().to_uint());
+      res &= qualvec.empty() ? true : checkForQualMask( obj.hwQual().to_uint(),qualvec[index]);
       return res;
     }
 
@@ -118,7 +118,7 @@ namespace l1t {
                         : true;
       result &= regionsAbsEtaLowerBounds_.empty()
                     ? true
-                    : checkEtaDependendcuts(regionsAbsEtaLowerBounds_, regionsQual_, regionsMaxIso_, regionsPt_, obj);
+                    : checkEtaDependendcuts(regionsAbsEtaLowerBounds_, regionsQual_, regionsMaxIso_, regionsminPt_, obj);
       return result;
     }
 
@@ -138,7 +138,7 @@ namespace l1t {
       desc.addOptional<std::vector<double>>("regionsAbsEtaLowerBounds");
       desc.addOptional<std::vector<unsigned int>>("regionsQual");
       desc.addOptional<std::vector<double>>("regionsMaxIso");
-      desc.addOptional<std::vector<double>>("regionsPt");
+      desc.addOptional<std::vector<double>>("regionsminPt");
       desc.addOptional<double>("maxIso");
     }
 
@@ -161,7 +161,7 @@ namespace l1t {
     const std::vector<double> regionsAbsEtaLowerBounds_;
     const std::vector<unsigned int> regionsQual_;
     const std::vector<double> regionsMaxIso_;
-    const std::vector<double> regionsPt_;
+    const std::vector<double> regionsminPt_;
     const std::optional<double> maxIso_;
     const L1GTSingleInOutLUT oneOverIsoLUT_;
   };
