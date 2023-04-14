@@ -93,7 +93,73 @@ TripleTkMuon533 = l1tGTTripleObjectCond.clone(
 pTripleTkMuon5_3_3 = cms.Path(TripleTkMuon533)
 algorithms.append(cms.PSet(expression = cms.string("pTripleTkMuon5_3_3")))
 
-####### TK EG and PHO seeds ###########
+####### EG and PHO seeds ###########
+
+SingleEGEle51 = l1tGTSingleObjectCond.clone(
+    tag = cms.InputTag("l1tGTProducer", "CL2Photons"),
+    #minPt = cms.double(29.9),
+    minEta = cms.double(-2.4),
+    maxEta = cms.double(2.4),
+    regionsAbsEtaLowerBounds=cms.vdouble(0,1.479),
+    regionsMinPt=cms.vdouble(41.3,39.3),
+    regionsQual=cms.vuint32(0b0010,0b0001)
+    #qual = cms.vuint32(0b0010)
+)
+pSingleEGEle51 = cms.Path(SingleEGEle51) 
+algorithms.append(cms.PSet(expression = cms.string("pSingleEGEle51")))
+
+DoubleEGEle3724 = l1tGTDoubleObjectCond.clone(
+    collection1 = cms.PSet(
+        tag = cms.InputTag("l1tGTProducer", "CL2Photons"),
+        #minPt = cms.double(20.6),
+        minEta = cms.double(-2.4),
+        maxEta = cms.double(2.4),
+        regionsAbsEtaLowerBounds=cms.vdouble(0,1.479),
+        regionsMinPt=cms.vdouble(29.3,27.9),
+        regionsQual=cms.vuint32(0b0010,0b0001)
+        #qual = cms.vuint32(0b0010)
+    ),
+    collection2 = cms.PSet(
+        tag = cms.InputTag("l1tGTProducer", "CL2Photons"),
+        #minPt = cms.double(9.6),
+        minEta = cms.double(-2.4),
+        maxEta = cms.double(2.4),
+        regionsAbsEtaLowerBounds=cms.vdouble(0,1.479),
+        regionsMinPt=cms.vdouble(18.1,17.3),
+        regionsQual=cms.vuint32(0b0010,0b0001)
+        #qual = cms.vuint32(0b0010)
+    ),
+    minDR = cms.double(0.1),
+)
+pDoubleEGEle37_24 = cms.Path(DoubleEGEle3724)
+algorithms.append(cms.PSet(expression = cms.string("pDoubleEGEle37_24")))
+
+IsoTkEleEGEle2212 = l1tGTDoubleObjectCond.clone(
+    collection1 = cms.PSet(
+        tag = cms.InputTag("l1tGTProducer", "CL2Electrons"),
+        #minPt = cms.double(20.6),
+        minEta = cms.double(-2.4),
+        maxEta = cms.double(2.4),
+        regionsAbsEtaLowerBounds=cms.vdouble(0,1.479),
+        regionsMinPt=cms.vdouble(18.0,17.1),
+        regionsQual=cms.vuint32(0b0000,0b0010),
+        regionsMaxIso = cms.vdouble(0.13,0.28)
+        #qual = cms.vuint32(0b0010)
+    ),
+    collection2 = cms.PSet(
+        tag = cms.InputTag("l1tGTProducer", "CL2Photons"),
+        #minPt = cms.double(9.6),
+        minEta = cms.double(-2.4),
+        maxEta = cms.double(2.4),
+        regionsAbsEtaLowerBounds=cms.vdouble(0,1.479),
+        regionsMinPt=cms.vdouble(7.8,7.6),
+        regionsQual=cms.vuint32(0b0010,0b0001)
+        #qual = cms.vuint32(0b0010)
+    ),
+    minDR = cms.double(0.1),
+)
+pIsoTkEleEGEle22_12 = cms.Path(IsoTkEleEGEle2212)
+algorithms.append(cms.PSet(expression = cms.string("pIsoTkEleEGEle22_12")))
 
 SingleTkEle36 = l1tGTSingleObjectCond.clone(
     tag = cms.InputTag("l1tGTProducer", "CL2Electrons"),
