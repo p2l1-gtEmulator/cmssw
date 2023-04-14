@@ -10,6 +10,21 @@
 namespace l1t {
 
   template <typename T, typename K>
+  inline std::vector<T> getParamVector(const std::string& name,
+                                       const edm::ParameterSet& config,
+                                       std::function<T(K)> conv) {
+    if (config.exists(name)) {
+      const std::vector<K>& values = config.getParameter<std::vector<K>>(name);
+      std::vector<T> convertedValues(values.size());
+      for (std::size_t i = 0; i < values.size(); i++) {
+        convertedValues[i] = conv(values[i]);
+      }
+      return convertedValues;
+    }
+    return std::vector<T>();
+  }
+
+  template <typename T, typename K>
   inline std::optional<T> getOptionalParam(const std::string& name,
                                            const edm::ParameterSet& config,
                                            std::function<T(K)> conv) {

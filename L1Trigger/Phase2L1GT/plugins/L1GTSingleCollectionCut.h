@@ -44,17 +44,17 @@ namespace l1t {
               "minEtaAbs", config, std::bind(&L1GTScales::to_hw_eta, scales, std::placeholders::_1))),
           maxEtaAbs_(getOptionalParam<int, double>(
               "maxEtaAbs", config, std::bind(&L1GTScales::to_hw_eta, scales, std::placeholders::_1))),
+          maxIso_(getOptionalParam<int, double>(
+              "maxIso", config, std::bind(&L1GTScales::to_hw_isolation, scales, std::placeholders::_1))),
           regionsAbsEtaLowerBounds_(config.exists("regionsAbsEtaLowerBounds")
                                         ? config.getParameter<std::vector<double>>("regionsAbsEtaLowerBounds")
                                         : std::vector<double>()),
+          regionsMinPt_(getParamVector<int, double>(
+              "regionsMinPt", config, std::bind(&L1GTScales::to_hw_pT, scales, std::placeholders::_1))),
+          regionsMaxIso_(getParamVector<double, double>(
+              "regionsMaxIso", config, std::bind(&L1GTScales::to_hw_isolation, scales, std::placeholders::_1))),
           regionsQual_(config.exists("regionsQual") ? config.getParameter<std::vector<unsigned int>>("regionsQual")
                                                     : std::vector<unsigned int>()),
-          regionsMaxIso_(config.exists("regionsMaxIso") ? config.getParameter<std::vector<double>>("regionsMaxIso")
-                                                        : std::vector<double>()),
-          regionsMinPt_(config.exists("regionsMinPt") ? config.getParameter<std::vector<double>>("regionsMinPt")
-                                                      : std::vector<double>()),
-          maxIso_(getOptionalParam<int, double>(
-              "maxIso", config, std::bind(&L1GTScales::to_hw_isolation, scales, std::placeholders::_1))),
           oneOverIsoLUT_(lutConfig.getParameterSet("one_over_iso_lut")) {}
 
     bool checkEtadependentcuts(const P2GTCandidate& obj) const {
@@ -62,7 +62,7 @@ namespace l1t {
 
       unsigned int index;
       index = atIndex(obj.hwEta());
-      res &= regionsMinPt_.empty() ? true : (obj.hwPT() > scales_.to_hw_pT(regionsMinPt_[index]));
+      res &= regionsMinPt_.empty() ? true : obj.hwPT() > regionsMinPt_[index];
       res &= regionsMaxIso_.empty() ? true
                                     : std::round(oneOverIsoLUT_.output_scale() * regionsMaxIso_[index]) <
                                           oneOverIsoLUT_[obj.hwIso()] * obj.hwPT();
@@ -123,11 +123,11 @@ namespace l1t {
       desc.addOptional<std::vector<unsigned int>>("qual");
       desc.addOptional<double>("minEtaAbs");
       desc.addOptional<double>("maxEtaAbs");
-      desc.addOptional<std::vector<double>>("regionsAbsEtaLowerBounds");
-      desc.addOptional<std::vector<unsigned int>>("regionsQual");
-      desc.addOptional<std::vector<double>>("regionsMaxIso");
-      desc.addOptional<std::vector<double>>("regionsMinPt");
       desc.addOptional<double>("maxIso");
+      desc.addOptional<std::vector<double>>("regionsAbsEtaLowerBounds");
+      desc.addOptional<std::vector<double>>("regionsMinPt");
+      desc.addOptional<std::vector<double>>("regionsMaxIso");
+      desc.addOptional<std::vector<unsigned int>>("regionsQual");
     }
 
     const edm::InputTag& tag() const { return tag_; }
@@ -146,11 +146,11 @@ namespace l1t {
     const std::vector<unsigned int> qual_;
     const std::optional<int> minEtaAbs_;
     const std::optional<int> maxEtaAbs_;
-    const std::vector<double> regionsAbsEtaLowerBounds_;
-    const std::vector<unsigned int> regionsQual_;
-    const std::vector<double> regionsMaxIso_;
-    const std::vector<double> regionsMinPt_;
     const std::optional<double> maxIso_;
+    const std::vector<double> regionsAbsEtaLowerBounds_;
+    const std::vector<int> regionsMinPt_;
+    const std::vector<double> regionsMaxIso_;
+    const std::vector<unsigned int> regionsQual_;
     const L1GTSingleInOutLUT oneOverIsoLUT_;
   };
 
