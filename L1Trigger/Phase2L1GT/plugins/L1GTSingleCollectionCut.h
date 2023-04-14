@@ -74,7 +74,7 @@ namespace l1t {
       // Function that checks at which index the eta of the object is
       // If object abs(eta) < regionsAbsEtaLowerBounds_[0] the function returns the last index,
       // Might be undesired behaviour
-      for (unsigned int i = 0; i < regionsAbsEtaLowerBounds_.size(); i++) {
+      for (unsigned int i = 0; i < regionsAbsEtaLowerBounds_.size() - 1; i++) {
         if (std::abs(objeta) >= scales_.to_hw_eta(regionsAbsEtaLowerBounds_[i]) &&
             std::abs(objeta) < scales_.to_hw_eta(regionsAbsEtaLowerBounds_[i + 1])) {
           return i;
