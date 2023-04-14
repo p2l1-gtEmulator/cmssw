@@ -65,8 +65,6 @@ namespace pathStatusExpression {
 
     EvaluatorType type() const override { return Name; }
 
-    const char* pathName() const { return pathName_.c_str(); }
-
     void print(std::ostream& out, unsigned int indentation) const override {
       out << std::string(indentation, ' ') << pathName_ << "\n";
     }
@@ -161,7 +159,10 @@ namespace pathStatusExpression {
   // internet for a description of this algorithm)
   class ShuntingYardAlgorithm {
   public:
-    void addPathName(std::vector<char> const& s) { operandStack.push_back(std::make_unique<Operand>(s)); }
+    void addPathName(std::vector<char> const& s) {
+      operandStack.push_back(std::make_unique<Operand>(s));
+      pathNames_.emplace_back(s.begin(), s.end());
+    }
 
     void addOperatorNot() {
       if (operatorStack.empty() || operatorStack.back()->type() != Evaluator::Not) {
@@ -259,9 +260,10 @@ namespace pathStatusExpression {
       return temp;
     }
 
-    const std::vector<std::unique_ptr<Evaluator>>& getOperandStack() const { return operandStack; }
+    const std::vector<std::string>& pathNames() { return pathNames_; }
 
   private:
+    std::vector<std::string> pathNames_;
     std::vector<std::unique_ptr<Evaluator>> operandStack;
     std::vector<std::unique_ptr<Evaluator>> operatorStack;
   };
@@ -372,8 +374,8 @@ L1GTAlgoBlockProducer::L1GTAlgoBlockProducer(const edm::ParameterSet& config) {
 
     AlgoDefinition definition;
 
-    for (const auto& operand : shuntingYardAlgorithm.getOperandStack()) {
-      definition.pathNames_.push_back(operand->pathName());
+    for (const std::string& pathName : shuntingYardAlgorithm.pathNames()) {
+      definition.pathNames_.push_back(pathName);
     }
 
     definition.evaluator_ = shuntingYardAlgorithm.finish();
@@ -402,7 +404,6 @@ void L1GTAlgoBlockProducer::beginRun(const edm::Run& iRun, const edm::EventSetup
         for (const auto& mod : modules) {
           if (mod.front() != std::string("-") && pset->exists(mod)) {
             const auto& modPSet = pset->getParameterSet(mod);
-
             if (modPSet.getParameter<std::string>("@module_edm_type") == "EDFilter") {
               if (modPSet.getParameter<std::string>("@module_type") == "L1GTSingleObjectCond") {
                 algoDef.filtModules_.insert({mod, modPSet.getParameter<edm::InputTag>("tag").instance()});
