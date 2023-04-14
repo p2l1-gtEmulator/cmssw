@@ -106,11 +106,9 @@ namespace l1t {
   }
 
   P2GTCandidate::P2GTCandidate(const EtSum& ht, const EtSum& mht) {
-    l1gt::Sum sum{true /* valid */, mht.pt(), mht.phi() / l1gt::Scales::ETAPHI_LSB, ht.pt()};
-
-    hwPT_ = sum.vector_pt.V.to_int();
-    hwPhi_ = sum.vector_phi.V.to_int();
-    hwSca_sum_ = sum.scalar_pt.V.to_int();
+    hwPT_ = mht.hwPt();
+    hwPhi_ = mht.hwPhi();
+    hwSca_sum_ = ht.pt();
     objectType_ = CL2HtSum;
   }
 
