@@ -2,7 +2,6 @@
 #define DataFormats_L1TParticleFlow_PFJet_h
 
 #include <vector>
-#include <unordered_map>
 #include "DataFormats/L1Trigger/interface/L1Candidate.h"
 #include "DataFormats/L1TParticleFlow/interface/PFCandidate.h"
 #include "DataFormats/Common/interface/Ptr.h"
