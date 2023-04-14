@@ -115,7 +115,8 @@ SingleIsoTkEle28 = l1tGTSingleObjectCond.clone(
     maxEta = cms.double(2.4),
     regionsAbsEtaLowerBounds=cms.vdouble(0,1.479),
     regionsMinPt=cms.vdouble(23,21.9),
-    regionsQual=cms.vuint32(0b0000,0b0010)
+    regionsQual=cms.vuint32(0b0000,0b0010),
+    regionsMaxIso = cms.vdouble(0.13,0.28)
     #qual = cms.vuint32(0b0010)
 )
 pSingleIsoTkEle28 = cms.Path(SingleIsoTkEle28) 
@@ -164,7 +165,8 @@ SingleIsoTkPho36 = l1tGTSingleObjectCond.clone(
     maxEta = cms.double(2.4),
     regionsAbsEtaLowerBounds=cms.vdouble(0,1.479),
     regionsMinPt=cms.vdouble(30.8,29.2),
-    regionsQual=cms.vuint32(0b0010,0b0100)
+    regionsQual=cms.vuint32(0b0010,0b0100),
+    regionsMaxIso = cms.vdouble(0.25,0.205)
     #qual = cms.vuint32(0b0100),
     #maxIso = cms.double(0.205)
 )
@@ -229,7 +231,8 @@ DoubleIsoTkPho2212 = l1tGTDoubleObjectCond.clone(
         maxEta = cms.double(2.4),
         regionsAbsEtaLowerBounds=cms.vdouble(0,1.479),
         regionsMinPt=cms.vdouble(18.0,16.2),
-        regionsQual=cms.vuint32(0b0010,0b0100)
+        regionsQual=cms.vuint32(0b0010,0b0100),
+        regionsMaxIso = cms.vdouble(0.25,0.205)
         #qual = cms.vuint32(0b0010)
     ),
     collection2 = cms.PSet(
@@ -239,7 +242,8 @@ DoubleIsoTkPho2212 = l1tGTDoubleObjectCond.clone(
         maxEta = cms.double(2.4),
         regionsAbsEtaLowerBounds=cms.vdouble(0,1.479),
         regionsMinPt=cms.vdouble(8.8,6.9),
-        regionsQual=cms.vuint32(0b0010,0b0100)
+        regionsQual=cms.vuint32(0b0010,0b0100),
+        regionsMaxIso = cms.vdouble(0.25,0.205)
         #qual = cms.vuint32(0b0010)
     ),
 )
