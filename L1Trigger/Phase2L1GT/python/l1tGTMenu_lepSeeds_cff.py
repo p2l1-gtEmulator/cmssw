@@ -48,7 +48,7 @@ DoubleTkMuon157 = l1tGTDoubleObjectCond.clone(
         minEta = cms.double(-2.4),
         maxEta = cms.double(2.4),
         regionsAbsEtaLowerBounds=cms.vdouble(0,0.83,1.24),
-        regionsMinPt=cms.vdouble(5.7,5.6,5.9)
+        regionsMinPt=cms.vdouble(7,7,7)
     ),
     maxDz = cms.double(1),
 )
