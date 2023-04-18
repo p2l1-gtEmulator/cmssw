@@ -108,7 +108,7 @@ namespace l1t {
   P2GTCandidate::P2GTCandidate(const EtSum& ht, const EtSum& mht) {
     hwPT_ = mht.hwPt();
     hwPhi_ = mht.hwPhi();
-    hwSca_sum_ = ht.pt();
+    hwSca_sum_ = ht.hwPt();
     objectType_ = CL2HtSum;
   }
 
