@@ -24,6 +24,7 @@
 #include "DataFormats/L1TCorrelator/interface/TkEm.h"
 #include "DataFormats/L1TCorrelator/interface/TkElectronFwd.h"
 #include "DataFormats/L1TCorrelator/interface/TkElectron.h"
+#include "DataFormats/L1TParticleFlow/interface/PFTau.h"
 
 #include "DataFormats/L1Trigger/interface/EtSum.h"
 
@@ -54,6 +55,7 @@ private:
   const edm::EDGetTokenT<PFJetCollection> cl2JetToken_;
   const edm::EDGetTokenT<TkEmCollection> cl2PhotonToken_;
   const edm::EDGetTokenT<TkElectronCollection> cl2ElectronToken_;
+  const edm::EDGetTokenT<PFTauCollection> cl2TauToken_;
   const edm::EDGetTokenT<std::vector<l1t::EtSum>> cl2EtSumToken_;
   const edm::EDGetTokenT<std::vector<l1t::EtSum>> cl2HtSumToken_;
 };
@@ -68,6 +70,7 @@ L1GTProducer::L1GTProducer(const edm::ParameterSet &config)
       cl2JetToken_(consumes<PFJetCollection>(config.getParameter<edm::InputTag>("CL2Jets"))),
       cl2PhotonToken_(consumes<TkEmCollection>(config.getParameter<edm::InputTag>("CL2Photons"))),
       cl2ElectronToken_(consumes<TkElectronCollection>(config.getParameter<edm::InputTag>("CL2Electrons"))),
+      cl2TauToken_(consumes<PFTauCollection>(config.getParameter<edm::InputTag>("CL2Taus"))),
       cl2EtSumToken_(consumes<std::vector<l1t::EtSum>>(config.getParameter<edm::InputTag>("CL2EtSum"))),
       cl2HtSumToken_(consumes<std::vector<l1t::EtSum>>(config.getParameter<edm::InputTag>("CL2HtSum"))) {
   produces<P2GTCandidateCollection>("GTTPromptJets");
@@ -81,6 +84,7 @@ L1GTProducer::L1GTProducer(const edm::ParameterSet &config)
   produces<P2GTCandidateCollection>("CL2Jets");
   produces<P2GTCandidateCollection>("CL2Photons");
   produces<P2GTCandidateCollection>("CL2Electrons");
+  produces<P2GTCandidateCollection>("CL2Taus");
   produces<P2GTCandidateCollection>("CL2EtSum");
   produces<P2GTCandidateCollection>("CL2HtSum");
 }
@@ -98,6 +102,7 @@ void L1GTProducer::fillDescriptions(edm::ConfigurationDescriptions &description)
   desc.addOptional<edm::InputTag>("CL2Jets");
   desc.addOptional<edm::InputTag>("CL2Photons");
   desc.addOptional<edm::InputTag>("CL2Electrons");
+  desc.addOptional<edm::InputTag>("CL2Taus");
   desc.addOptional<edm::InputTag>("CL2EtSum");
   desc.addOptional<edm::InputTag>("CL2HtSum");
 
@@ -150,6 +155,7 @@ void L1GTProducer::produce(edm::StreamID, edm::Event &event, const edm::EventSet
 
   produceByToken<PFJetCollection>("CL2Jets", cl2JetToken_, event);
   produceByToken<TkEmCollection>("CL2Photons", cl2PhotonToken_, event);
+  produceByToken<PFTauCollection>("CL2Taus", cl2TauToken_, event);
   produceByToken<TkElectronCollection>("CL2Electrons", cl2ElectronToken_, event);
   produceByToken<std::vector<EtSum>, 1>("CL2EtSum", cl2EtSumToken_, event);
   produceCl2HtSum("CL2HtSum", cl2HtSumToken_, event);

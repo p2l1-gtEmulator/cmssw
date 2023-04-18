@@ -11,6 +11,7 @@ l1tGTProducer = cms.EDProducer(
     CL2Jets = cms.InputTag("l1tSCPFL1PuppiCorrectedEmulator"),
     CL2Electrons = cms.InputTag("l1tLayer2EG", "L1CtTkElectron"),
     CL2Photons = cms.InputTag("l1tLayer2EG", "L1CtTkEm"),
+    CL2Taus = cms.InputTag("l1tNNTauProducerPuppi", "L1PFTausNN"),
     CL2EtSum = cms.InputTag("l1tMETPFProducer"),
     CL2HtSum = cms.InputTag("l1tSCPFL1PuppiCorrectedEmulatorMHT")
 )

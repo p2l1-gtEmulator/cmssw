@@ -9,6 +9,7 @@
 #include "DataFormats/L1TParticleFlow/interface/PFJet.h"
 #include "DataFormats/L1TCorrelator/interface/TkEm.h"
 #include "DataFormats/L1TCorrelator/interface/TkElectron.h"
+#include "DataFormats/L1TParticleFlow/interface/PFTau.h"
 
 #include "DataFormats/L1TParticleFlow/interface/gt_datatypes.h"
 
@@ -94,6 +95,19 @@ namespace l1t {
     hwQual_ = gtElectron.quality.V.to_int();
     hwCharge_ = gtElectron.charge.V.to_int();
     objectType_ = CL2Electrons;
+  }
+
+  P2GTCandidate::P2GTCandidate(const PFTau& obj) {
+    l1gt::Tau gtTau = obj.getTauGT();
+    hwPT_ = gtTau.v3.pt.V.to_int();
+    hwPhi_ = gtTau.v3.phi.V.to_int();
+    hwEta_ = gtTau.v3.eta.V.to_int();
+    hwSeed_pT_ = gtTau.seed_pt.V.to_int();
+    hwSeed_z0_ = gtTau.seed_z0.V.to_int();
+    hwCharge_ = gtTau.charge.V.to_int();
+    hwType_ = gtTau.type.V.to_int();
+    hwIso_ =  gtTau.isolation.V.to_int();
+    objectType_ = CL2Taus;
   }
 
   P2GTCandidate::P2GTCandidate(const EtSum& met) {

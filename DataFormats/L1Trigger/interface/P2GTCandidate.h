@@ -20,6 +20,7 @@ namespace l1t {
   class TkEm;
   class TkElectron;
   class EtSum;
+  class PFTau;
 
   class P2GTCandidate;
   typedef std::vector<P2GTCandidate> P2GTCandidateCollection;
@@ -109,6 +110,7 @@ namespace l1t {
     P2GTCandidate(const PFJet&);
     P2GTCandidate(const TkEm&);
     P2GTCandidate(const TkElectron&);
+    P2GTCandidate(const PFTau&);
 
     P2GTCandidate(const EtSum&);
     P2GTCandidate(const EtSum&, const EtSum&);
