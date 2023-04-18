@@ -89,9 +89,9 @@ TripleTkMuon533 = l1tGTTripleObjectCond.clone(
     delta13 = cms.PSet(
         maxDz = cms.double(1)
     ),
-    delta23 = cms.PSet(
-        maxDz = cms.double(1)
-    )
+    #delta23 = cms.PSet(
+    #    maxDz = cms.double(1)
+    #)
 )
 pTripleTkMuon5_3_3 = cms.Path(TripleTkMuon533)
 algorithms.append(cms.PSet(expression = cms.string("pTripleTkMuon5_3_3")))
@@ -382,3 +382,28 @@ algorithms.append(cms.PSet(expression = cms.string("pDoubleIsoTkPho22_12")))
 
 #algorithms.append(cms.PSet(name=cms.string("pDoubleTkIsoPho22_12"),
 #                       expression=cms.string("(pSingleIsoTkPho22Barrel or pSingleIsoTkPho22EndcapPos or pSingleIsoTkPho22EndcapNeg) and (pSingleIsoTkPho12Barrel or pSingleIsoTkPho12EndcapPos or pSingleIsoTkPho12EndcapNeg)")))
+
+
+
+DoublePuppiTau5252 = l1tGTDoubleObjectCond.clone(
+    collection1 = cms.PSet(
+        tag = cms.InputTag("l1tGTProducer", "CL2Taus"),
+        minEta = cms.double(-2.172),
+        maxEta = cms.double(2.172),
+        regionsAbsEtaLowerBounds=cms.vdouble(0,1.5),
+        regionsMinPt=cms.vdouble(25.6,19.6),
+        minHwIso = cms.int32(286),
+    ),
+    collection2 = cms.PSet(
+        tag = cms.InputTag("l1tGTProducer", "CL2Taus"),
+        minEta = cms.double(-2.172),
+        maxEta = cms.double(2.172),
+        regionsAbsEtaLowerBounds=cms.vdouble(0,1.5),
+        regionsMinPt=cms.vdouble(25.6,19.6),
+        minHwIso = cms.int32(286),
+    ),
+    minDR = cms.double(0.5),
+)
+pDoublePuppiTau52_52 = cms.Path(DoublePuppiTau5252)
+algorithms.append(cms.PSet(expression = cms.string("pDoublePuppiTau52_52")))
+

@@ -30,7 +30,7 @@ algorithms.append(cms.PSet(expression = cms.string("pSinglePuppiJet230")))
 
 PuppiHT450 = l1tGTSingleObjectCond.clone(
     tag = cms.InputTag("l1tGTProducer", "CL2HtSum"),
-    minPt = cms.double(372.9)
+    minScalarSumPt = cms.double(372.9)
 )
 pPuppiHT450 = cms.Path(PuppiHT450)
 algorithms.append(cms.PSet(expression = cms.string("pPuppiHT450")))
@@ -82,7 +82,7 @@ pQuadJet70_55_40_40 = cms.Path(QuadJet70554040)
 
 PuppiHT400 = l1tGTSingleObjectCond.clone(
     tag = cms.InputTag("l1tGTProducer", "CL2HtSum"),
-    minPt = cms.double(326.9) 
+    minScalarSumPt = cms.double(326.9) 
 )
 pPuppiHT400 = cms.Path(PuppiHT400)
 
