@@ -111,10 +111,6 @@ void L1GTTripleObjectCond::fillDescriptions(edm::ConfigurationDescriptions& desc
   L1GTSingleCollectionCut::fillDescriptions(collection3Desc);
   desc.add<edm::ParameterSetDescription>("collection3", collection3Desc);
 
-  edm::ParameterSetDescription oneOverIsoLUTDesc;
-  L1GTSingleInOutLUT::fillLUTDescriptions(oneOverIsoLUTDesc);
-  desc.add<edm::ParameterSetDescription>("one_over_iso_lut", oneOverIsoLUTDesc);
-
   edm::ParameterSetDescription scalesDesc;
   L1GTScales::fillDescriptions(scalesDesc);
   desc.add<edm::ParameterSetDescription>("scales", scalesDesc);

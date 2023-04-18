@@ -103,8 +103,3 @@ COSH_ETA_LUT_2 = SingleInOutLUT(
     SingleInOutLUT.optimal_scale_factor(
         COSH_ETA_IN_WIDTH, 17, 2, scale_parameter.eta_lsb.value(), math.cosh, 2**13 * scale_parameter.eta_lsb.value()),
     math.cosh, 2**13 * scale_parameter.eta_lsb.value(), "[2pi, 4pi)")
-
-ONE_OVER_ISO_LUT = SingleInOutLUT(
-    ISOLATION_WIDTH, 0, scale_parameter.isolation_lsb.value(), 2**16 - 1, lambda x: 1 /
-    x if x > scale_parameter.isolation_lsb.value() else 1/scale_parameter.isolation_lsb.value()
-)

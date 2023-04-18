@@ -2,4 +2,4 @@
   <class name="l1t::InvariantMassError"/>
   <class name="l1t::InvariantMassErrorCollection"/>
   <class name="edm::Wrapper<l1t::InvariantMassErrorCollection>"/>
-</lcgdict
+</lcgdict>

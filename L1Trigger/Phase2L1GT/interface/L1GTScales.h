@@ -9,6 +9,8 @@
 
 namespace l1t {
   class L1GTScales {
+    static constexpr int RELATIVE_ISOLATION_RESOLUTION = 10; // Resolution = 1/2^RELATIVE_ISOLATION_RESOLUTION
+
   public:
     L1GTScales(double pT_lsb,
                double phi_lsb,
@@ -34,7 +36,9 @@ namespace l1t {
     int to_hw_eta(double value) const { return std::round(value / eta_lsb_); };
     int to_hw_z0(double value) const { return std::round(value / z0_lsb_); };
     // int to_hw_d0(double value) const { return std::round(value / d0_lsb_); };
-    double to_hw_isolation(double value) const { return 1. / (value * pT_lsb_); }
+    int to_hw_isolation(double value) const {
+      return std::round(pT_lsb_ * value * std::pow(2, isolation_shift_) / isolation_lsb_);
+    }
     int to_hw_beta(double value) const { return std::round(value / beta_lsb_); };
     int to_hw_mass(double value) const { return std::round(value / mass_lsb_); };
     int to_hw_seed_pT(double value) const { return std::round(value / seed_pT_lsb_); };
@@ -63,6 +67,7 @@ namespace l1t {
     double sum_pT_pv_lsb() const { return sum_pT_pv_lsb_; }
     int pos_chg() const { return pos_chg_; }
     int neg_chg() const { return neg_chg_; }
+    int isolation_shift() const { return isolation_shift_; }
 
   private:
     const double pT_lsb_;
@@ -71,6 +76,7 @@ namespace l1t {
     const double z0_lsb_;
     //const double dD_lsb_;
     const double isolation_lsb_;
+    const double isolation_shift_;
     const double beta_lsb_;
     const double mass_lsb_;
     const double seed_pT_lsb_;

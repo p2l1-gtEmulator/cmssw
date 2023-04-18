@@ -25,6 +25,7 @@ namespace l1t {
         z0_lsb_(z0_lsb),
         //d0_lsb_(d0_lsb),
         isolation_lsb_(isolation_lsb),
+        isolation_shift_(RELATIVE_ISOLATION_RESOLUTION + std::log2(isolation_lsb_ / pT_lsb_)),
         beta_lsb_(beta_lsb),
         mass_lsb_(mass_lsb),
         seed_pT_lsb_(seed_pT_lsb),
@@ -41,6 +42,7 @@ namespace l1t {
         z0_lsb_(config.getParameter<double>("z0_lsb")),
         //d0_lsb_(config.getParameter<double>("d0_lsb")),
         isolation_lsb_(config.getParameter<double>("isolation_lsb")),
+        isolation_shift_(RELATIVE_ISOLATION_RESOLUTION + std::log2(isolation_lsb_ / pT_lsb_)),
         beta_lsb_(config.getParameter<double>("beta_lsb")),
         mass_lsb_(config.getParameter<double>("mass_lsb")),
         seed_pT_lsb_(config.getParameter<double>("seed_pT_lsb")),
@@ -88,6 +90,7 @@ namespace l1t {
         .def("to_hw_eta", &L1GTScales::to_hw_eta)
         .def("to_hw_z0", &L1GTScales::to_hw_z0)
         .def("to_hw_isolation", &L1GTScales::to_hw_isolation)
+        .def("isolation_shift", &L1GTScales::isolation_shift)
         .def("to_hw_beta", &L1GTScales::to_hw_beta)
         .def("to_hw_mass", &L1GTScales::to_hw_mass)
         .def("to_hw_seed_pT", &L1GTScales::to_hw_seed_pT)

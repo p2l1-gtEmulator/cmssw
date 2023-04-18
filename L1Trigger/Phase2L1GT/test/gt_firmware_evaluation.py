@@ -29,12 +29,11 @@ process.l1tGTProducer = cms.EDProducer(
 
 process.l1t_GTProducer = cms.Path(process.l1tGTProducer)
 
-from L1Trigger.Phase2L1GT.l1tGTSingleInOutLUT import COSH_ETA_LUT, COSH_ETA_LUT_2, COS_PHI_LUT, ONE_OVER_ISO_LUT
+from L1Trigger.Phase2L1GT.l1tGTSingleInOutLUT import COSH_ETA_LUT, COSH_ETA_LUT_2, COS_PHI_LUT
 
 COSH_ETA_LUT.export("coshEtaLUT.mem")
 COSH_ETA_LUT_2.export("coshEtaLUT2.mem")
 COS_PHI_LUT.export("cosPhiLUT.mem")
-ONE_OVER_ISO_LUT.export("oneOverIsoLUT.mem")
 
 from L1Trigger.Phase2L1GT.l1tGTSingleObjectCond_cfi import l1tGTSingleObjectCond
 from L1Trigger.Phase2L1GT.l1tGTDoubleObjectCond_cfi import l1tGTDoubleObjectCond
@@ -758,8 +757,8 @@ process._quadTkEleTkMuPUPPIJet_30_40_25_25_er2p4 = l1tGTQuadObjectCond.clone(
         minPt=cms.double(30),
         minEta=cms.double(-2.4),
         maxEta=cms.double(2.4),
-	regionsAbsEtaLowerBounds=cms.vdouble(0,1.2,3),
-	regionsPt=cms.vdouble(12,14,15)
+	    regionsAbsEtaLowerBounds=cms.vdouble(0,1.2,3),
+	    regionsMinPt=cms.vdouble(12,14,15)
     ),
     collection2=cms.PSet(
         tag=cms.InputTag("l1tGTProducer", "GMTTkMuons"),

@@ -12,7 +12,6 @@
 
 #include "L1Trigger/Phase2L1GT/interface/L1GTScales.h"
 #include "L1GTSingleCollectionCut.h"
-#include "L1GTSingleInOutLUT.h"
 
 #include <cmath>
 #include <cinttypes>
@@ -47,10 +46,6 @@ L1GTSingleObjectCond::L1GTSingleObjectCond(const edm::ParameterSet& config)
 void L1GTSingleObjectCond::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
   edm::ParameterSetDescription desc;
   L1GTSingleCollectionCut::fillDescriptions(desc);
-
-  edm::ParameterSetDescription oneOverIsoLUTDesc;
-  L1GTSingleInOutLUT::fillLUTDescriptions(oneOverIsoLUTDesc);
-  desc.add<edm::ParameterSetDescription>("one_over_iso_lut", oneOverIsoLUTDesc);
 
   edm::ParameterSetDescription scalesDesc;
   L1GTScales::fillDescriptions(scalesDesc);

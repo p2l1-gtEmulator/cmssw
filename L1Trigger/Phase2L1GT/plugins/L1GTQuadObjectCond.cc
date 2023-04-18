@@ -150,10 +150,6 @@ void L1GTQuadObjectCond::fillDescriptions(edm::ConfigurationDescriptions& descri
   L1GTSingleCollectionCut::fillDescriptions(collection4Desc);
   desc.add<edm::ParameterSetDescription>("collection4", collection4Desc);
 
-  edm::ParameterSetDescription oneOverIsoLUTDesc;
-  L1GTSingleInOutLUT::fillLUTDescriptions(oneOverIsoLUTDesc);
-  desc.add<edm::ParameterSetDescription>("one_over_iso_lut", oneOverIsoLUTDesc);
-
   edm::ParameterSetDescription scalesDesc;
   L1GTScales::fillDescriptions(scalesDesc);
   desc.add<edm::ParameterSetDescription>("scales", scalesDesc);

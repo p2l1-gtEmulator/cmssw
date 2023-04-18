@@ -91,10 +91,6 @@ void L1GTDoubleObjectCond::fillDescriptions(edm::ConfigurationDescriptions& desc
   L1GTDeltaCut::fillDescriptions(desc);
   L1GTDeltaCut::fillLUTDescriptions(desc);
 
-  edm::ParameterSetDescription oneOverIsoLUTDesc;
-  L1GTSingleInOutLUT::fillLUTDescriptions(oneOverIsoLUTDesc);
-  desc.add<edm::ParameterSetDescription>("one_over_iso_lut", oneOverIsoLUTDesc);
-
   edm::ParameterSetDescription scalesDesc;
   L1GTScales::fillDescriptions(scalesDesc);
   desc.add<edm::ParameterSetDescription>("scales", scalesDesc);
