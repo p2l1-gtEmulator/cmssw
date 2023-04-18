@@ -107,6 +107,8 @@ namespace l1t {
       result &= qual_.empty() ? true : std::find(qual_.begin(), qual_.end(), obj.hwQual().to_uint()) != qual_.end();
       result &=
           maxIso_ ? obj.hwIso().to_int() << scales_.isolation_shift() < maxIso_.value() * obj.hwPT().to_int() : true;
+
+      result &= minHwIso_ ? (obj.hwIso() > minHwIso_) : true;
       result &= regionsAbsEtaLowerBounds_.empty() ? true : checkEtadependentcuts(obj);
       return result;
     }
