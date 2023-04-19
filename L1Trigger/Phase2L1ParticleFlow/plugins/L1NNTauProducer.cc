@@ -279,8 +279,10 @@ void L1NNTauProducer::makeTau_HW(const l1t::PFCandidate& seed,
   //Firmware Tau
   l1ct::Tau l1ctTau;
   l1ctTau.hwPt = l1ct::pt_t(pt);  //l1gt is <16,11> and currently <16,14>
-  l1ctTau.hwEta = l1ct::eta_t(seed.eta() / l1ct::Scales::ETAPHI_LSB);
-  l1ctTau.hwPhi = l1ct::phi_t(seed.phi() / l1ct::Scales::ETAPHI_LSB);
+  l1ctTau.hwEta = l1ct::glbeta_t(seed.eta() / l1ct::Scales::ETAPHI_LSB);
+  l1ctTau.hwPhi = l1ct::glbphi_t(seed.phi() / l1ct::Scales::ETAPHI_LSB);
+  //l1ctTau.hwEta = l1ct::eta_t(seed.eta() / l1ct::Scales::ETAPHI_LSB);
+  //l1ctTau.hwPhi = l1ct::phi_t(seed.phi() / l1ct::Scales::ETAPHI_LSB);
 
   l1ctTau.hwSeedPt = seed.pt();
   l1ctTau.hwSeedZ0 = seed.hwZ0();
