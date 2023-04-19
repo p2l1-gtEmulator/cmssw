@@ -103,6 +103,7 @@ process.L1simulation_step = cms.Path(process.SimL1Emulator)
 process.endjob_step = cms.EndPath(process.endOfProcess)
 process.FEVTDEBUGHLToutput_step = cms.EndPath(process.FEVTDEBUGHLToutput)
 
+
 #GT emulator
 process.load('L1Trigger.Configuration.GTemulator_cff')
 process.GTemulation_step = cms.Path(process.GTemulator)
@@ -113,6 +114,9 @@ from L1Trigger.Phase2L1GT.l1tGTAlgoBlockProducer_cff import collectAlgorithmPath
 
 process.GToutput = cms.OutputModule("PoolOutputModule",
     outputCommands = cms.untracked.vstring('drop *',
+       #'keep *_l1ctLayer2*_*',
+       #'keep *_l1tLayer2EG_*_*',
+       #'keep *l1tLayer2EG*_*_*_L1TEmulation',
        'keep *P2GT*_*_*_L1TEmulation',
     ),
     fileName=cms.untracked.string("l1t_emulation.root")
