@@ -9,7 +9,7 @@
 
 namespace l1t {
   class L1GTScales {
-    static constexpr int RELATIVE_ISOLATION_RESOLUTION = 10; // Resolution = 1/2^RELATIVE_ISOLATION_RESOLUTION
+    static constexpr int RELATIVE_ISOLATION_RESOLUTION = 10;  // Resolution = 1/2^RELATIVE_ISOLATION_RESOLUTION
 
   public:
     L1GTScales(double pT_lsb,

@@ -106,7 +106,7 @@ namespace l1t {
     hwSeed_z0_ = gtTau.seed_z0.V.to_int();
     hwCharge_ = gtTau.charge.V.to_int();
     hwType_ = gtTau.type.V.to_int();
-    hwIso_ =  gtTau.isolation.V.to_int();
+    hwIso_ = gtTau.isolation.V.to_int();
     objectType_ = CL2Taus;
   }
 
