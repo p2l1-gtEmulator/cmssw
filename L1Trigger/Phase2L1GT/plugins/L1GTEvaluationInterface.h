@@ -53,7 +53,7 @@ namespace l1t {
 
     static constexpr std::size_t WIDTH = N;
 
-    virtual std::size_t packed_width() const override { return WIDTH; }
+    std::size_t packed_width() const override { return WIDTH; }
   };
 
   template <std::size_t N>
@@ -68,11 +68,11 @@ namespace l1t {
 
     virtual ap_uint<44> pack_common() const { return l1t_pack_int<ap_uint<44>>(valid, pT, phi, eta); }
 
-    virtual ap_uint<N> pack() const override { return pack_common(); }
+    ap_uint<N> pack() const override { return pack_common(); }
 
-    virtual ap_uint<N> unpack(const ap_uint<N>& packed) override { return l1t_unpack_int(packed, valid, pT, phi, eta); }
+    ap_uint<N> unpack(const ap_uint<N>& packed) override { return l1t_unpack_int(packed, valid, pT, phi, eta); }
 
-    virtual P2GTCandidate to_GTObject() const override {
+    P2GTCandidate to_GTObject() const override {
       P2GTCandidate gt_object;
       gt_object.setHwPT(pT);
       gt_object.setHwPhi(phi);
@@ -94,13 +94,13 @@ namespace l1t {
 
     ap_uint<46> pack_common() const { return l1t_pack_int<ap_uint<46>>(valid, pT, phi, scalar_sum_pT); }
 
-    virtual ap_uint<N> pack() const override { return pack_common(); }
+    ap_uint<N> pack() const override { return pack_common(); }
 
-    virtual ap_uint<N> unpack(const ap_uint<N>& packed) override {
+    ap_uint<N> unpack(const ap_uint<N>& packed) override {
       return l1t_unpack_int(packed, valid, pT, phi, scalar_sum_pT);
     }
 
-    virtual P2GTCandidate to_GTObject() const override {
+    P2GTCandidate to_GTObject() const override {
       P2GTCandidate gt_object;
       gt_object.setHwPT(pT);
       gt_object.setHwPhi(phi);
@@ -166,7 +166,7 @@ namespace l1t {
       return l1t_pack_int<ap_uint<WIDTH>>(L1TGT_Common3Vector::pack_common(), z0, d0, charge, qual);
     }
 
-    ap_uint<WIDTH> unpack(const ap_uint<WIDTH>& packed) {
+    ap_uint<WIDTH> unpack(const ap_uint<WIDTH>& packed) override {
       return l1t_unpack_int(L1TGT_Common3Vector::unpack(packed), z0, d0, charge, qual);
     }
 
@@ -467,7 +467,7 @@ namespace l1t {
       return l1t_pack_int<ap_uint<WIDTH>>(L1TGT_Common3Vector::pack_common(), seed_pT, seed_z0, charge, type);
     }
 
-    ap_uint<WIDTH> unpack(const ap_uint<WIDTH>& packed) {
+    ap_uint<WIDTH> unpack(const ap_uint<WIDTH>& packed) override {
       return l1t_unpack_int(L1TGT_Common3Vector::unpack(packed), seed_pT, seed_z0, charge, type);
     }
 
