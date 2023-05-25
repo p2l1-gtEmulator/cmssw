@@ -381,7 +381,7 @@ L1GTAlgoBlockProducer::L1GTAlgoBlockProducer(const edm::ParameterSet& config) {
     definition.evaluator_ = shuntingYardAlgorithm.finish();
 
     definition.evaluator_->init(iC);
-    algoDefinitions_.emplace(name, std::move(definition));
+    algoDefinitions_.emplace(std::move(name), std::move(definition));
   }
 
   consumesMany<P2GTCandidateVectorRef>();
