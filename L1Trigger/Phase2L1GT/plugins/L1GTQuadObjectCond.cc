@@ -55,6 +55,7 @@ private:
   const edm::EDGetTokenT<P2GTCandidateCollection> token2_;
   const edm::EDGetTokenT<P2GTCandidateCollection> token3_;
   const edm::EDGetTokenT<P2GTCandidateCollection> token4_;
+  const edm::EDGetTokenT<P2GTCandidateCollection> primVertToken_;
 };
 
 L1GTQuadObjectCond::L1GTQuadObjectCond(const edm::ParameterSet& config)
@@ -92,7 +93,8 @@ L1GTQuadObjectCond::L1GTQuadObjectCond(const edm::ParameterSet& config)
                          ? token2_
                          : (collection3Cuts_.tag() == collection4Cuts_.tag()
                                 ? token3_
-                                : consumes<P2GTCandidateCollection>(collection4Cuts_.tag())))) {
+                                : consumes<P2GTCandidateCollection>(collection4Cuts_.tag())))),
+      primVertToken_(consumes<P2GTCandidateCollection>(config.getParameter<edm::InputTag>("primVertTag"))) {
   produces<P2GTCandidateVectorRef>(collection1Cuts_.tag().instance());
 
   if (!(collection1Cuts_.tag() == collection2Cuts_.tag())) {
@@ -136,6 +138,8 @@ void L1GTQuadObjectCond::fillDescriptions(edm::ConfigurationDescriptions& descri
   L1GTScales::fillPSetDescription(scalesDesc);
   desc.add<edm::ParameterSetDescription>("scales", scalesDesc);
 
+  desc.add<edm::InputTag>("primVertTag");
+
   desc.addUntracked<bool>("sanity_checks", false);
   desc.addUntracked<bool>("inv_mass_checks", false);
 
@@ -173,6 +177,7 @@ bool L1GTQuadObjectCond::filter(edm::StreamID, edm::Event& event, const edm::Eve
   edm::Handle<P2GTCandidateCollection> col2 = event.getHandle(token2_);
   edm::Handle<P2GTCandidateCollection> col3 = event.getHandle(token3_);
   edm::Handle<P2GTCandidateCollection> col4 = event.getHandle(token4_);
+  edm::Handle<P2GTCandidateCollection> primVertCol = event.getHandle(primVertToken_);
 
   bool condition_result = false;
 
@@ -214,9 +219,13 @@ bool L1GTQuadObjectCond::filter(edm::StreamID, edm::Event& event, const edm::Eve
 
           bool pass = true;
           pass &= collection1Cuts_.checkObject(col1->at(idx1));
+          pass &= collection1Cuts_.checkPrimaryVertices(col1->at(idx1), *primVertCol);
           pass &= collection2Cuts_.checkObject(col2->at(idx2));
+          pass &= collection2Cuts_.checkPrimaryVertices(col2->at(idx2), *primVertCol);
           pass &= collection3Cuts_.checkObject(col3->at(idx3));
+          pass &= collection3Cuts_.checkPrimaryVertices(col3->at(idx3), *primVertCol);
           pass &= collection4Cuts_.checkObject(col4->at(idx4));
+          pass &= collection4Cuts_.checkPrimaryVertices(col4->at(idx4), *primVertCol);
           pass &= delta12Cuts_.checkObjects(col1->at(idx1), col2->at(idx2), massErrors);
           pass &= delta13Cuts_.checkObjects(col1->at(idx1), col3->at(idx3), massErrors);
           pass &= delta23Cuts_.checkObjects(col2->at(idx2), col3->at(idx3), massErrors);

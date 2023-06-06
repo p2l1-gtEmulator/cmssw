@@ -215,8 +215,8 @@ algorithms.append(cms.PSet(expression = cms.string("pSingleIsoTkEle28")))
 #SingleIsoTkEle28Endcap = l1tGTSingleObjectCond.clone(
 #    tag = cms.InputTag("l1tGTProducer", "CL2Electrons"),
 #    minPt = cms.double(21.9),
-#    minEtaAbs = cms.double(1.479),
-#    maxEtaAbs = cms.double(2.4),
+#    minAbsEta = cms.double(1.479),
+#    maxAbsEta = cms.double(2.4),
 #    qual = cms.vuint32(0b0010,0b0011,0b0110,0b1010,0b0111,0b1011,0b1110,0b1111),
     #maxIso = cms.double(0.28)
 #)
@@ -256,8 +256,8 @@ algorithms.append(cms.PSet(expression=cms.string("pSingleIsoTkPho36")))
 #SingleIsoTkPho36Endcap = l1tGTSingleObjectCond.clone(
 #    tag = cms.InputTag("l1tGTProducer", "CL2Photons"),
 #    minPt = cms.double(30.8),
-#    minEtaAbs = cms.double(1.479),
-#    maxEtaAbs = cms.double(2.4),
+#    minAbsEta = cms.double(1.479),
+#    maxAbsEta = cms.double(2.4),
 #    qual = cms.vuint32(0b0100),
 #    maxIso = cms.double(0.205)
 #)
@@ -353,8 +353,8 @@ algorithms.append(cms.PSet(expression = cms.string("pDoubleIsoTkPho22_12")))
 #SingleIsoTkPho22Endcap = l1tGTSingleObjectCond.clone(
 #    tag = cms.InputTag("l1tGTProducer", "CL2Photons"),
 #    minPt = cms.double(17.1),
-#    minEtaAbs = cms.double(1.479),
-#    maxEtaAbs = cms.double(2.4),
+#    minAbsEta = cms.double(1.479),
+#    maxAbsEta = cms.double(2.4),
 #    qual = cms.vuint32(0b0100),
 #    maxIso = cms.double(0.205)
 #)
@@ -373,8 +373,8 @@ algorithms.append(cms.PSet(expression = cms.string("pDoubleIsoTkPho22_12")))
 #SingleIsoTkPho12EndcapPos = l1tGTSingleObjectCond.clone(
 #    tag = cms.InputTag("l1tGTProducer", "CL2Photons"),
 #    minPt = cms.double(8.8),
-#    minEtaAbs = cms.double(1.479),
-#    maxEtaAbs = cms.double(2.4),
+#    minAbsEta = cms.double(1.479),
+#    maxAbsEta = cms.double(2.4),
 #    qual = cms.vuint32(0b0100),
 #    maxIso = cms.double(0.205)
 #)
