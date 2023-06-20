@@ -172,7 +172,7 @@ namespace l1t {
 
     P2GTCandidate to_GTObject() const override {
       P2GTCandidate gt_object(L1TGT_Common3Vector::to_GTObject());
-      gt_object.setHwZ0(static_cast<int>(z0) << 5);
+      gt_object.setHwZ0(static_cast<int>(z0) << 12);
       gt_object.setHwD0(static_cast<int>(d0) << 5);
       gt_object.setHwCharge(charge);
       gt_object.setHwQual(qual);
@@ -211,7 +211,7 @@ namespace l1t {
 
     P2GTCandidate to_GTObject() const override {
       P2GTCandidate gt_object(L1TGT_Common3Vector::to_GTObject());
-      gt_object.setHwZ0(z0);
+      gt_object.setHwZ0(static_cast<int>(z0) << 7);
       gt_object.setHwD0(static_cast<int>(d0) << 2);
       gt_object.setHwCharge(charge);
       gt_object.setHwQual(qual);
@@ -273,7 +273,7 @@ namespace l1t {
 
     P2GTCandidate to_GTObject() const override {
       P2GTCandidate gt_object(L1TGT_Common3Vector::to_GTObject());
-      gt_object.setHwZ0(z0);
+      gt_object.setHwZ0(static_cast<int>(z0) << 7);
       gt_object.setHwNumber_of_tracks(number_of_tracks);
 
       return gt_object;
@@ -301,7 +301,7 @@ namespace l1t {
 
     P2GTCandidate to_GTObject() const override {
       P2GTCandidate gt_object(L1TGT_Common3Vector::to_GTObject());
-      gt_object.setHwZ0(z0);
+      gt_object.setHwZ0(static_cast<int>(z0) << 7);
       gt_object.setHwNumber_of_tracks(number_of_tracks);
       gt_object.setHwD0(d0);
 
@@ -367,7 +367,7 @@ namespace l1t {
 
     P2GTCandidate to_GTObject() const override {
       P2GTCandidate gt_object(L1TGT_Common3Vector::to_GTObject());
-      gt_object.setHwZ0(z0);
+      gt_object.setHwZ0(static_cast<int>(z0) << 7);
 
       return gt_object;
     }
@@ -397,7 +397,7 @@ namespace l1t {
 
     ap_uint<WIDTH> pack() const override {
       return l1t_pack_int<ap_uint<WIDTH>>(
-          valid, z0 /*, number_of_tracks_in_pv, sum_pT_pv, qual, number_of_tracks_not_in_pv */);  // TODO: Maybe later
+          valid, z0, number_of_tracks_in_pv, sum_pT_pv, qual, number_of_tracks_not_in_pv);
     }
 
     ap_uint<WIDTH> unpack(const ap_uint<WIDTH>& packed) override {
@@ -406,7 +406,7 @@ namespace l1t {
 
     P2GTCandidate to_GTObject() const override {
       P2GTCandidate gt_object;
-      gt_object.setHwZ0(z0);
+      gt_object.setHwZ0(static_cast<int>(z0) * 5);
       gt_object.setHwNumber_of_tracks_in_pv(number_of_tracks_in_pv);
       gt_object.setHwSum_pT_pv(sum_pT_pv);
       gt_object.setHwQual(qual);
@@ -434,7 +434,7 @@ namespace l1t {
 
     P2GTCandidate to_GTObject() const override {
       P2GTCandidate gt_object(L1TGT_Common3Vector::to_GTObject());
-      gt_object.setHwZ0(z0);
+      gt_object.setHwZ0(static_cast<int>(z0) << 7);
 
       return gt_object;
     }
@@ -505,7 +505,7 @@ namespace l1t {
       gt_object.setHwQual(qual);
       gt_object.setHwIso(iso);
       gt_object.setHwCharge(charge);
-      gt_object.setHwZ0(z0);
+      gt_object.setHwZ0(static_cast<int>(z0) << 7);
 
       return gt_object;
     }
