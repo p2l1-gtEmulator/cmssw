@@ -69,7 +69,7 @@ bool L1GTSingleObjectCond::filter(edm::StreamID, edm::Event& event, const edm::E
   for (std::size_t idx = 0; idx < col->size(); ++idx) {
     bool pass{collection.checkObject(col->at(idx))};
     pass &= collection.checkPrimaryVertices(col->at(idx), *primVertCol);
-    
+
     condition_result |= pass;
 
     if (pass) {

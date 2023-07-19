@@ -59,6 +59,10 @@ namespace l1t {
               "minCombPt", config, [&scales](double value) { return scales.to_hw_PtSquared(value); })),
           maxPTSquared_(getOptionalParam<double, double>(
               "maxCombPt", config, [&scales](double value) { return scales.to_hw_PtSquared(value); })),
+          minInvMassSqrOver2DRSqr_(getOptionalParam<double, double>(
+              "minInvMassOverDR", config, [&scales](double value) { return scales.to_hw_InvMassSqrDiv2(value); })),
+          maxInvMassSqrOver2DRSqr_(getOptionalParam<double, double>(
+              "maxInvMassOverDR", config, [&scales](double value) { return scales.to_hw_InvMassSqrDiv2(value); })),
           os_(config.getParameter<bool>("os")),
           ss_(config.getParameter<bool>("ss")),
           enable_sanity_checks_(enable_sanity_checks),
@@ -71,7 +75,8 @@ namespace l1t {
 
       std::optional<uint32_t> dEta;
 
-      if (minDEta_ || maxDEta_ || minDRSquared_ || maxDRSquared_ || minInvMassSqrDiv2_ || maxInvMassSqrDiv2_) {
+      if (minDEta_ || maxDEta_ || minDRSquared_ || maxDRSquared_ || minInvMassSqrDiv2_ || maxInvMassSqrDiv2_ ||
+          minInvMassSqrOver2DRSqr_ || maxInvMassSqrOver2DRSqr_) {
         dEta = (obj1.hwEta() > obj2.hwEta()) ? obj1.hwEta().to_int() - obj2.hwEta().to_int()
                                              : obj2.hwEta().to_int() - obj1.hwEta().to_int();
         res &= minDEta_ ? dEta > minDEta_ : true;
@@ -84,7 +89,8 @@ namespace l1t {
       std::optional<uint32_t> dPhi;
 
       if (minDPhi_ || maxDPhi_ || minDRSquared_ || maxDRSquared_ || minInvMassSqrDiv2_ || maxInvMassSqrDiv2_ ||
-          minTransMassSqrDiv2_ || maxTransMassSqrDiv2_ || minPTSquared_ || maxPTSquared_) {
+          minTransMassSqrDiv2_ || maxTransMassSqrDiv2_ || minPTSquared_ || maxPTSquared_ || minInvMassSqrOver2DRSqr_ ||
+          maxInvMassSqrOver2DRSqr_) {
         dPhi = HW_PI - abs(abs(obj1.hwPhi().to_int() - obj2.hwPhi().to_int()) - HW_PI);
       }
 
@@ -97,8 +103,9 @@ namespace l1t {
         res &= maxDz_ ? dZ < maxDz_ : true;
       }
 
-      if (minDRSquared_ || maxDRSquared_) {
-        uint32_t dRSquared = dEta.value() * dEta.value() + dPhi.value() * dPhi.value();
+      uint32_t dRSquared = 0;
+      if (minDRSquared_ || maxDRSquared_ || minInvMassSqrOver2DRSqr_ || maxInvMassSqrOver2DRSqr_) {
+        dRSquared = dEta.value() * dEta.value() + dPhi.value() * dPhi.value();
         res &= minDRSquared_ ? dRSquared > minDRSquared_ : true;
         res &= maxDRSquared_ ? dRSquared < maxDRSquared_ : true;
       }
@@ -137,8 +144,8 @@ namespace l1t {
         }
       }
 
-      if (minInvMassSqrDiv2_ || maxInvMassSqrDiv2_) {
-        int64_t invMassSqrDiv2;
+      int64_t invMassSqrDiv2;
+      if (minInvMassSqrDiv2_ || maxInvMassSqrDiv2_ || minInvMassSqrOver2DRSqr_ || maxInvMassSqrOver2DRSqr_) {
         if (dEta < DETA_LUT_SPLIT) {
           // dEta [0, 2pi)
           invMassSqrDiv2 = obj1.hwPT().to_int64() * obj2.hwPT().to_int64() * (lutCoshDEta - lutCosDPhi);
@@ -195,6 +202,35 @@ namespace l1t {
                    : true;
       }
 
+      if (minInvMassSqrOver2DRSqr_ || maxInvMassSqrOver2DRSqr_) {
+        ap_uint<96> invMassSqrDiv2Shift = ap_uint<96>(invMassSqrDiv2)
+                                          << L1GTScales::INV_MASS_SQR_OVER_2_DR_SQR_RESOLUTION;
+
+        if (dEta < DETA_LUT_SPLIT) {
+          res &= minInvMassSqrOver2DRSqr_
+                     ? invMassSqrDiv2Shift >
+                           ap_uint<64>(std::round(minInvMassSqrOver2DRSqr_.value() * coshEtaLUT_.output_scale())) *
+                               dRSquared
+                     : true;
+          res &= maxInvMassSqrOver2DRSqr_
+                     ? invMassSqrDiv2Shift <
+                           ap_uint<64>(std::round(maxInvMassSqrOver2DRSqr_.value() * coshEtaLUT_.output_scale())) *
+                               dRSquared
+                     : true;
+        } else {
+          res &= minInvMassSqrOver2DRSqr_
+                     ? invMassSqrDiv2Shift >
+                           ap_uint<64>(std::round(minInvMassSqrOver2DRSqr_.value() * coshEtaLUT2_.output_scale())) *
+                               dRSquared
+                     : true;
+          res &= maxInvMassSqrOver2DRSqr_
+                     ? invMassSqrDiv2Shift <
+                           ap_uint<64>(std::round(maxInvMassSqrOver2DRSqr_.value() * coshEtaLUT2_.output_scale())) *
+                               dRSquared
+                     : true;
+        }
+      }
+
       return res;
     }
 
@@ -227,6 +263,8 @@ namespace l1t {
       desc.addOptional<double>("maxTransMass");
       desc.addOptional<double>("minCombPt");
       desc.addOptional<double>("maxCombPt");
+      desc.addOptional<double>("minInvMassOverDR");
+      desc.addOptional<double>("maxInvMassOverDR");
       desc.add<bool>("os", false);
       desc.add<bool>("ss", false);
     }
@@ -255,6 +293,9 @@ namespace l1t {
 
     const std::optional<double> minPTSquared_;
     const std::optional<double> maxPTSquared_;
+
+    const std::optional<double> minInvMassSqrOver2DRSqr_;
+    const std::optional<double> maxInvMassSqrOver2DRSqr_;
 
     const bool os_;  // Opposite sign
     const bool ss_;  // Same sign

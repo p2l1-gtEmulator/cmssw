@@ -60,14 +60,14 @@ namespace l1t {
           maxAbsEta_(getOptionalParam<int, double>(
               "maxAbsEta", config, [&scales](double value) { return scales.to_hw_eta(value); })),
           maxIso_(getOptionalParam<int, double>(
-              "maxIso", config, [&scales](double value) { return scales.to_hw_isolation(value); })),
+              "maxIso", config, [&scales](double value) { return scales.to_hw_relative_isolation(value); })),
           minHwIso_(getOptionalParam<int>("minHwIso", config)),
           regionsAbsEtaLowerBounds_(getParamVector<int, double>(
               "regionsAbsEtaLowerBounds", config, [&scales](double value) { return scales.to_hw_eta(value); })),
           regionsMinPt_(getParamVector<int, double>(
               "regionsMinPt", config, [&scales](double value) { return scales.to_hw_pT(value); })),
           regionsMaxIso_(getParamVector<int, double>(
-              "regionsMaxIso", config, [&scales](double value) { return scales.to_hw_isolation(value); })),
+              "regionsMaxIso", config, [&scales](double value) { return scales.to_hw_relative_isolation(value); })),
           regionsQual_(config.getParameter<std::vector<unsigned int>>("regionsQual")),
           minPrimVertDz_(getOptionalParam<int, double>(
               "minPrimVertDz", config, [&scales](double value) { return scales.to_hw_z0(value); })),
