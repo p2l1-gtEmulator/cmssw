@@ -12,6 +12,7 @@
 
 #include <functional>
 #include <optional>
+#include <cstdint>
 
 namespace l1t {
 
@@ -97,8 +98,9 @@ namespace l1t {
       result &= maxScalarSumPt_ ? (obj.hwSca_sum() < minScalarSumPt_) : true;
 
       result &= qual_.empty() ? true : std::find(qual_.begin(), qual_.end(), obj.hwQual().to_uint()) != qual_.end();
-      result &=
-          maxIso_ ? obj.hwIso().to_int() << scales_.isolation_shift() < maxIso_.value() * obj.hwPT().to_int() : true;
+      result &= maxIso_ ? obj.hwIso().to_int64() << scales_.isolation_shift() <
+                              static_cast<int64_t>(maxIso_.value()) * obj.hwPT().to_int64()
+                        : true;
 
       result &= minHwIso_ ? (obj.hwIso() > minHwIso_) : true;
       result &= regionsAbsEtaLowerBounds_.empty() ? true : checkEtaDependentCuts(obj);
@@ -162,9 +164,9 @@ namespace l1t {
       unsigned int index;
       index = atIndex(obj.hwEta());
       res &= regionsMinPt_.empty() ? true : obj.hwPT() > regionsMinPt_[index];
-      res &= regionsMaxIso_.empty()
-                 ? true
-                 : obj.hwIso().to_int() << scales_.isolation_shift() < regionsMaxIso_[index] * obj.hwPT().to_int();
+      res &= regionsMaxIso_.empty() ? true
+                                    : obj.hwIso().to_int64() << scales_.isolation_shift() <
+                                          static_cast<int64_t>(regionsMaxIso_[index]) * obj.hwPT().to_int64();
       res &= regionsQual_.empty() ? true : (obj.hwQual().to_uint() & regionsQual_[index]) == regionsQual_[index];
       return res;
     }
