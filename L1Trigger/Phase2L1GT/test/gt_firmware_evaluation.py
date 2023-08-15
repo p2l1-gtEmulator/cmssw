@@ -9,7 +9,7 @@ process.load('Configuration.StandardSequences.Services_cff')
 
 # Input source
 process.source = cms.Source("EmptySource")
-process.maxEvents = cms.untracked.PSet(input=cms.untracked.int32(72))
+process.maxEvents = cms.untracked.PSet(input=cms.untracked.int32(94))
 
 options = VarParsing.VarParsing()
 options.register ("platform",
