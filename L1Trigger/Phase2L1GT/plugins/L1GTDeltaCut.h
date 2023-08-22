@@ -7,8 +7,6 @@
 
 #include "L1Trigger/Phase2L1GT/interface/L1GTInvariantMassError.h"
 
-#include "FWCore/Framework/interface/MakerMacros.h"
-
 #include "L1Trigger/Phase2L1GT/interface/L1GTScales.h"
 
 #include "L1GTSingleInOutLUT.h"
@@ -20,8 +18,6 @@ namespace l1t {
 
   class L1GTDeltaCut {
   public:
-    static constexpr uint32_t DETA_LUT_SPLIT = 1 << 13;  // hw 2pi
-
     L1GTDeltaCut(const edm::ParameterSet& config,
                  const edm::ParameterSet& lutConfig,
                  const L1GTScales& scales,
@@ -115,7 +111,9 @@ namespace l1t {
 
       int32_t lutCoshDEta;
       if (dEta) {
-        lutCoshDEta = dEta < DETA_LUT_SPLIT ? coshEtaLUT_[dEta.value()] : coshEtaLUT2_[dEta.value() - DETA_LUT_SPLIT];
+        lutCoshDEta = dEta < L1GTSingleInOutLUT::DETA_LUT_SPLIT
+                          ? coshEtaLUT_[dEta.value()]
+                          : coshEtaLUT2_[dEta.value() - L1GTSingleInOutLUT::DETA_LUT_SPLIT];
       }
 
       // Optimization: (cos(x + pi) = -cos(x), x in [0, pi))
@@ -126,8 +124,10 @@ namespace l1t {
 
       if (enable_sanity_checks_ && dEta && dPhi) {
         // Check whether the LUT error is smaller or equal than the expected maximum LUT error
-        double coshEtaLUTMax = dEta < DETA_LUT_SPLIT ? coshEtaLUT_.hwMax_error() : coshEtaLUT2_.hwMax_error();
-        double etaLUTScale = dEta < DETA_LUT_SPLIT ? coshEtaLUT_.output_scale() : coshEtaLUT2_.output_scale();
+        double coshEtaLUTMax =
+            dEta < L1GTSingleInOutLUT::DETA_LUT_SPLIT ? coshEtaLUT_.hwMax_error() : coshEtaLUT2_.hwMax_error();
+        double etaLUTScale =
+            dEta < L1GTSingleInOutLUT::DETA_LUT_SPLIT ? coshEtaLUT_.output_scale() : coshEtaLUT2_.output_scale();
 
         if (std::abs(lutCoshDEta - etaLUTScale * std::cosh(dEta.value() * scales_.eta_lsb())) > coshEtaLUTMax) {
           edm::LogError("COSH LUT") << "Difference larger than max LUT error: " << coshEtaLUTMax
@@ -146,7 +146,7 @@ namespace l1t {
 
       int64_t invMassSqrDiv2;
       if (minInvMassSqrDiv2_ || maxInvMassSqrDiv2_ || minInvMassSqrOver2DRSqr_ || maxInvMassSqrOver2DRSqr_) {
-        if (dEta < DETA_LUT_SPLIT) {
+        if (dEta < L1GTSingleInOutLUT::DETA_LUT_SPLIT) {
           // dEta [0, 2pi)
           invMassSqrDiv2 = obj1.hwPT().to_int64() * obj2.hwPT().to_int64() * (lutCoshDEta - lutCosDPhi);
           res &= minInvMassSqrDiv2_
@@ -172,9 +172,10 @@ namespace l1t {
               std::sqrt(2 * obj1.hwPT().to_double() * obj2.hwPT().to_double() *
                         (std::cosh(dEta.value() * scales_.eta_lsb()) - std::cos(dPhi.value() * scales_.phi_lsb())));
 
-          double lutInvMass = scales_.pT_lsb() * std::sqrt(2 * static_cast<double>(invMassSqrDiv2) /
-                                                           (dEta < DETA_LUT_SPLIT ? coshEtaLUT_.output_scale()
-                                                                                  : coshEtaLUT2_.output_scale()));
+          double lutInvMass =
+              scales_.pT_lsb() * std::sqrt(2 * static_cast<double>(invMassSqrDiv2) /
+                                           (dEta < L1GTSingleInOutLUT::DETA_LUT_SPLIT ? coshEtaLUT_.output_scale()
+                                                                                      : coshEtaLUT2_.output_scale()));
 
           double error = std::abs(precInvMass - lutInvMass);
           massErrors.emplace_back(InvariantMassError{error, error / precInvMass, precInvMass});
@@ -193,12 +194,12 @@ namespace l1t {
 
       if (minTransMassSqrDiv2_ || maxTransMassSqrDiv2_) {
         int64_t transMassDiv2 = obj1.hwPT().to_int64() * obj2.hwPT().to_int64() *
-                                (static_cast<int64_t>(coshEtaLUT_.output_scale()) - lutCosDPhi);
+                                (static_cast<int64_t>(std::round(cosPhiLUT_.output_scale())) - lutCosDPhi);
         res &= minTransMassSqrDiv2_
-                   ? transMassDiv2 > std::round(minTransMassSqrDiv2_.value() * coshEtaLUT_.output_scale())
+                   ? transMassDiv2 > std::round(minTransMassSqrDiv2_.value() * cosPhiLUT_.output_scale())
                    : true;
         res &= maxTransMassSqrDiv2_
-                   ? transMassDiv2 < std::round(maxTransMassSqrDiv2_.value() * coshEtaLUT_.output_scale())
+                   ? transMassDiv2 < std::round(maxTransMassSqrDiv2_.value() * cosPhiLUT_.output_scale())
                    : true;
       }
 
@@ -206,7 +207,7 @@ namespace l1t {
         ap_uint<96> invMassSqrDiv2Shift = ap_uint<96>(invMassSqrDiv2)
                                           << L1GTScales::INV_MASS_SQR_OVER_2_DR_SQR_RESOLUTION;
 
-        if (dEta < DETA_LUT_SPLIT) {
+        if (dEta < L1GTSingleInOutLUT::DETA_LUT_SPLIT) {
           res &= minInvMassSqrOver2DRSqr_
                      ? invMassSqrDiv2Shift >
                            ap_uint<64>(std::round(minInvMassSqrOver2DRSqr_.value() * coshEtaLUT_.output_scale())) *

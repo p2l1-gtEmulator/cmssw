@@ -13,6 +13,7 @@
 #include "L1Trigger/Phase2L1GT/interface/L1GTScales.h"
 #include "L1GTSingleCollectionCut.h"
 #include "L1GTDeltaCut.h"
+#include "L1GTMultiBodyCut.h"
 #include "L1GTSingleInOutLUT.h"
 
 #include <cinttypes>
@@ -51,6 +52,12 @@ private:
   const L1GTDeltaCut delta24Cuts_;
   const L1GTDeltaCut delta34Cuts_;
 
+  const L1GTMultiBodyCut delta123Cuts_;
+  const L1GTMultiBodyCut delta124Cuts_;
+  const L1GTMultiBodyCut delta234Cuts_;
+
+  const L1GTMultiBodyCut delta1234Cuts_;
+
   const edm::EDGetTokenT<P2GTCandidateCollection> token1_;
   const edm::EDGetTokenT<P2GTCandidateCollection> token2_;
   const edm::EDGetTokenT<P2GTCandidateCollection> token3_;
@@ -78,6 +85,10 @@ L1GTQuadObjectCond::L1GTQuadObjectCond(const edm::ParameterSet& config)
           config.getParameter<edm::ParameterSet>("delta24"), config, scales_, enable_sanity_checks_, inv_mass_checks_),
       delta34Cuts_(
           config.getParameter<edm::ParameterSet>("delta34"), config, scales_, enable_sanity_checks_, inv_mass_checks_),
+      delta123Cuts_(config.getParameter<edm::ParameterSet>("delta123"), config, scales_, inv_mass_checks_),
+      delta124Cuts_(config.getParameter<edm::ParameterSet>("delta124"), config, scales_, inv_mass_checks_),
+      delta234Cuts_(config.getParameter<edm::ParameterSet>("delta234"), config, scales_, inv_mass_checks_),
+      delta1234Cuts_(config, config, scales_, inv_mass_checks_),
       token1_(consumes<P2GTCandidateCollection>(collection1Cuts_.tag())),
       token2_(collection1Cuts_.tag() == collection2Cuts_.tag()
                   ? token1_
@@ -167,6 +178,20 @@ void L1GTQuadObjectCond::fillDescriptions(edm::ConfigurationDescriptions& descri
   L1GTDeltaCut::fillPSetDescription(delta34Desc);
   desc.add<edm::ParameterSetDescription>("delta34", delta34Desc);
 
+  edm::ParameterSetDescription delta123Desc;
+  L1GTMultiBodyCut::fillPSetDescription(delta123Desc);
+  desc.add<edm::ParameterSetDescription>("delta123", delta123Desc);
+
+  edm::ParameterSetDescription delta124Desc;
+  L1GTMultiBodyCut::fillPSetDescription(delta124Desc);
+  desc.add<edm::ParameterSetDescription>("delta124", delta124Desc);
+
+  edm::ParameterSetDescription delta234Desc;
+  L1GTMultiBodyCut::fillPSetDescription(delta234Desc);
+  desc.add<edm::ParameterSetDescription>("delta234", delta234Desc);
+
+  L1GTMultiBodyCut::fillPSetDescription(desc);
+
   L1GTDeltaCut::fillLUTDescriptions(desc);
 
   descriptions.addWithDefaultLabel(desc);
@@ -232,6 +257,12 @@ bool L1GTQuadObjectCond::filter(edm::StreamID, edm::Event& event, const edm::Eve
           pass &= delta14Cuts_.checkObjects(col1->at(idx1), col4->at(idx4), massErrors);
           pass &= delta24Cuts_.checkObjects(col2->at(idx2), col4->at(idx4), massErrors);
           pass &= delta34Cuts_.checkObjects(col3->at(idx3), col4->at(idx4), massErrors);
+          pass &= delta123Cuts_.checkObjects(col1->at(idx1), col2->at(idx2), col3->at(idx3), massErrors);
+          pass &= delta124Cuts_.checkObjects(col1->at(idx1), col2->at(idx2), col4->at(idx4), massErrors);
+          pass &= delta234Cuts_.checkObjects(col2->at(idx2), col3->at(idx3), col4->at(idx4), massErrors);
+          pass &=
+              delta1234Cuts_.checkObjects(col1->at(idx1), col2->at(idx2), col3->at(idx3), col4->at(idx4), massErrors);
+
           condition_result |= pass;
 
           if (pass) {
