@@ -13,6 +13,7 @@
 #include "L1GTOptionalParam.h"
 
 #include <optional>
+#include <cinttypes>
 
 namespace l1t {
 
@@ -26,15 +27,31 @@ namespace l1t {
           coshEtaLUT_(lutConfig.getParameterSet("cosh_eta_lut")),
           coshEtaLUT2_(lutConfig.getParameterSet("cosh_eta_lut2")),
           cosPhiLUT_(lutConfig.getParameterSet("cos_phi_lut")),
-          minInvMassSqrDiv2_(getOptionalParam<double, double>(
-              "minInvMass", config, [&scales](double value) { return scales.to_hw_InvMassSqrDiv2(value); })),
-          maxInvMassSqrDiv2_(getOptionalParam<double, double>(
-              "maxInvMass", config, [&scales](double value) { return scales.to_hw_InvMassSqrDiv2(value); })),
-          minTransMassSqrDiv2_(getOptionalParam<double, double>(
-              "minTransMass", config, [&scales](double value) { return scales.to_hw_TransMassSqrDiv2(value); })),
-          maxTransMassSqrDiv2_(getOptionalParam<double, double>(
-              "maxTransMass", config, [&scales](double value) { return scales.to_hw_TransMassSqrDiv2(value); })),
-          scale_normal_factor_(std::ceil(std::ceil(coshEtaLUT_.output_scale() / coshEtaLUT2_.output_scale()))),
+          minInvMassSqrDiv2_(getOptionalParam<int64_t, double>("minInvMass",
+                                                               config,
+                                                               [&](double value) {
+                                                                 return std::round(scales.to_hw_InvMassSqrDiv2(value) *
+                                                                                   cosPhiLUT_.output_scale());
+                                                               })),
+          maxInvMassSqrDiv2_(getOptionalParam<int64_t, double>("maxInvMass",
+                                                               config,
+                                                               [&](double value) {
+                                                                 return std::round(scales.to_hw_InvMassSqrDiv2(value) *
+                                                                                   cosPhiLUT_.output_scale());
+                                                               })),
+          minTransMassSqrDiv2_(getOptionalParam<int64_t, double>(
+              "minTransMass",
+              config,
+              [&](double value) {
+                return std::round(scales.to_hw_TransMassSqrDiv2(value) * cosPhiLUT_.output_scale());
+              })),
+          maxTransMassSqrDiv2_(getOptionalParam<int64_t, double>(
+              "maxTransMass",
+              config,
+              [&](double value) {
+                return std::round(scales.to_hw_TransMassSqrDiv2(value) * cosPhiLUT_.output_scale());
+              })),
+          scale_normal_factor_(std::ceil(coshEtaLUT_.output_scale() / coshEtaLUT2_.output_scale())),
           inv_mass_checks_(inv_mass_checks) {}
 
     bool checkObjects(const P2GTCandidate& obj1,
@@ -49,10 +66,8 @@ namespace l1t {
                                  calc2BodyInvMass(obj2, obj3, massErrors) + calc2BodyInvMass(obj1, obj4, massErrors) +
                                  calc2BodyInvMass(obj2, obj4, massErrors) + calc2BodyInvMass(obj3, obj4, massErrors);
 
-        res &= minInvMassSqrDiv2_ ? invMassSqrDiv2 > std::round(minInvMassSqrDiv2_.value() * coshEtaLUT_.output_scale())
-                                  : true;
-        res &= maxInvMassSqrDiv2_ ? invMassSqrDiv2 < std::round(maxInvMassSqrDiv2_.value() * coshEtaLUT_.output_scale())
-                                  : true;
+        res &= minInvMassSqrDiv2_ ? invMassSqrDiv2 > minInvMassSqrDiv2_.value() : true;
+        res &= maxInvMassSqrDiv2_ ? invMassSqrDiv2 < maxInvMassSqrDiv2_.value() : true;
       }
 
       if (minTransMassSqrDiv2_ || maxTransMassSqrDiv2_) {
@@ -60,12 +75,8 @@ namespace l1t {
                                 calc2BodyTransMass(obj2, obj3) + calc2BodyTransMass(obj1, obj4) +
                                 calc2BodyTransMass(obj2, obj4) + calc2BodyTransMass(obj3, obj4);
 
-        res &= minTransMassSqrDiv2_
-                   ? transMassDiv2 > std::round(minTransMassSqrDiv2_.value() * cosPhiLUT_.output_scale())
-                   : true;
-        res &= maxTransMassSqrDiv2_
-                   ? transMassDiv2 < std::round(maxTransMassSqrDiv2_.value() * cosPhiLUT_.output_scale())
-                   : true;
+        res &= minTransMassSqrDiv2_ ? transMassDiv2 > minTransMassSqrDiv2_.value() : true;
+        res &= maxTransMassSqrDiv2_ ? transMassDiv2 < maxTransMassSqrDiv2_.value() : true;
       }
 
       return res;
@@ -81,22 +92,16 @@ namespace l1t {
         int64_t invMassSqrDiv2 = calc2BodyInvMass(obj1, obj2, massErrors) + calc2BodyInvMass(obj1, obj3, massErrors) +
                                  calc2BodyInvMass(obj2, obj3, massErrors);
 
-        res &= minInvMassSqrDiv2_ ? invMassSqrDiv2 > std::round(minInvMassSqrDiv2_.value() * coshEtaLUT_.output_scale())
-                                  : true;
-        res &= maxInvMassSqrDiv2_ ? invMassSqrDiv2 < std::round(maxInvMassSqrDiv2_.value() * coshEtaLUT_.output_scale())
-                                  : true;
+        res &= minInvMassSqrDiv2_ ? invMassSqrDiv2 > minInvMassSqrDiv2_.value() : true;
+        res &= maxInvMassSqrDiv2_ ? invMassSqrDiv2 < maxInvMassSqrDiv2_.value() : true;
       }
 
       if (minTransMassSqrDiv2_ || maxTransMassSqrDiv2_) {
         int64_t transMassDiv2 =
             calc2BodyTransMass(obj1, obj2) + calc2BodyTransMass(obj1, obj3) + calc2BodyTransMass(obj2, obj3);
 
-        res &= minTransMassSqrDiv2_
-                   ? transMassDiv2 > std::round(minTransMassSqrDiv2_.value() * cosPhiLUT_.output_scale())
-                   : true;
-        res &= maxTransMassSqrDiv2_
-                   ? transMassDiv2 < std::round(maxTransMassSqrDiv2_.value() * cosPhiLUT_.output_scale())
-                   : true;
+        res &= minTransMassSqrDiv2_ ? transMassDiv2 > minTransMassSqrDiv2_.value() : true;
+        res &= maxTransMassSqrDiv2_ ? transMassDiv2 < maxTransMassSqrDiv2_.value() : true;
       }
 
       return res;
@@ -172,10 +177,10 @@ namespace l1t {
     const L1GTSingleInOutLUT coshEtaLUT2_;  // [2pi, 4pi)
     const L1GTSingleInOutLUT cosPhiLUT_;
 
-    const std::optional<double> minInvMassSqrDiv2_;
-    const std::optional<double> maxInvMassSqrDiv2_;
-    const std::optional<double> minTransMassSqrDiv2_;
-    const std::optional<double> maxTransMassSqrDiv2_;
+    const std::optional<int64_t> minInvMassSqrDiv2_;
+    const std::optional<int64_t> maxInvMassSqrDiv2_;
+    const std::optional<int64_t> minTransMassSqrDiv2_;
+    const std::optional<int64_t> maxTransMassSqrDiv2_;
 
     const int64_t scale_normal_factor_;
     const bool inv_mass_checks_;

@@ -13,6 +13,7 @@
 #include "L1GTOptionalParam.h"
 
 #include <optional>
+#include <cinttypes>
 
 namespace l1t {
 
@@ -47,14 +48,26 @@ namespace l1t {
               "minInvMass", config, [&scales](double value) { return scales.to_hw_InvMassSqrDiv2(value); })),
           maxInvMassSqrDiv2_(getOptionalParam<double, double>(
               "maxInvMass", config, [&scales](double value) { return scales.to_hw_InvMassSqrDiv2(value); })),
-          minTransMassSqrDiv2_(getOptionalParam<double, double>(
-              "minTransMass", config, [&scales](double value) { return scales.to_hw_TransMassSqrDiv2(value); })),
-          maxTransMassSqrDiv2_(getOptionalParam<double, double>(
-              "maxTransMass", config, [&scales](double value) { return scales.to_hw_TransMassSqrDiv2(value); })),
-          minPTSquared_(getOptionalParam<double, double>(
-              "minCombPt", config, [&scales](double value) { return scales.to_hw_PtSquared(value); })),
-          maxPTSquared_(getOptionalParam<double, double>(
-              "maxCombPt", config, [&scales](double value) { return scales.to_hw_PtSquared(value); })),
+          minTransMassSqrDiv2_(getOptionalParam<int64_t, double>(
+              "minTransMass",
+              config,
+              [&](double value) {
+                return std::round(scales.to_hw_TransMassSqrDiv2(value) * cosPhiLUT_.output_scale());
+              })),
+          maxTransMassSqrDiv2_(getOptionalParam<int64_t, double>(
+              "maxTransMass",
+              config,
+              [&](double value) {
+                return std::round(scales.to_hw_TransMassSqrDiv2(value) * cosPhiLUT_.output_scale());
+              })),
+          minPTSquared_(getOptionalParam<int64_t, double>(
+              "minCombPt",
+              config,
+              [&](double value) { return std::round(scales.to_hw_PtSquared(value) * cosPhiLUT_.output_scale()); })),
+          maxPTSquared_(getOptionalParam<int64_t, double>(
+              "maxCombPt",
+              config,
+              [&](double value) { return std::round(scales.to_hw_PtSquared(value) * cosPhiLUT_.output_scale()); })),
           minInvMassSqrOver2DRSqr_(getOptionalParam<double, double>(
               "minInvMassOverDR", config, [&scales](double value) { return scales.to_hw_InvMassSqrDiv2(value); })),
           maxInvMassSqrOver2DRSqr_(getOptionalParam<double, double>(
@@ -188,19 +201,15 @@ namespace l1t {
                             obj2.hwPT().to_int64() * obj2.hwPT().to_int64() *
                                 static_cast<int64_t>(std::round(cosPhiLUT_.output_scale())) +
                             2 * obj1.hwPT().to_int64() * obj2.hwPT().to_int64() * lutCosDPhi;
-        res &= minPTSquared_ ? pTSquared > std::round(minPTSquared_.value() * cosPhiLUT_.output_scale()) : true;
-        res &= maxPTSquared_ ? pTSquared < std::round(maxPTSquared_.value() * cosPhiLUT_.output_scale()) : true;
+        res &= minPTSquared_ ? pTSquared > minPTSquared_.value() : true;
+        res &= maxPTSquared_ ? pTSquared < maxPTSquared_.value() : true;
       }
 
       if (minTransMassSqrDiv2_ || maxTransMassSqrDiv2_) {
         int64_t transMassDiv2 = obj1.hwPT().to_int64() * obj2.hwPT().to_int64() *
                                 (static_cast<int64_t>(std::round(cosPhiLUT_.output_scale())) - lutCosDPhi);
-        res &= minTransMassSqrDiv2_
-                   ? transMassDiv2 > std::round(minTransMassSqrDiv2_.value() * cosPhiLUT_.output_scale())
-                   : true;
-        res &= maxTransMassSqrDiv2_
-                   ? transMassDiv2 < std::round(maxTransMassSqrDiv2_.value() * cosPhiLUT_.output_scale())
-                   : true;
+        res &= minTransMassSqrDiv2_ ? transMassDiv2 > minTransMassSqrDiv2_.value() : true;
+        res &= maxTransMassSqrDiv2_ ? transMassDiv2 < maxTransMassSqrDiv2_.value() : true;
       }
 
       if (minInvMassSqrOver2DRSqr_ || maxInvMassSqrOver2DRSqr_) {
@@ -289,11 +298,11 @@ namespace l1t {
 
     const std::optional<double> minInvMassSqrDiv2_;
     const std::optional<double> maxInvMassSqrDiv2_;
-    const std::optional<double> minTransMassSqrDiv2_;
-    const std::optional<double> maxTransMassSqrDiv2_;
+    const std::optional<int64_t> minTransMassSqrDiv2_;
+    const std::optional<int64_t> maxTransMassSqrDiv2_;
 
-    const std::optional<double> minPTSquared_;
-    const std::optional<double> maxPTSquared_;
+    const std::optional<int64_t> minPTSquared_;
+    const std::optional<int64_t> maxPTSquared_;
 
     const std::optional<double> minInvMassSqrOver2DRSqr_;
     const std::optional<double> maxInvMassSqrOver2DRSqr_;
