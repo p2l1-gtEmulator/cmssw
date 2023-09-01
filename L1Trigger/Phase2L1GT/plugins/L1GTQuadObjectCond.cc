@@ -54,6 +54,7 @@ private:
 
   const L1GTMultiBodyCut delta123Cuts_;
   const L1GTMultiBodyCut delta124Cuts_;
+  const L1GTMultiBodyCut delta134Cuts_;
   const L1GTMultiBodyCut delta234Cuts_;
 
   const L1GTMultiBodyCut delta1234Cuts_;
@@ -87,6 +88,7 @@ L1GTQuadObjectCond::L1GTQuadObjectCond(const edm::ParameterSet& config)
           config.getParameter<edm::ParameterSet>("delta34"), config, scales_, enable_sanity_checks_, inv_mass_checks_),
       delta123Cuts_(config.getParameter<edm::ParameterSet>("delta123"), config, scales_, inv_mass_checks_),
       delta124Cuts_(config.getParameter<edm::ParameterSet>("delta124"), config, scales_, inv_mass_checks_),
+      delta134Cuts_(config.getParameter<edm::ParameterSet>("delta134"), config, scales_, inv_mass_checks_),
       delta234Cuts_(config.getParameter<edm::ParameterSet>("delta234"), config, scales_, inv_mass_checks_),
       delta1234Cuts_(config, config, scales_, inv_mass_checks_),
       token1_(consumes<P2GTCandidateCollection>(collection1Cuts_.tag())),
@@ -186,6 +188,10 @@ void L1GTQuadObjectCond::fillDescriptions(edm::ConfigurationDescriptions& descri
   L1GTMultiBodyCut::fillPSetDescription(delta124Desc);
   desc.add<edm::ParameterSetDescription>("delta124", delta124Desc);
 
+  edm::ParameterSetDescription delta134Desc;
+  L1GTMultiBodyCut::fillPSetDescription(delta134Desc);
+  desc.add<edm::ParameterSetDescription>("delta134", delta134Desc);
+
   edm::ParameterSetDescription delta234Desc;
   L1GTMultiBodyCut::fillPSetDescription(delta234Desc);
   desc.add<edm::ParameterSetDescription>("delta234", delta234Desc);
@@ -259,6 +265,7 @@ bool L1GTQuadObjectCond::filter(edm::StreamID, edm::Event& event, const edm::Eve
           pass &= delta34Cuts_.checkObjects(col3->at(idx3), col4->at(idx4), massErrors);
           pass &= delta123Cuts_.checkObjects(col1->at(idx1), col2->at(idx2), col3->at(idx3), massErrors);
           pass &= delta124Cuts_.checkObjects(col1->at(idx1), col2->at(idx2), col4->at(idx4), massErrors);
+          pass &= delta134Cuts_.checkObjects(col1->at(idx1), col3->at(idx3), col4->at(idx4), massErrors);
           pass &= delta234Cuts_.checkObjects(col2->at(idx2), col3->at(idx3), col4->at(idx4), massErrors);
           pass &=
               delta1234Cuts_.checkObjects(col1->at(idx1), col2->at(idx2), col3->at(idx3), col4->at(idx4), massErrors);
