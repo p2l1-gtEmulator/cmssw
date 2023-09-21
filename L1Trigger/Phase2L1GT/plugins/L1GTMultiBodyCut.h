@@ -51,7 +51,8 @@ namespace l1t {
               [&](double value) {
                 return std::round(scales.to_hw_TransMassSqrDiv2(value) * cosPhiLUT_.output_scale());
               })),
-          scale_normal_factor_(std::ceil(coshEtaLUT_.output_scale() / coshEtaLUT2_.output_scale())),
+          scale_normal_shift_(
+              std::round(std::log2(std::ceil(coshEtaLUT_.output_scale() / coshEtaLUT2_.output_scale())))),
           inv_mass_checks_(inv_mass_checks) {}
 
     bool checkObjects(const P2GTCandidate& obj1,
@@ -157,7 +158,7 @@ namespace l1t {
       }
 
       // Normalize scales required due to LUT split in dEta with different scale factors.
-      return dEta < L1GTSingleInOutLUT::DETA_LUT_SPLIT ? invMassSqrDiv2 : invMassSqrDiv2 * scale_normal_factor_;
+      return dEta < L1GTSingleInOutLUT::DETA_LUT_SPLIT ? invMassSqrDiv2 : invMassSqrDiv2 << scale_normal_shift_;
     }
 
     int64_t calc2BodyTransMass(const P2GTCandidate& obj1, const P2GTCandidate& obj2) const {
@@ -182,7 +183,7 @@ namespace l1t {
     const std::optional<int64_t> minTransMassSqrDiv2_;
     const std::optional<int64_t> maxTransMassSqrDiv2_;
 
-    const int64_t scale_normal_factor_;
+    const int32_t scale_normal_shift_;
     const bool inv_mass_checks_;
   };
 
