@@ -25,16 +25,8 @@ process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
 process.source = cms.Source("PoolSource",
                             fileNames=cms.untracked.vstring(
-'/store/mc/Phase2Fall22DRMiniAOD/TT_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW-MINIAOD/PU200_125X_mcRun4_realistic_v2_ext1-v1/30001/9ac14ec7-19fe-4933-a6c6-bc873f473f67.root',
-'/store/mc/Phase2Fall22DRMiniAOD/TT_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW-MINIAOD/PU200_125X_mcRun4_realistic_v2_ext1-v1/30001/cf19f554-5b35-4074-b297-937986db7743.root',
-'/store/mc/Phase2Fall22DRMiniAOD/TT_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW-MINIAOD/PU200_125X_mcRun4_realistic_v2_ext1-v1/30001/2215647c-cacd-4c9d-a84f-646a4c11c347.root',
-'/store/mc/Phase2Fall22DRMiniAOD/TT_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW-MINIAOD/PU200_125X_mcRun4_realistic_v2_ext1-v1/30000/bec8fe62-c75f-459d-ba69-366fff94d3e5.root',
-'/store/mc/Phase2Fall22DRMiniAOD/TT_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW-MINIAOD/PU200_125X_mcRun4_realistic_v2_ext1-v1/30001/0d870582-78fd-4c25-b476-2ccd2129edc7.root',
-'/store/mc/Phase2Fall22DRMiniAOD/TT_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW-MINIAOD/PU200_125X_mcRun4_realistic_v2_ext1-v1/30001/b7256d6c-d4b1-4ca4-bbf1-bf0853220641.root',
-'/store/mc/Phase2Fall22DRMiniAOD/TT_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW-MINIAOD/PU200_125X_mcRun4_realistic_v2_ext1-v1/30000/3eaace9c-7465-4f52-94e8-b07e3b2630e8.root',
-'/store/mc/Phase2Fall22DRMiniAOD/TT_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW-MINIAOD/PU200_125X_mcRun4_realistic_v2_ext1-v1/30000/0f2c534d-5292-4bd3-9948-e8003583d2f6.root',
-'/store/mc/Phase2Fall22DRMiniAOD/TT_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW-MINIAOD/PU200_125X_mcRun4_realistic_v2_ext1-v1/30001/70c30283-78fd-44b4-8a30-60db56b3c0f9.root',
-'/store/mc/Phase2Fall22DRMiniAOD/TT_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW-MINIAOD/PU200_125X_mcRun4_realistic_v2_ext1-v1/30001/90196109-a57c-4df8-931d-7b42bc7b6a3e.root',
+'/store/mc/Phase2Spring23DIGIRECOMiniAOD/TT_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW-MINIAOD/PU200_131X_mcRun4_realistic_v5-v1/50000/023b71b9-1d38-4891-b5e6-d584032d2cc4.root',
+'/store/mc/Phase2Spring23DIGIRECOMiniAOD/TT_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW-MINIAOD/PU200_131X_mcRun4_realistic_v5-v1/50000/038a471b-1202-4170-8326-40a327b6abd2.root',
                             ),
 )
 
@@ -92,7 +84,7 @@ process.FEVTDEBUGHLToutput = cms.OutputModule("PoolOutputModule",
 
 # Other statements
 from Configuration.AlCa.GlobalTag import GlobalTag
-process.GlobalTag = GlobalTag(process.GlobalTag, '125X_mcRun4_realistic_v2', '')
+process.GlobalTag = GlobalTag(process.GlobalTag, '131X_mcRun4_realistic_v5', '')
 
 # Path and EndPath definitions
 process.raw2digi_step = cms.Path(process.RawToDigi)
@@ -112,9 +104,6 @@ from L1Trigger.Phase2L1GT.l1tGTAlgoBlockProducer_cff import collectAlgorithmPath
 
 process.GToutput = cms.OutputModule("PoolOutputModule",
     outputCommands = cms.untracked.vstring('drop *',
-       #'keep *_l1ctLayer2*_*',
-       #'keep *_l1tLayer2EG_*_*',
-       #'keep *l1tLayer2EG*_*_*_L1TEmulation',
        'keep *P2GT*_*_*_L1TEmulation',
     ),
     fileName=cms.untracked.string("l1t_emulation.root")
