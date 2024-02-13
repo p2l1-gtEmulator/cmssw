@@ -20,7 +20,7 @@ namespace l1t {
                double eta_lsb,
                double z0_lsb,
                //double dD_lsb,
-               double isolation_lsb,
+               double isolationPT_lsb,
                double beta_lsb,
                double mass_lsb,
                double seed_pT_lsb,

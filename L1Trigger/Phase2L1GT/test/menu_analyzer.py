@@ -71,8 +71,8 @@ if __name__ == "__main__":
                 if object_name(obj.objectType()) in ["CL2Electron", "CL2Photon"]:
                     print(" {}: pt {:3.1f} eta {:3.2f} phi {:3.2f} iso: {:3.2f} relIso: {:3.2f}".format(
                         object_name(obj.objectType()), obj.pt(), obj.eta(), obj.phi(),
-                        obj.hwIso() * scale_parameter.isolation_lsb.value(),
-                        obj.hwIso() * scale_parameter.isolation_lsb.value()/(obj.hwPT() * scale_parameter.pT_lsb.value())))
+                        obj.hwIso() * scale_parameter.isolationPT_lsb.value(),
+                        obj.hwIso() * scale_parameter.isolationPT_lsb.value()/(obj.hwPT() * scale_parameter.pT_lsb.value())))
                 elif "Sum" not in object_name(obj.objectType()):
                     print(" {}: pt {:3.1f} eta {:3.2f} phi {:3.2f}".format(
                         object_name(obj.objectType()), obj.pt(), obj.eta(), obj.phi()))
